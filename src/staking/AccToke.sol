@@ -130,7 +130,7 @@ contract AccToke is IAccToke, ERC20Votes, Pausable, SystemComponent, SecurityBas
         }
 
         // checkpoint rewards for caller
-        _collectRewards(to, false);
+        _collectRewards(to, to, false);
 
         // save information for current lockup
         lockups[to].push(Lockup({ amount: SafeCast.toUint128(amount), end: SafeCast.toUint128(end), points: points }));
@@ -145,8 +145,17 @@ contract AccToke is IAccToke, ERC20Votes, Pausable, SystemComponent, SecurityBas
     }
 
     /// @inheritdoc IAccToke
-    function unstake(uint256[] memory lockupIds) external whenNotPaused {
-        _collectRewards(msg.sender, false);
+    function unstake(uint256[] memory lockupIds) external override {
+        unstake(lockupIds, msg.sender);
+    }
+
+    function unstake(uint256[] memory lockupIds, address user) public override whenNotPaused {
+        if (user == address(0)) revert Errors.ZeroAddress("user");
+        if (msg.sender != user && msg.sender != address(systemRegistry.autoPoolRouter())) {
+            revert Errors.AccessDenied();
+        }
+
+        _collectRewards(user, user, false);
 
         uint256 length = lockupIds.length;
         if (length == 0) revert InvalidLockupIds();
@@ -154,13 +163,13 @@ contract AccToke is IAccToke, ERC20Votes, Pausable, SystemComponent, SecurityBas
         uint256 totalPoints = 0;
         uint256 totalAmount = 0;
 
-        uint256 totalLockups = lockups[msg.sender].length;
+        uint256 totalLockups = lockups[user].length;
         for (uint256 iter = 0; iter < length;) {
             uint256 lockupId = lockupIds[iter];
             if (lockupId >= totalLockups) revert LockupDoesNotExist();
 
             // get staking information
-            Lockup memory lockup = lockups[msg.sender][lockupId];
+            Lockup memory lockup = lockups[user][lockupId];
 
             if (lockup.end == 0) revert AlreadyUnlocked();
 
@@ -174,12 +183,12 @@ contract AccToke is IAccToke, ERC20Votes, Pausable, SystemComponent, SecurityBas
             }
 
             // remove stake
-            delete lockups[msg.sender][lockupId];
+            delete lockups[user][lockupId];
 
             // tally total points to be burned
             totalPoints += lockup.points;
 
-            emit Unstake(msg.sender, lockupId, lockup.amount, lockup.end, lockup.points);
+            emit Unstake(user, lockupId, lockup.amount, lockup.end, lockup.points);
 
             // tally total toke amount to be returned
             totalAmount += lockup.amount;
@@ -190,9 +199,9 @@ contract AccToke is IAccToke, ERC20Votes, Pausable, SystemComponent, SecurityBas
         }
 
         // wipe points
-        _burn(msg.sender, totalPoints);
+        _burn(user, totalPoints);
         // send staked toke back to user
-        toke.safeTransfer(msg.sender, totalAmount);
+        toke.safeTransfer(user, totalAmount);
     }
 
     /// @inheritdoc IAccToke
@@ -202,7 +211,7 @@ contract AccToke is IAccToke, ERC20Votes, Pausable, SystemComponent, SecurityBas
         if (length != durations.length) revert InvalidDurationLength();
 
         // before doing anything, make sure the rewards checkpoints are updated!
-        _collectRewards(msg.sender, false);
+        _collectRewards(msg.sender, msg.sender, false);
 
         uint256 totalExtendedPoints = 0;
 
@@ -344,12 +353,30 @@ contract AccToke is IAccToke, ERC20Votes, Pausable, SystemComponent, SecurityBas
     }
 
     /// @inheritdoc IAccToke
-    function collectRewards() external returns (uint256) {
-        return _collectRewards(msg.sender, true);
+    function collectRewards() external override returns (uint256) {
+        return _collectRewards(msg.sender, msg.sender, true);
+    }
+
+    /// @inheritdoc IAccToke
+    function collectRewards(address user, address recipient) external override returns (uint256) {
+        if (user != msg.sender) {
+            address router = address(systemRegistry.autoPoolRouter());
+            if (msg.sender == router) {
+                if (recipient != user && recipient != router) {
+                    revert Errors.AccessDenied();
+                }
+            } else {
+                revert Errors.AccessDenied();
+            }
+        }
+
+        if (recipient == address(0)) revert Errors.ZeroAddress("recipient");
+
+        return _collectRewards(user, recipient, true);
     }
 
     /// @dev See {IAccToke-collectRewards}.
-    function _collectRewards(address user, bool distribute) internal returns (uint256) {
+    function _collectRewards(address user, address recipient, bool distribute) internal returns (uint256) {
         // calculate user's new rewards per share (current minus claimed)
         uint256 netRewardsPerShare = accRewardPerShare - rewardDebtPerShare[user];
         // calculate amount of actual rewards
@@ -382,10 +409,10 @@ contract AccToke is IAccToke, ERC20Votes, Pausable, SystemComponent, SecurityBas
             totalRewardsClaimed += totalClaiming;
             rewardsClaimed[user] += totalClaiming;
 
-            emit RewardsClaimed(user, totalClaiming);
+            emit RewardsClaimed(user, recipient, totalClaiming);
 
-            // send rewards to user
-            weth.safeTransfer(user, totalClaiming);
+            // send rewards to recipient
+            weth.safeTransfer(recipient, totalClaiming);
 
             // return total amount claimed
             return totalClaiming;

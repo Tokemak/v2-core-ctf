@@ -7,6 +7,7 @@ import { ReentrancyGuard } from "openzeppelin-contracts/security/ReentrancyGuard
 
 import { Address } from "openzeppelin-contracts/utils/Address.sol";
 import { IAutopool, IAutopilotRouter } from "src/interfaces/vault/IAutopilotRouter.sol";
+import { IAccToke } from "src/interfaces/staking/IAccToke.sol";
 import { IRewards } from "src/interfaces/rewarders/IRewards.sol";
 import { SwapParams, IAsyncSwapper } from "src/interfaces/liquidation/IAsyncSwapper.sol";
 import { AutopilotRouterBase, ISystemRegistry } from "src/vault/AutopilotRouterBase.sol";
@@ -125,5 +126,28 @@ contract AutopilotRouter is IAutopilotRouter, AutopilotRouterBase, ReentrancyGua
     ) public payable override returns (uint256) {
         if (msg.sender != recipient.wallet) revert Errors.AccessDenied();
         return rewarder.claimFor(recipient, v, r, s);
+    }
+
+    /// @inheritdoc IAutopilotRouter
+    function stakeAccBalance(uint256 duration, address to) public override {
+        uint256 amount = IERC20(systemRegistry.toke()).balanceOf(address(this));
+        return stakeAcc(amount, duration, to);
+    }
+
+    /// @inheritdoc IAutopilotRouter
+    function stakeAcc(uint256 amount, uint256 duration, address to) public override {
+        IAccToke accToke = systemRegistry.accToke();
+        approve(IERC20(accToke.toke()), address(accToke), amount);
+        return accToke.stake(amount, duration, to);
+    }
+
+    /// @inheritdoc IAutopilotRouter
+    function unstakeAcc(uint256[] memory lockupIds, address user) public override {
+        systemRegistry.accToke().unstake(lockupIds, user);
+    }
+
+    /// @inheritdoc IAutopilotRouter
+    function collectAccTokeRewards(address user, address recipient) public override returns (uint256) {
+        return systemRegistry.accToke().collectRewards(user, recipient);
     }
 }

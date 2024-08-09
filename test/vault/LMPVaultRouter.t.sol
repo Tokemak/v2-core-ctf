@@ -19,6 +19,7 @@ import { AutopoolETH } from "src/vault/AutopoolETH.sol";
 import { VaultTypes } from "src/vault/VaultTypes.sol";
 import { AutopoolFactory } from "src/vault/AutopoolFactory.sol";
 import { IAutopilotRouterBase, IAutopilotRouter } from "src/interfaces/vault/IAutopilotRouter.sol";
+import { IAccToke } from "src/interfaces/staking/IAccToke.sol";
 
 import { IMainRewarder } from "src/interfaces/rewarders/IMainRewarder.sol";
 import { IRewards } from "src/interfaces/rewarders/IRewards.sol";
@@ -118,6 +119,7 @@ contract AutopilotRouterTest is BaseTest {
         );
 
         deal(address(baseAsset), address(this), depositAmount * 10);
+        deployAccToke();
 
         autoPoolInitData = abi.encode("");
 
@@ -1281,6 +1283,99 @@ contract AutopilotRouterTest is BaseTest {
         assertEq(autoPool.balanceOf(address(this)), shares);
     }
 
+    function test_StakingRewards_SingleUser_OneStakeAA() public {
+        uint256 amount = 10_000 * 1e18;
+
+        _prepareFunds(address(autoPoolRouter), amount);
+        address user1 = address(this);
+
+        // stake toke for a year
+        autoPoolRouter.stakeAcc(amount, ONE_YEAR, address(this));
+        assertEq(accToke.totalRewardsEarned(), 0, "No rewards yet");
+        assertEq(accToke.totalRewardsClaimed(), 0);
+        assertEq(accToke.previewRewards(), 0);
+        // add new rewards
+        _topOffRewards(amount);
+        // make sure we can claim now
+        assertApproxEqRel(accToke.totalRewardsEarned(), amount, TOLERANCE);
+        assertEq(accToke.totalRewardsClaimed(), 0);
+        assertApproxEqRel(
+            accToke.previewRewards(address(this)), amount, TOLERANCE, "Full reward not showing up as available"
+        );
+
+        // claim rewards
+        autoPoolRouter.collectAccTokeRewards(user1, address(autoPoolRouter));
+        // make sure: a) no more left to claim, b) claim was logged properly
+        assertApproxEqRel(accToke.totalRewardsEarned(), amount, TOLERANCE);
+        assertApproxEqRel(accToke.totalRewardsClaimed(), amount, TOLERANCE);
+        assertEq(accToke.previewRewards(), 0, "Should have no more rewards to claim");
+        assertApproxEqRel(accToke.rewardsClaimed(address(this)), amount, TOLERANCE);
+    }
+
+    function test_StakingMaxToke_SingleUser_OneStake() public {
+        uint256 amount = depositAmount;
+
+        _prepareFunds(address(autoPoolRouter), amount);
+        address user1 = address(this);
+
+        // stake toke for a year
+        autoPoolRouter.stakeAccBalance(ONE_YEAR, address(this));
+        assertEq(accToke.totalRewardsEarned(), 0, "No rewards yet");
+        assertEq(accToke.totalRewardsClaimed(), 0);
+        assertEq(accToke.previewRewards(), 0);
+        // add new rewards
+        _topOffRewards(amount);
+        // make sure we can claim now
+        assertApproxEqRel(accToke.totalRewardsEarned(), amount, TOLERANCE);
+        assertEq(accToke.totalRewardsClaimed(), 0);
+        assertApproxEqRel(accToke.previewRewards(user1), amount, TOLERANCE, "Full reward not showing up as available");
+        // claim rewards
+        autoPoolRouter.collectAccTokeRewards(user1, address(autoPoolRouter));
+        // make sure: a) no more left to claim, b) claim was logged properly
+        assertApproxEqRel(accToke.totalRewardsEarned(), amount, TOLERANCE);
+        assertApproxEqRel(accToke.totalRewardsClaimed(), amount, TOLERANCE);
+        assertEq(accToke.previewRewards(), 0, "Should have no more rewards to claim");
+        assertApproxEqRel(accToke.rewardsClaimed(address(this)), amount, TOLERANCE);
+    }
+
+    function testStakingAndUnstaking() public {
+        uint256 amount = depositAmount;
+
+        _prepareFunds(address(autoPoolRouter), amount);
+
+        // stake toke for a year
+        autoPoolRouter.stakeAcc(amount, ONE_YEAR, address(this));
+
+        IAccToke.Lockup[] memory lockups = accToke.getLockups(address(this));
+        assert(lockups.length == 1);
+
+        uint256 lockupId = 0;
+        IAccToke.Lockup memory lockup = lockups[lockupId];
+
+        assertEq(lockup.amount, amount, "Lockup amount incorrect");
+        assertEq(lockup.end, block.timestamp + ONE_YEAR);
+
+        // voting power
+        // NOTE: doing exception for comparisons since with low numbers relative tolerance is trickier
+        assertApproxEqRel(accToke.balanceOf(address(this)), (amount * 18) / 10, TOLERANCE, "Voting power incorrect");
+
+        //
+        // Unstake
+        //
+
+        // make sure can't unstake too early
+        vm.warp(block.timestamp + ONE_YEAR - 1);
+        vm.expectRevert(IAccToke.NotUnlockableYet.selector);
+
+        uint256[] memory lockupIds = new uint256[](1);
+        lockupIds[0] = lockupId;
+        autoPoolRouter.unstakeAcc(lockupIds, address(this));
+        // get to proper timestamp and unlock
+        vm.warp(block.timestamp + 1);
+        accToke.unstake(lockupIds, address(this));
+        assertEq(accToke.balanceOf(address(this)), 0);
+    }
+
     function test_expiration() public {
         // Check that the expiration function works. Should revert for timestamps in the past.
         vm.expectRevert(IAutopilotRouterBase.TimestampTooOld.selector);
@@ -1381,5 +1476,29 @@ contract AutopilotRouterTest is BaseTest {
             )
         );
         assert(systemRegistry.autoPoolRegistry().isVault(address(autoPool)));
+    }
+
+    function _prepareFunds(address user, uint256 amount) private {
+        vm.startPrank(user);
+
+        deal(address(toke), user, amount);
+        toke.approve(address(accToke), amount);
+        deal(address(weth), user, amount);
+        weth.approve(address(accToke), amount);
+    }
+
+    // @dev Top off rewards to make sure there is enough to claim
+    function _topOffRewards(uint256 _amount) private {
+        // get some weth if not enough to top off rewards
+        if (weth.balanceOf(address(this)) < _amount) {
+            deal(address(weth), address(this), _amount);
+        }
+
+        uint256 wethStakingBalanceBefore = weth.balanceOf(address(accToke));
+
+        weth.approve(address(accToke), _amount);
+        accToke.addWETHRewards(_amount);
+
+        assertEq(weth.balanceOf(address(accToke)), wethStakingBalanceBefore + _amount);
     }
 }

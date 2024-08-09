@@ -25,7 +25,7 @@ contract StakingTest is BaseTest {
         uint256 newPoints
     );
     event RewardsAdded(uint256 amount, uint256 accRewardPerShare);
-    event RewardsClaimed(address indexed user, uint256 amount);
+    event RewardsClaimed(address indexed user, address indexed recipient, uint256 amount);
     event AdminUnlockSet(bool newUnlockState);
 
     // solhint-disable-next-line var-name-mixedcase
@@ -152,6 +152,58 @@ contract StakingTest is BaseTest {
         // get to proper timestamp and unlock
         vm.warp(block.timestamp + 1);
         accToke.unstake(lockupIds);
+        assertEq(accToke.balanceOf(address(this)), 0);
+    }
+
+    function testStakingAndUnstakingNotByUser(uint256 amount) public {
+        _checkFuzz(amount);
+
+        prepareFunds(address(this), amount);
+
+        //
+        // stake
+        //
+        stake(amount, ONE_YEAR);
+
+        IAccToke.Lockup[] memory lockups = accToke.getLockups(address(this));
+        assert(lockups.length == 1);
+
+        uint256 lockupId = 0;
+        IAccToke.Lockup memory lockup = lockups[lockupId];
+
+        assertEq(lockup.amount, amount, "Lockup amount incorrect");
+        assertEq(lockup.end, block.timestamp + ONE_YEAR);
+
+        // voting power
+        // NOTE: doing exception for comparisons since with low numbers relative tolerance is trickier
+        assertApproxEqRel(accToke.balanceOf(address(this)), (amount * 18) / 10, TOLERANCE, "Voting power incorrect");
+
+        //
+        // Unstake
+        //
+        uint256[] memory lockupIds = new uint256[](1);
+        lockupIds[0] = lockupId;
+
+        // get to proper timestamp and unlock
+        vm.warp(block.timestamp + ONE_YEAR);
+        //Router can unstake on behalf of user but a randomUser cannot
+        address user = address(this);
+        address router = address(systemRegistry.autoPoolRouter());
+        address randomUser = address(2);
+
+        vm.startPrank(randomUser);
+        vm.expectRevert(Errors.AccessDenied.selector);
+        accToke.unstake(lockupIds, user);
+        vm.stopPrank();
+        vm.startPrank(router);
+
+        //Cannot be unstaked for zeroAddress user
+        vm.expectRevert(abi.encodeWithSelector(Errors.ZeroAddress.selector, "user"));
+        accToke.unstake(lockupIds, address(0));
+
+        //Unstake for user
+        accToke.unstake(lockupIds, user);
+        vm.stopPrank();
         assertEq(accToke.balanceOf(address(this)), 0);
     }
 
@@ -440,6 +492,58 @@ contract StakingTest is BaseTest {
         assertApproxEqRel(accToke.rewardsClaimed(address(this)), amount, TOLERANCE);
     }
 
+    function test_StakingRewards_SingleUser_OneStakeClaimRewardsOnBehalfOfUser(uint256 amount) public {
+        _checkFuzz(amount);
+
+        prepareFunds(address(this), amount);
+        address user1 = address(this);
+
+        // stake toke for a year
+        stake(amount, ONE_YEAR);
+        assertEq(accToke.totalRewardsEarned(), 0, "No rewards yet");
+        assertEq(accToke.totalRewardsClaimed(), 0);
+        assertEq(accToke.previewRewards(), 0);
+        // add new rewards
+        topOffRewards(amount);
+        // make sure we can claim now
+        assertApproxEqRel(accToke.totalRewardsEarned(), amount, TOLERANCE);
+        assertEq(accToke.totalRewardsClaimed(), 0);
+        assertApproxEqRel(accToke.previewRewards(), amount, TOLERANCE, "Full reward not showing up as available");
+
+        //Rewards can be claimed on behalf of user by
+        // 1. user itself
+        // 2. router
+        collectRewardsOnBehalfOfUser(user1);
+        // make sure: a) no more left to claim, b) claim was logged properly
+        assertApproxEqRel(accToke.totalRewardsEarned(), amount, TOLERANCE);
+        assertApproxEqRel(accToke.totalRewardsClaimed(), amount, TOLERANCE);
+        assertEq(accToke.previewRewards(), 0, "Should have no more rewards to claim");
+        assertApproxEqRel(accToke.rewardsClaimed(address(this)), amount, TOLERANCE);
+    }
+
+    function test_CollectRewardsOnBehalfOfUser_InvalidCollector() public {
+        address randomUser = address(2);
+        address router = address(systemRegistry.autoPoolRouter());
+
+        //A random user cannot collect rewards on behalf of user
+        vm.startPrank(randomUser);
+        address user = address(this);
+        vm.expectRevert(Errors.AccessDenied.selector);
+        accToke.collectRewards(user, router);
+
+        vm.stopPrank();
+
+        //Router can collect rewards on behalf of user but recipient needs to be user or router
+        vm.startPrank(router);
+        vm.expectRevert(Errors.AccessDenied.selector);
+        accToke.collectRewards(user, randomUser);
+        vm.stopPrank();
+
+        //User cannot claim rewards for zero address.
+        vm.expectRevert(abi.encodeWithSelector(Errors.ZeroAddress.selector, "recipient"));
+        accToke.collectRewards(user, address(0));
+    }
+
     function test_StakingRewards_SingleUser_MultipleStakes(uint256 amount) public {
         _checkFuzz(amount);
 
@@ -692,8 +796,21 @@ contract StakingTest is BaseTest {
         uint256 claimTargetAmount = accToke.previewRewards();
 
         vm.expectEmit(true, true, true, true);
-        emit RewardsClaimed(user, claimTargetAmount);
+        emit RewardsClaimed(user, user, claimTargetAmount);
         accToke.collectRewards();
+
+        vm.stopPrank();
+    }
+
+    function collectRewardsOnBehalfOfUser(address user) private {
+        address router = address(systemRegistry.autoPoolRouter());
+        vm.startPrank(router);
+
+        uint256 claimTargetAmount = accToke.previewRewards(user);
+
+        vm.expectEmit(true, true, true, true);
+        emit RewardsClaimed(user, router, claimTargetAmount);
+        accToke.collectRewards(user, router);
 
         vm.stopPrank();
     }

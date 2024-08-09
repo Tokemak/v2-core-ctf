@@ -61,8 +61,9 @@ interface IAccToke {
     );
     event RewardsAdded(uint256 amount, uint256 accRewardPerShare);
     event RewardsCollected(address indexed user, uint256 amount);
-    event RewardsClaimed(address indexed user, uint256 amount);
+    event RewardsClaimed(address indexed user, address indexed recipient, uint256 amount);
     event AdminUnlockSet(bool newUnlockState);
+    
 
     ///////////////////////////////////////////////////////////////////
     //
@@ -100,6 +101,13 @@ interface IAccToke {
      * @param lockupIds the id of the lockup to unstake
      */
     function unstake(uint256[] memory lockupIds) external;
+
+    /**
+     * @notice Collect staked TOKE for a lockup and any earned rewards.
+     * @param lockupIds the id of the lockup to unstake
+     * @param user address of the user to unstake for
+     */
+    function unstake(uint256[] memory lockupIds, address user) external;
 
     /**
      * @notice Extend a stake lockup for additional points.
@@ -150,6 +158,9 @@ interface IAccToke {
 
     /// @notice Claim rewards for the caller
     function collectRewards() external returns (uint256);
+
+    /// @notice Claim rewards for the user and send to recipient
+    function collectRewards(address user, address recipient) external returns (uint256);
 
     /// @notice Check if amount can be staked
     function isStakeableAmount(uint256 amount) external pure returns (bool);
