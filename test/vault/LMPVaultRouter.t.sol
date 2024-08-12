@@ -1290,7 +1290,7 @@ contract AutopilotRouterTest is BaseTest {
         address user1 = address(this);
 
         // stake toke for a year
-        autoPoolRouter.stakeAcc(amount, ONE_YEAR, address(this));
+        autoPoolRouter.stakeAcc(address(accToke), amount, ONE_YEAR, address(this));
         assertEq(accToke.totalRewardsEarned(), 0, "No rewards yet");
         assertEq(accToke.totalRewardsClaimed(), 0);
         assertEq(accToke.previewRewards(), 0);
@@ -1304,7 +1304,7 @@ contract AutopilotRouterTest is BaseTest {
         );
 
         // claim rewards
-        autoPoolRouter.collectAccTokeRewards(user1, address(autoPoolRouter));
+        autoPoolRouter.collectAccTokeRewards(address(accToke), user1, address(autoPoolRouter));
         // make sure: a) no more left to claim, b) claim was logged properly
         assertApproxEqRel(accToke.totalRewardsEarned(), amount, TOLERANCE);
         assertApproxEqRel(accToke.totalRewardsClaimed(), amount, TOLERANCE);
@@ -1319,7 +1319,7 @@ contract AutopilotRouterTest is BaseTest {
         address user1 = address(this);
 
         // stake toke for a year
-        autoPoolRouter.stakeAccBalance(ONE_YEAR, address(this));
+        autoPoolRouter.stakeAccBalance(address(accToke), ONE_YEAR, address(this));
         assertEq(accToke.totalRewardsEarned(), 0, "No rewards yet");
         assertEq(accToke.totalRewardsClaimed(), 0);
         assertEq(accToke.previewRewards(), 0);
@@ -1330,7 +1330,7 @@ contract AutopilotRouterTest is BaseTest {
         assertEq(accToke.totalRewardsClaimed(), 0);
         assertApproxEqRel(accToke.previewRewards(user1), amount, TOLERANCE, "Full reward not showing up as available");
         // claim rewards
-        autoPoolRouter.collectAccTokeRewards(user1, address(autoPoolRouter));
+        autoPoolRouter.collectAccTokeRewards(address(accToke), user1, address(autoPoolRouter));
         // make sure: a) no more left to claim, b) claim was logged properly
         assertApproxEqRel(accToke.totalRewardsEarned(), amount, TOLERANCE);
         assertApproxEqRel(accToke.totalRewardsClaimed(), amount, TOLERANCE);
@@ -1344,7 +1344,7 @@ contract AutopilotRouterTest is BaseTest {
         _prepareFunds(address(autoPoolRouter), amount);
 
         // stake toke for a year
-        autoPoolRouter.stakeAcc(amount, ONE_YEAR, address(this));
+        autoPoolRouter.stakeAcc(address(accToke), amount, ONE_YEAR, address(this));
 
         IAccToke.Lockup[] memory lockups = accToke.getLockups(address(this));
         assert(lockups.length == 1);
@@ -1369,7 +1369,7 @@ contract AutopilotRouterTest is BaseTest {
 
         uint256[] memory lockupIds = new uint256[](1);
         lockupIds[0] = lockupId;
-        autoPoolRouter.unstakeAcc(lockupIds, address(this));
+        autoPoolRouter.unstakeAcc(address(accToke), lockupIds, address(this));
         // get to proper timestamp and unlock
         vm.warp(block.timestamp + 1);
         accToke.unstake(lockupIds, address(this));

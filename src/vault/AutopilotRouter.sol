@@ -12,6 +12,7 @@ import { IRewards } from "src/interfaces/rewarders/IRewards.sol";
 import { SwapParams, IAsyncSwapper } from "src/interfaces/liquidation/IAsyncSwapper.sol";
 import { AutopilotRouterBase, ISystemRegistry } from "src/vault/AutopilotRouterBase.sol";
 import { Errors } from "src/utils/Errors.sol";
+import { ContractTypes } from "src/libs/ContractTypes.sol";
 
 /// @title ERC4626Router contract
 contract AutopilotRouter is IAutopilotRouter, AutopilotRouterBase, ReentrancyGuard {
@@ -129,25 +130,44 @@ contract AutopilotRouter is IAutopilotRouter, AutopilotRouterBase, ReentrancyGua
     }
 
     /// @inheritdoc IAutopilotRouter
-    function stakeAccBalance(uint256 duration, address to) public override {
+    function stakeAccBalance(address accToke, uint256 duration, address to) public payable override {
         uint256 amount = IERC20(systemRegistry.toke()).balanceOf(address(this));
-        return stakeAcc(amount, duration, to);
+        return stakeAcc(accToke, amount, duration, to);
     }
 
     /// @inheritdoc IAutopilotRouter
-    function stakeAcc(uint256 amount, uint256 duration, address to) public override {
-        IAccToke accToke = systemRegistry.accToke();
-        approve(IERC20(accToke.toke()), address(accToke), amount);
-        return accToke.stake(amount, duration, to);
+    function stakeAcc(
+        address accToke,
+        uint256 amount,
+        uint256 duration,
+        address to
+    ) public payable override validateAccToke(accToke) {
+        approve(IERC20(systemRegistry.toke()), accToke, amount);
+        return IAccToke(accToke).stake(amount, duration, to);
     }
 
     /// @inheritdoc IAutopilotRouter
-    function unstakeAcc(uint256[] memory lockupIds, address user) public override {
-        systemRegistry.accToke().unstake(lockupIds, user);
+    function unstakeAcc(
+        address accToke,
+        uint256[] memory lockupIds,
+        address user
+    ) public payable override validateAccToke(accToke) {
+        IAccToke(accToke).unstake(lockupIds, user);
     }
 
     /// @inheritdoc IAutopilotRouter
-    function collectAccTokeRewards(address user, address recipient) public override returns (uint256) {
-        return systemRegistry.accToke().collectRewards(user, recipient);
+    function collectAccTokeRewards(
+        address accToke,
+        address user,
+        address recipient
+    ) public payable override validateAccToke(accToke) returns (uint256) {
+        return IAccToke(accToke).collectRewards(user, recipient);
+    }
+
+    modifier validateAccToke(address accToke) {
+        if (!systemRegistry.isValidContract(ContractTypes.ACC_TOKE_INSTANCE, accToke)) {
+            revert Errors.InvalidAddress(accToke);
+        }
+        _;
     }
 }
