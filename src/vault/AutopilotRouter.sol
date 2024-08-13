@@ -147,21 +147,16 @@ contract AutopilotRouter is IAutopilotRouter, AutopilotRouterBase, ReentrancyGua
     }
 
     /// @inheritdoc IAutopilotRouter
-    function unstakeAcc(
-        address accToke,
-        uint256[] memory lockupIds,
-        address user
-    ) public payable override validateAccToke(accToke) {
-        IAccToke(accToke).unstake(lockupIds, user);
+    function unstakeAcc(address accToke, uint256[] memory lockupIds) public payable override validateAccToke(accToke) {
+        IAccToke(accToke).unstake(lockupIds, msg.sender);
     }
 
     /// @inheritdoc IAutopilotRouter
     function collectAccTokeRewards(
         address accToke,
-        address user,
         address recipient
     ) public payable override validateAccToke(accToke) returns (uint256) {
-        return IAccToke(accToke).collectRewards(user, recipient);
+        return IAccToke(accToke).collectRewards(msg.sender, recipient);
     }
 
     modifier validateAccToke(address accToke) {

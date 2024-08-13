@@ -533,12 +533,6 @@ contract StakingTest is BaseTest {
 
         vm.stopPrank();
 
-        //Router can collect rewards on behalf of user but recipient needs to be user or router
-        vm.startPrank(router);
-        vm.expectRevert(Errors.AccessDenied.selector);
-        accToke.collectRewards(user, randomUser);
-        vm.stopPrank();
-
         //User cannot claim rewards for zero address.
         vm.expectRevert(abi.encodeWithSelector(Errors.ZeroAddress.selector, "recipient"));
         accToke.collectRewards(user, address(0));

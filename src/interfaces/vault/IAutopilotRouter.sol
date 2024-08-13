@@ -162,21 +162,15 @@ interface IAutopilotRouter is IAutopilotRouterBase {
      * @notice unstake Acc token balance
      * @param accToke contract address of the AccToke
      * @param lockupIds The lockup ids to unstake
-     * @param user The user to unstake for
      */
-    function unstakeAcc(address accToke, uint256[] memory lockupIds, address user) external payable;
+    function unstakeAcc(address accToke, uint256[] memory lockupIds) external payable;
 
     /**
      * @notice Collect staking rewards
      * @dev rewards can only be sent to user or router
      * @param accToke contract address of the AccToke
-     * @param user The user to collect rewards for
      * @param recipient The recipient of the rewards
      * @return amountReceived Swap output amount
      */
-    function collectAccTokeRewards(
-        address accToke,
-        address user,
-        address recipient
-    ) external payable returns (uint256);
+    function collectAccTokeRewards(address accToke, address recipient) external payable returns (uint256);
 }

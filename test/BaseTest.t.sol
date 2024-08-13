@@ -25,6 +25,7 @@ import { VaultTypes } from "src/vault/VaultTypes.sol";
 import { Roles } from "src/libs/Roles.sol";
 import { TestWETH9 } from "test/mocks/TestWETH9.sol";
 import { TOKE_MAINNET, USDC_MAINNET, WETH_MAINNET } from "test/utils/Addresses.sol";
+import { ContractTypes } from "src/libs/ContractTypes.sol";
 
 contract BaseTest is Test {
     // if forking is required at specific block, set this in sub-contract's setup before calling parent
@@ -200,6 +201,7 @@ contract BaseTest is Test {
         vm.label(address(accToke), "AccToke");
 
         systemRegistry.setAccToke(address(accToke));
+        systemRegistry.setContract(ContractTypes.ACC_TOKE_INSTANCE, address(accToke));
     }
 
     function deployAutopoolRegistry() public {

@@ -20,6 +20,7 @@ import { VaultTypes } from "src/vault/VaultTypes.sol";
 import { AutopoolFactory } from "src/vault/AutopoolFactory.sol";
 import { IAutopilotRouterBase, IAutopilotRouter } from "src/interfaces/vault/IAutopilotRouter.sol";
 import { IAccToke } from "src/interfaces/staking/IAccToke.sol";
+import { AccToke } from "src/staking/AccToke.sol";
 
 import { IMainRewarder } from "src/interfaces/rewarders/IMainRewarder.sol";
 import { IRewards } from "src/interfaces/rewarders/IRewards.sol";
@@ -39,6 +40,8 @@ import { ERC2612 } from "test/utils/ERC2612.sol";
 import { AutopoolETHStrategyTestHelpers as stratHelpers } from "test/strategy/AutopoolETHStrategyTestHelpers.sol";
 import { AutopoolETHStrategy } from "src/strategy/AutopoolETHStrategy.sol";
 import { TestERC20 } from "test/mocks/TestERC20.sol";
+
+import { ContractTypes } from "src/libs/ContractTypes.sol";
 
 import { Vm } from "forge-std/Vm.sol";
 
@@ -94,6 +97,7 @@ contract AutopilotRouterTest is BaseTest {
 
     IMainRewarder public autoPoolRewarder;
     Rewards public rewards;
+    AccToke public newAccToke;
     Vm.Wallet public rewardsSigner;
 
     uint256 public constant MIN_DEPOSIT_AMOUNT = 100;
@@ -120,6 +124,18 @@ contract AutopilotRouterTest is BaseTest {
 
         deal(address(baseAsset), address(this), depositAmount * 10);
         deployAccToke();
+
+        newAccToke = new AccToke(
+            systemRegistry,
+            //solhint-disable-next-line not-rely-on-time
+            block.timestamp, // start epoch
+            MIN_STAKING_DURATION
+        );
+
+        //set newAccToke as a valid contract in SystemRegistry
+        systemRegistry.setContract(ContractTypes.ACC_TOKE_INSTANCE, address(newAccToke));
+
+        vm.label(address(newAccToke), "newAccToke");
 
         autoPoolInitData = abi.encode("");
 
@@ -1283,11 +1299,10 @@ contract AutopilotRouterTest is BaseTest {
         assertEq(autoPool.balanceOf(address(this)), shares);
     }
 
-    function test_StakingRewards_SingleUser_OneStakeAA() public {
+    function test_StakingRewards_SingleUser_OneStake() public {
         uint256 amount = 10_000 * 1e18;
 
         _prepareFunds(address(autoPoolRouter), amount);
-        address user1 = address(this);
 
         // stake toke for a year
         autoPoolRouter.stakeAcc(address(accToke), amount, ONE_YEAR, address(this));
@@ -1304,7 +1319,7 @@ contract AutopilotRouterTest is BaseTest {
         );
 
         // claim rewards
-        autoPoolRouter.collectAccTokeRewards(address(accToke), user1, address(autoPoolRouter));
+        autoPoolRouter.collectAccTokeRewards(address(accToke), address(autoPoolRouter));
         // make sure: a) no more left to claim, b) claim was logged properly
         assertApproxEqRel(accToke.totalRewardsEarned(), amount, TOLERANCE);
         assertApproxEqRel(accToke.totalRewardsClaimed(), amount, TOLERANCE);
@@ -1330,7 +1345,7 @@ contract AutopilotRouterTest is BaseTest {
         assertEq(accToke.totalRewardsClaimed(), 0);
         assertApproxEqRel(accToke.previewRewards(user1), amount, TOLERANCE, "Full reward not showing up as available");
         // claim rewards
-        autoPoolRouter.collectAccTokeRewards(address(accToke), user1, address(autoPoolRouter));
+        autoPoolRouter.collectAccTokeRewards(address(accToke), address(autoPoolRouter));
         // make sure: a) no more left to claim, b) claim was logged properly
         assertApproxEqRel(accToke.totalRewardsEarned(), amount, TOLERANCE);
         assertApproxEqRel(accToke.totalRewardsClaimed(), amount, TOLERANCE);
@@ -1369,11 +1384,79 @@ contract AutopilotRouterTest is BaseTest {
 
         uint256[] memory lockupIds = new uint256[](1);
         lockupIds[0] = lockupId;
-        autoPoolRouter.unstakeAcc(address(accToke), lockupIds, address(this));
+        autoPoolRouter.unstakeAcc(address(accToke), lockupIds);
         // get to proper timestamp and unlock
         vm.warp(block.timestamp + 1);
         accToke.unstake(lockupIds, address(this));
         assertEq(accToke.balanceOf(address(this)), 0);
+    }
+
+    function testStakingAndUnstakingWithInvalidAccToke() public {
+        uint256 amount = depositAmount;
+
+        _prepareFunds(address(autoPoolRouter), amount);
+
+        address invalidAccToke = address(0x2);
+
+        vm.expectRevert(abi.encodeWithSelector(Errors.InvalidAddress.selector, invalidAccToke));
+        autoPoolRouter.stakeAcc(invalidAccToke, amount, ONE_YEAR, address(this));
+    }
+
+    function testStakingAndUnstakingMultipleAccToke() public {
+        //Router will stake at 2 different AccToke contracts
+        uint256 amount = depositAmount;
+
+        _prepareFunds(address(autoPoolRouter), amount * 2);
+
+        // stake toke for a year
+        autoPoolRouter.stakeAcc(address(accToke), amount, ONE_YEAR, address(this));
+
+        //stake toke for a year in newAccToke
+        autoPoolRouter.stakeAcc(address(newAccToke), amount, ONE_YEAR, address(this));
+
+        IAccToke.Lockup[] memory lockups = accToke.getLockups(address(this));
+        assert(lockups.length == 1);
+
+        IAccToke.Lockup[] memory newLockups = newAccToke.getLockups(address(this));
+        assert(newLockups.length == 1);
+
+        uint256 lockupId = 0;
+        IAccToke.Lockup memory lockup = lockups[lockupId];
+        IAccToke.Lockup memory newLockup = newLockups[lockupId];
+
+        assertEq(lockup.amount, amount, "Lockup amount incorrect");
+        assertEq(lockup.end, block.timestamp + ONE_YEAR);
+        assertEq(newLockup.amount, amount, "Lockup amount incorrect");
+        assertEq(newLockup.end, block.timestamp + ONE_YEAR);
+
+        // voting power
+        // NOTE: doing exception for comparisons since with low numbers relative tolerance is trickier
+        assertApproxEqRel(accToke.balanceOf(address(this)), (amount * 18) / 10, TOLERANCE, "Voting power incorrect");
+        assertApproxEqRel(newAccToke.balanceOf(address(this)), (amount * 18) / 10, TOLERANCE, "Voting power incorrect");
+
+        //
+        // Unstake
+        //
+        vm.stopPrank();
+
+        // make sure can't unstake too early
+        vm.warp(block.timestamp + ONE_YEAR - 1);
+        vm.expectRevert(IAccToke.NotUnlockableYet.selector);
+
+        uint256[] memory lockupIds = new uint256[](1);
+        lockupIds[0] = lockupId;
+        autoPoolRouter.unstakeAcc(address(accToke), lockupIds);
+
+        vm.expectRevert(IAccToke.NotUnlockableYet.selector);
+        autoPoolRouter.unstakeAcc(address(newAccToke), lockupIds);
+
+        // get to proper timestamp and unlock
+        vm.warp(block.timestamp + 1);
+        autoPoolRouter.unstakeAcc(address(accToke), lockupIds);
+        autoPoolRouter.unstakeAcc(address(newAccToke), lockupIds);
+
+        assertEq(accToke.balanceOf(address(this)), 0);
+        assertEq(newAccToke.balanceOf(address(this)), 0);
     }
 
     function test_expiration() public {
@@ -1485,6 +1568,7 @@ contract AutopilotRouterTest is BaseTest {
         toke.approve(address(accToke), amount);
         deal(address(weth), user, amount);
         weth.approve(address(accToke), amount);
+        vm.stopPrank();
     }
 
     // @dev Top off rewards to make sure there is enough to claim

@@ -150,7 +150,8 @@ contract AccToke is IAccToke, ERC20Votes, Pausable, SystemComponent, SecurityBas
     }
 
     function unstake(uint256[] memory lockupIds, address user) public override whenNotPaused {
-        if (user == address(0)) revert Errors.ZeroAddress("user");
+        Errors.verifyNotZero(user, "user");
+
         if (msg.sender != user && msg.sender != address(systemRegistry.autoPoolRouter())) {
             revert Errors.AccessDenied();
         }
@@ -359,18 +360,12 @@ contract AccToke is IAccToke, ERC20Votes, Pausable, SystemComponent, SecurityBas
 
     /// @inheritdoc IAccToke
     function collectRewards(address user, address recipient) external override returns (uint256) {
-        if (user != msg.sender) {
-            address router = address(systemRegistry.autoPoolRouter());
-            if (msg.sender == router) {
-                if (recipient != user && recipient != router) {
-                    revert Errors.AccessDenied();
-                }
-            } else {
-                revert Errors.AccessDenied();
-            }
+        address router = address(systemRegistry.autoPoolRouter());
+        if (msg.sender != user && msg.sender != router) {
+            revert Errors.AccessDenied();
         }
 
-        if (recipient == address(0)) revert Errors.ZeroAddress("recipient");
+        Errors.verifyNotZero(recipient, "recipient");
 
         return _collectRewards(user, recipient, true);
     }
