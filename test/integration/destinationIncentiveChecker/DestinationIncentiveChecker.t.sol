@@ -67,6 +67,7 @@ contract DestinationIncentiveCheckerTest is Test {
     function setUp() public {
         vm.createSelectFork(vm.envString("MAINNET_RPC_URL"), 20_763_926);
 
+        // Mock addresses setup
         mockCurveCalc = makeAddr("mockCurve");
         mockBalCalc = makeAddr("mockBal");
         mockOracle = makeAddr("mockOracle");

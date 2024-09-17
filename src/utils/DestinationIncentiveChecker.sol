@@ -12,11 +12,15 @@ import { IConvexStashToken } from "src/interfaces/external/convex/IConvexStashTo
 
 // slither-disable-start low-level-calls
 
-/// @title Checks for incentive tokens that are not registered in incentive pricing stats contract
+/// @title Checks for destination incentive tokens that are not registered in `IncentivePricingStats.sol`
 contract DestinationIncentiveChecker is SystemComponent {
+    /// @notice Version of this contract.  Expected to be updated
     uint256 public constant VERSION = 1;
 
+    /// @notice Hash of balancer exchange name.  Name matches return from `exchangeName()` on Balancer dest vaults
     bytes32 public constant BALANCER = keccak256("balancer");
+
+    /// @notice Hash of curve exchange name.  Name matches return from `exchangeName()` on Curve dest vaults
     bytes32 public constant CURVE = keccak256("curve");
 
     constructor(ISystemRegistry _systemRegistry) SystemComponent(_systemRegistry) { }
@@ -54,7 +58,7 @@ contract DestinationIncentiveChecker is SystemComponent {
                     // If token to validate is equal to registered, break, don't need to do anything
                     if (currentTokenToValidate == registeredIncentiveTokens[k]) break;
 
-                    // If we get to the end of the registered array, to validate is not there.  Add to unregistered
+                    // If we get to the end of registered array, tokens to validate is not there.  Add to unregistered
                     if (k == registeredIncentiveTokens.length - 1) {
                         unregistered[unregisteredIndex] = currentTokenToValidate;
                         unregisteredIndex++;
@@ -72,7 +76,7 @@ contract DestinationIncentiveChecker is SystemComponent {
         return toReturn;
     }
 
-    /// @dev Handles getting tokens from a Balancer destination
+    /// @dev Handles getting tokens from a Balancer / Aura destination
     /// @return incentives Array of incentive tokens for destination, if any
     function _handleBalancer(DestinationVault dest) private view returns (address[] memory incentives) {
         // Get aura staking from destination
@@ -100,13 +104,14 @@ contract DestinationIncentiveChecker is SystemComponent {
                 for (uint256 j = 0; j < destTrackedTokens.length; ++j) {
                     if (incentives[i] == destTrackedTokens[j]) {
                         incentives[i] = address(0);
+                        break;
                     }
                 }
             }
         }
     }
 
-    /// @dev Handles getting tokens from a Curve destination
+    /// @dev Handles getting tokens from a Curve / Convex destination
     /// @return incentives Array of incentive tokens for destination, if any
     function _handleCurve(DestinationVault dest) private view returns (address[] memory incentives) {
         // Get convex staking from destination vault
@@ -140,6 +145,7 @@ contract DestinationIncentiveChecker is SystemComponent {
                 for (uint256 j = 0; j < destTrackedTokens.length; ++j) {
                     if (incentives[i] == destTrackedTokens[j]) {
                         incentives[i] = address(0);
+                        break;
                     }
                 }
             }
