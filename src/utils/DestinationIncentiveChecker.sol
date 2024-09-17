@@ -10,6 +10,8 @@ import { IBaseRewardPool } from "src/interfaces/external/convex/IBaseRewardPool.
 import { IAuraStashToken } from "src/interfaces/external/aura/IAuraStashToken.sol";
 import { IConvexStashToken } from "src/interfaces/external/convex/IConvexStashToken.sol";
 
+// slither-disable-start low-level-calls
+
 /// @title Checks for incentive tokens that are not registered in incentive pricing stats contract
 contract DestinationIncentiveChecker is SystemComponent {
     uint256 public constant VERSION = 1;
@@ -32,6 +34,7 @@ contract DestinationIncentiveChecker is SystemComponent {
             DestinationVault currentDest = DestinationVault(destinations[i]);
             bytes32 exchange = keccak256(abi.encodePacked(currentDest.exchangeName()));
 
+            // slither-disable-next-line uninitialized-local
             address[] memory toValidate;
             // If the exchange is either Balancer or Curve, get incentive tokens from that destination
             if (exchange == BALANCER) {
@@ -143,3 +146,5 @@ contract DestinationIncentiveChecker is SystemComponent {
         }
     }
 }
+
+// slither-disable-end low-level-calls
