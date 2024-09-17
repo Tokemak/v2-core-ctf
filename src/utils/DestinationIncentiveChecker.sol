@@ -10,7 +10,7 @@ import { IBaseRewardPool } from "src/interfaces/external/convex/IBaseRewardPool.
 import { IAuraStashToken } from "src/interfaces/external/aura/IAuraStashToken.sol";
 import { IConvexStashToken } from "src/interfaces/external/convex/IConvexStashToken.sol";
 
-/// @title Checks for incentive tokens that are not registered
+/// @title Checks for incentive tokens that are not registered in incentive pricing stats contract
 contract DestinationIncentiveChecker is SystemComponent {
     uint256 public constant VERSION = 1;
 
@@ -25,7 +25,7 @@ contract DestinationIncentiveChecker is SystemComponent {
         address[] memory registeredIncentiveTokens = systemRegistry.incentivePricing().getRegisteredTokens();
         address[] memory destinations = systemRegistry.destinationVaultRegistry().listVaults();
 
-        address[] memory unregistered = new address[](type(uint128).max);
+        address[] memory unregistered = new address[](type(uint16).max);
         uint256 unregisteredIndex = 0;
         // Loop through all destinations
         for (uint256 i = 0; i < destinations.length; ++i) {
@@ -79,7 +79,7 @@ contract DestinationIncentiveChecker is SystemComponent {
         IBaseRewardPool rewardPool = IBaseRewardPool(abi.decode(retData, (address)));
 
         uint256 extraRewardLength = rewardPool.extraRewardsLength();
-        incentives = new address[](extraRewardLength - 1);
+        incentives = new address[](extraRewardLength);
 
         address[] memory destTrackedTokens = dest.trackedTokens();
 
@@ -112,7 +112,7 @@ contract DestinationIncentiveChecker is SystemComponent {
         IBaseRewardPool rewardPool = IBaseRewardPool(abi.decode(retData, (address)));
 
         uint256 extraRewardLength = rewardPool.extraRewardsLength();
-        incentives = new address[](extraRewardLength - 1);
+        incentives = new address[](extraRewardLength);
 
         address[] memory destTrackedTokens = dest.trackedTokens();
 
