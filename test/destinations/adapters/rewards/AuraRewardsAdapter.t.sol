@@ -296,13 +296,3 @@ contract AuraRewardsAdapterTest is Test {
         vm.selectFork(_forkId);
     }
 }
-
-library TestAuraAdapter {
-    function claimRewards(
-        address gauge,
-        address user,
-        EnumerableSet.AddressSet storage trackedTokens
-    ) internal returns (uint256[] memory amounts, address[] memory tokens) {
-        (amounts, tokens) = AuraRewards.claimRewards(gauge, AURA_MAINNET, user, trackedTokens);
-    }
-}

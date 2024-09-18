@@ -1,0 +1,55 @@
+name: "Fuzzing"
+
+on:
+  schedule:
+    # Runs at 12 PM UTC every 3 days
+    - cron: "0 12 */3 * *"
+
+  workflow_dispatch: # Allows manual triggering without specifying branches
+
+jobs:
+  fuzzing:
+    runs-on: "self-hosted"
+    steps:
+      - name: Clean up workspace
+        run: sudo rm -rf /home/ubuntu/actions-runner/_work/v2-core/v2-core/*
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          persist-credentials: false
+          fetch-depth: 0
+
+      # Self-hosted runner should have echidna installed
+      - name: Verify echidna installation
+        run: which echidna
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly-cafc2606a2187a42b236df4aa65f4e8cdfcea970
+
+      - name: Install NodeJS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build package
+        run: forge build --build-info --skip script test
+
+      - name: "Run Echidna: Autopool"
+        run: npm run fuzz:autopool
+
+      - name: "Run Echidna: Router"
+        run: npm run fuzz:router
+
+      - name: "Run Echidna: NavTracking (Strategy)"
+        run: npm run fuzz:strategy:nav
+
+      - name: "Run Echidna: ViolationTracking (Strategy)"
+        run: npm run fuzz:strategy:violation
