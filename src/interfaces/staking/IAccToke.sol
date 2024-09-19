@@ -42,6 +42,7 @@ interface IAccToke {
     error InvalidLockupIds();
     error InvalidDurationLength();
     error InvalidMinStakeDuration();
+    error AdminUnlockActive();
 
     ///////////////////////////////////////////////////////////////////
     //                        Events
@@ -61,6 +62,7 @@ interface IAccToke {
     event RewardsAdded(uint256 amount, uint256 accRewardPerShare);
     event RewardsCollected(address indexed user, uint256 amount);
     event RewardsClaimed(address indexed user, uint256 amount);
+    event AdminUnlockSet(bool newUnlockState);
 
     ///////////////////////////////////////////////////////////////////
     //

@@ -61,6 +61,15 @@ contract AccToke is IAccToke, ERC20Votes, Pausable, SystemComponent, SecurityBas
     // See {IAccToke-rewardsClaimed}
     mapping(address => uint256) public rewardsClaimed;
 
+    /// @notice If flipped to true, users will be able to withdraw before locks end.
+    bool public adminUnlock = false;
+
+    /// @notice In the event of an admin unlock, some functions should not run.  This protects those functions
+    modifier whenNoAdminUnlock() {
+        if (adminUnlock) revert AdminUnlockActive();
+        _;
+    }
+
     constructor(
         ISystemRegistry _systemRegistry,
         uint256 _startEpoch,
@@ -105,7 +114,7 @@ contract AccToke is IAccToke, ERC20Votes, Pausable, SystemComponent, SecurityBas
         return amount >= MIN_STAKE_AMOUNT && amount <= MAX_STAKE_AMOUNT;
     }
 
-    function _stake(uint256 amount, uint256 duration, address to) internal whenNotPaused {
+    function _stake(uint256 amount, uint256 duration, address to) internal whenNotPaused whenNoAdminUnlock {
         //
         // validation checks
         //
@@ -152,9 +161,16 @@ contract AccToke is IAccToke, ERC20Votes, Pausable, SystemComponent, SecurityBas
             // get staking information
             Lockup memory lockup = lockups[msg.sender][lockupId];
 
-            // slither-disable-next-line timestamp
-            if (block.timestamp < lockup.end) revert NotUnlockableYet();
             if (lockup.end == 0) revert AlreadyUnlocked();
+
+            // If admin unlock is false, make sure lock endtime has been reached
+            if (!adminUnlock) {
+                // slither-disable-next-line timestamp
+                if (block.timestamp < lockup.end) revert NotUnlockableYet();
+            } else {
+                // If adminUnlock is true, update lock end locally.  Allows for actual unlock time in event
+                lockup.end = uint128(block.timestamp);
+            }
 
             // remove stake
             delete lockups[msg.sender][lockupId];
@@ -179,7 +195,7 @@ contract AccToke is IAccToke, ERC20Votes, Pausable, SystemComponent, SecurityBas
     }
 
     /// @inheritdoc IAccToke
-    function extend(uint256[] memory lockupIds, uint256[] memory durations) external whenNotPaused {
+    function extend(uint256[] memory lockupIds, uint256[] memory durations) external whenNotPaused whenNoAdminUnlock {
         uint256 length = lockupIds.length;
         if (length == 0) revert InvalidLockupIds();
         if (length != durations.length) revert InvalidDurationLength();
@@ -250,6 +266,17 @@ contract AccToke is IAccToke, ERC20Votes, Pausable, SystemComponent, SecurityBas
         maxStakeDuration = _maxStakeDuration;
 
         emit SetMaxStakeDuration(old, _maxStakeDuration);
+    }
+
+    /// @notice Set `adminUnlock` boolean
+    /// @dev If this is flipped to true, users will be able to withdraw their without reaching the end of locks
+    function setAdminUnlock(bool unlock) external hasRole(Roles.ACC_TOKE_MANAGER) {
+        // If bool is same as state set, revert
+        if (adminUnlock == unlock) revert Errors.InvalidParam("unlock");
+
+        adminUnlock = unlock;
+
+        emit AdminUnlockSet(unlock);
     }
 
     function pause() external hasRole(Roles.ACC_TOKE_MANAGER) {

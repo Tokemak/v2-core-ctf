@@ -26,6 +26,7 @@ contract StakingTest is BaseTest {
     );
     event RewardsAdded(uint256 amount, uint256 accRewardPerShare);
     event RewardsClaimed(address indexed user, uint256 amount);
+    event AdminUnlockSet(bool newUnlockState);
 
     // solhint-disable-next-line var-name-mixedcase
     uint256 public TOLERANCE = 1e14; // 0.01% (1e18 being 100%)
@@ -525,6 +526,138 @@ contract StakingTest is BaseTest {
         assertApproxEqRel(accToke.rewardsClaimed(user1), amount * 3 / 2, TOLERANCE);
         assertApproxEqRel(accToke.previewRewards(user2), 0, TOLERANCE);
         assertApproxEqRel(accToke.rewardsClaimed(user2), amount / 2, TOLERANCE);
+    }
+
+    /* **************************************************************************** */
+    /* 									Admin unlock										*/
+    /* **************************************************************************** */
+    function test_setAdminUnlock_RevertIf_CallerDoesNotHaveRole() public {
+        vm.expectRevert(Errors.AccessDenied.selector);
+        vm.prank(address(1));
+        accToke.setAdminUnlock(true);
+    }
+
+    function test_setAdminUnlock_RevertIf_BoolParamSameAsState() public {
+        vm.expectRevert(abi.encodeWithSelector(Errors.InvalidParam.selector, "unlock"));
+        accToke.setAdminUnlock(false);
+    }
+
+    function test_setAdminUnlock_RunsProperly() public {
+        vm.expectEmit(true, true, true, true);
+        emit AdminUnlockSet(true);
+        accToke.setAdminUnlock(true);
+        assertEq(accToke.adminUnlock(), true);
+    }
+
+    function test_stake_RevertIf_AdminUnlockTrue() public {
+        uint256 stakeTime = 100 days;
+        address user1 = makeAddr("user1");
+
+        prepareFunds(address(this), stakeAmount);
+
+        // Flip flag
+        accToke.setAdminUnlock(true);
+        assertEq(accToke.adminUnlock(), true);
+
+        // Attempt to stake
+        vm.expectRevert(IAccToke.AdminUnlockActive.selector);
+        accToke.stake(stakeAmount, stakeTime, user1);
+
+        vm.expectRevert(IAccToke.AdminUnlockActive.selector);
+        accToke.stake(stakeAmount, stakeTime);
+    }
+
+    function test_extend_RevertIf_AdminUnlockTrue() public {
+        uint256 stakeTime = 100 days;
+
+        prepareFunds(address(this), stakeAmount);
+
+        accToke.stake(stakeAmount, stakeTime);
+
+        // Flip flag
+        accToke.setAdminUnlock(true);
+        assertEq(accToke.adminUnlock(), true);
+
+        // Warp so it makes sense to extend
+        vm.warp(block.timestamp + 50 days);
+
+        // Attempt to extend
+        uint256[] memory lockupIds = new uint256[](1);
+        uint256[] memory extendDurations = new uint256[](1);
+        extendDurations[0] = stakeTime;
+
+        vm.expectRevert(IAccToke.AdminUnlockActive.selector);
+        accToke.extend(lockupIds, extendDurations);
+    }
+
+    function test_EarlyUnlock_ProperRewards_AdminUnlockTrue() public {
+        // Deposit
+        prepareFunds(address(this), stakeAmount);
+        accToke.stake(stakeAmount, 100 days);
+
+        // Queue rewards
+        accToke.addWETHRewards(1 ether);
+
+        // Ensure user has balance
+        (uint128 lockAmountBefore, uint128 lockEndBefore, uint256 pointsBefore) = accToke.lockups(address(this), 0);
+        assertEq(lockAmountBefore, stakeAmount);
+
+        // Ensure that timestamp less than end of lock
+        assertGt(lockEndBefore, block.timestamp);
+
+        // Snapshot rewards info - Paid in weth
+        uint256 rewardsBefore = accToke.previewRewards(address(this));
+        uint256 wethBalanceBefore = weth.balanceOf(address(this));
+
+        // Set to true
+        accToke.setAdminUnlock(true);
+        assertEq(accToke.adminUnlock(), true);
+
+        // Withdraw, ensure that end time updated to block timestamp in event
+        uint256[] memory lockups = new uint256[](1);
+        uint256 userTokeBalanceBefore = toke.balanceOf(address(this));
+
+        vm.expectEmit(true, true, true, true);
+        emit Unstake(address(this), 0, stakeAmount, block.timestamp, pointsBefore);
+        accToke.unstake(lockups);
+
+        // Check balance of user, lock deleted
+        (uint128 lockAmountAfter, uint128 lockEndAfter, uint256 pointsAfter) = accToke.lockups(address(this), 0);
+        assertEq(lockAmountAfter, 0);
+        assertEq(lockEndAfter, 0);
+        assertEq(pointsAfter, 0);
+        assertEq(toke.balanceOf(address(this)), userTokeBalanceBefore + stakeAmount);
+
+        // Collect rewards and check that amount collected is what is expected
+        accToke.collectRewards();
+        assertEq(weth.balanceOf(address(this)), wethBalanceBefore + rewardsBefore);
+    }
+
+    function test_RevertIf_EarlyUnlock_AdminUnlockFalse() public {
+        uint256 lockTime = 100 days;
+        uint256 snapshotTimestamp = block.timestamp;
+
+        // Deposit
+        prepareFunds(address(this), stakeAmount);
+        accToke.stake(stakeAmount, lockTime);
+
+        (, uint128 lockEnd,) = accToke.lockups(address(this), 0);
+        assertEq(lockEnd, block.timestamp + lockTime);
+
+        // Try to unstake without admin flag being flipped, no time change
+        assertEq(accToke.adminUnlock(), false);
+        vm.expectRevert(IAccToke.NotUnlockableYet.selector);
+
+        uint256[] memory unlockIds = new uint256[](1);
+        accToke.unstake(unlockIds);
+
+        // Warp timestamp to unlock
+        vm.warp(snapshotTimestamp + lockTime);
+
+        // unstake and checks
+        assertGt(accToke.balanceOf(address(this)), 0);
+        accToke.unstake(unlockIds);
+        assertEq(accToke.balanceOf(address(this)), 0);
     }
 
     /* **************************************************************************** */
