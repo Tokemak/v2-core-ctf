@@ -270,7 +270,7 @@ contract AccToke is IAccToke, ERC20Votes, Pausable, SystemComponent, SecurityBas
     }
 
     /// @notice Set `adminUnlock` boolean
-    /// @dev If this is true, users will be able to withdraw their without reaching the end of locks
+    /// @dev If this is true, users will be able to withdraw their stake without reaching the end of locks
     function setAdminUnlock(bool unlock) external hasRole(Roles.ACC_TOKE_MANAGER) {
         // If bool is same as state set, revert
         if (adminUnlock == unlock) revert Errors.InvalidParam("unlock");
