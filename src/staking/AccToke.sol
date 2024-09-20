@@ -61,7 +61,7 @@ contract AccToke is IAccToke, ERC20Votes, Pausable, SystemComponent, SecurityBas
     // See {IAccToke-rewardsClaimed}
     mapping(address => uint256) public rewardsClaimed;
 
-    /// @notice If flipped to true, users will be able to withdraw before locks end.
+    /// @notice If true, users will be able to withdraw before locks end.
     bool public adminUnlock = false;
 
     /// @notice In the event of an admin unlock, some functions should not run.  This protects those functions
@@ -124,6 +124,7 @@ contract AccToke is IAccToke, ERC20Votes, Pausable, SystemComponent, SecurityBas
         // duration checked inside previewPoints
         (uint256 points, uint256 end) = previewPoints(amount, duration);
 
+        // slither-disable-next-line timestamp
         if (points + totalSupply() > type(uint192).max) {
             revert StakingPointsExceeded();
         }
@@ -269,7 +270,7 @@ contract AccToke is IAccToke, ERC20Votes, Pausable, SystemComponent, SecurityBas
     }
 
     /// @notice Set `adminUnlock` boolean
-    /// @dev If this is flipped to true, users will be able to withdraw their without reaching the end of locks
+    /// @dev If this is true, users will be able to withdraw their without reaching the end of locks
     function setAdminUnlock(bool unlock) external hasRole(Roles.ACC_TOKE_MANAGER) {
         // If bool is same as state set, revert
         if (adminUnlock == unlock) revert Errors.InvalidParam("unlock");
@@ -310,6 +311,7 @@ contract AccToke is IAccToke, ERC20Votes, Pausable, SystemComponent, SecurityBas
         uint256 supply = totalSupply();
         Errors.verifyNotZero(supply, "supply");
 
+        // slither-disable-next-line timestamp
         if (amount * REWARD_FACTOR < supply) {
             revert InsufficientAmount();
         }
@@ -328,6 +330,7 @@ contract AccToke is IAccToke, ERC20Votes, Pausable, SystemComponent, SecurityBas
     /// @inheritdoc IAccToke
     function previewRewards(address user) public view returns (uint256 amount) {
         uint256 supply = totalSupply();
+        // slither-disable-next-line incorrect-equality,timestamp
         if (supply == 0) {
             return unclaimedRewards[user];
         }
@@ -357,6 +360,7 @@ contract AccToke is IAccToke, ERC20Votes, Pausable, SystemComponent, SecurityBas
         rewardDebtPerShare[user] = accRewardPerShare;
 
         // if nothing to claim, bail
+        // slither-disable-next-line incorrect-equality,timestamp
         if (netRewards == 0 && pendingRewards == 0) {
             return 0;
         }
@@ -386,6 +390,7 @@ contract AccToke is IAccToke, ERC20Votes, Pausable, SystemComponent, SecurityBas
             return totalClaiming;
         }
 
+        // slither-disable-next-line timestamp
         if (netRewards > 0) {
             // Save (sandbox) to their account for later transfer
             unclaimedRewards[user] += netRewards;
