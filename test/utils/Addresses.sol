@@ -67,7 +67,6 @@ address constant RENZO_RESTAKE_MANAGER_MAINNET = 0x74a09653A083691711cF8215a6ab0
 address constant PUFFER_VAULT_MAINNET = 0xD9A442856C234a39a81a089C06451EBAa4306a72;
 address constant PXETH_MAINNET = 0x04C154b66CB340F3Ae24111CC767e0184Ed00Cc6;
 address constant APXETH_MAINNET = 0x9Ba021B0a9b958B5E75cE9f6dff97C7eE52cb3E6;
-address constant OETH_MAINNET = 0x856c4Efb76C1D1AE02e20CEB03A2A6a08b0b8dC3;
 
 // This is a Balancer's GnosisSafe proxy – found it through
 // Authorizer(0xA331D84eC860Bf466b4CdCcFb4aC09a1B43F3aE6)#hasRole by the needed actionId found from
