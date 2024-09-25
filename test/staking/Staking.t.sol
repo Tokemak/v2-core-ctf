@@ -534,19 +534,22 @@ contract StakingTest is BaseTest {
     function test_setAdminUnlock_RevertIf_CallerDoesNotHaveRole() public {
         vm.expectRevert(Errors.AccessDenied.selector);
         vm.prank(address(1));
-        accToke.setAdminUnlock(true);
-    }
-
-    function test_setAdminUnlock_RevertIf_BoolParamSameAsState() public {
-        vm.expectRevert(abi.encodeWithSelector(Errors.InvalidParam.selector, "unlock"));
-        accToke.setAdminUnlock(false);
+        accToke.setAdminUnlock();
     }
 
     function test_setAdminUnlock_RunsProperly() public {
         vm.expectEmit(true, true, true, true);
         emit AdminUnlockSet(true);
-        accToke.setAdminUnlock(true);
+        accToke.setAdminUnlock();
         assertEq(accToke.adminUnlock(), true);
+    }
+
+    function test_setAdminUnlock_RevertIf_AlreadySet() public {
+        accToke.setAdminUnlock();
+        assertEq(accToke.adminUnlock(), true);
+
+        vm.expectRevert(abi.encodeWithSelector(Errors.AlreadySet.selector, "adminUnlock"));
+        accToke.setAdminUnlock();
     }
 
     function test_stake_RevertIf_AdminUnlockTrue() public {
@@ -556,7 +559,7 @@ contract StakingTest is BaseTest {
         prepareFunds(address(this), stakeAmount);
 
         // Flip flag
-        accToke.setAdminUnlock(true);
+        accToke.setAdminUnlock();
         assertEq(accToke.adminUnlock(), true);
 
         // Attempt to stake
@@ -575,7 +578,7 @@ contract StakingTest is BaseTest {
         accToke.stake(stakeAmount, stakeTime);
 
         // Flip flag
-        accToke.setAdminUnlock(true);
+        accToke.setAdminUnlock();
         assertEq(accToke.adminUnlock(), true);
 
         // Warp so it makes sense to extend
@@ -609,8 +612,8 @@ contract StakingTest is BaseTest {
         uint256 rewardsBefore = accToke.previewRewards(address(this));
         uint256 wethBalanceBefore = weth.balanceOf(address(this));
 
-        // Set to true
-        accToke.setAdminUnlock(true);
+        // Flip flag
+        accToke.setAdminUnlock();
         assertEq(accToke.adminUnlock(), true);
 
         // Withdraw, ensure that end time updated to block timestamp in event

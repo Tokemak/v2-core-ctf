@@ -61,7 +61,7 @@ contract AccToke is IAccToke, ERC20Votes, Pausable, SystemComponent, SecurityBas
     // See {IAccToke-rewardsClaimed}
     mapping(address => uint256) public rewardsClaimed;
 
-    /// @notice If true, users will be able to withdraw before locks end.
+    /// @notice If true, users will be able to withdraw before locks end
     bool public adminUnlock = false;
 
     /// @notice In the event of an admin unlock, some functions should not run.  This protects those functions
@@ -269,15 +269,16 @@ contract AccToke is IAccToke, ERC20Votes, Pausable, SystemComponent, SecurityBas
         emit SetMaxStakeDuration(old, _maxStakeDuration);
     }
 
-    /// @notice Set `adminUnlock` boolean
+    /// @notice Set `adminUnlock` boolean to true
+    /// @dev Can only be done once
     /// @dev If this is true, users will be able to withdraw their stake without reaching the end of locks
-    function setAdminUnlock(bool unlock) external hasRole(Roles.ACC_TOKE_MANAGER) {
-        // If bool is same as state set, revert
-        if (adminUnlock == unlock) revert Errors.InvalidParam("unlock");
+    function setAdminUnlock() external hasRole(Roles.ACC_TOKE_MANAGER) {
+        // Revert if flag has been flipped
+        if (adminUnlock) revert Errors.AlreadySet("adminUnlock");
 
-        adminUnlock = unlock;
+        adminUnlock = true;
 
-        emit AdminUnlockSet(unlock);
+        emit AdminUnlockSet(true);
     }
 
     function pause() external hasRole(Roles.ACC_TOKE_MANAGER) {
