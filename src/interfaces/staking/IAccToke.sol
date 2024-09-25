@@ -106,8 +106,9 @@ interface IAccToke {
      * @notice Collect staked TOKE for a lockup and any earned rewards.
      * @param lockupIds the id of the lockup to unstake
      * @param user address of the user to unstake for
+     * @param to address to receive the unstaked TOKE
      */
-    function unstake(uint256[] memory lockupIds, address user) external;
+    function unstake(uint256[] memory lockupIds, address user, address to) external;
 
     /**
      * @notice Extend a stake lockup for additional points.

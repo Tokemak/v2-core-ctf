@@ -1384,10 +1384,10 @@ contract AutopilotRouterTest is BaseTest {
 
         uint256[] memory lockupIds = new uint256[](1);
         lockupIds[0] = lockupId;
-        autoPoolRouter.unstakeAcc(address(accToke), lockupIds);
+        autoPoolRouter.unstakeAcc(address(accToke), lockupIds, address(this));
         // get to proper timestamp and unlock
         vm.warp(block.timestamp + 1);
-        accToke.unstake(lockupIds, address(this));
+        accToke.unstake(lockupIds, address(this), address(this));
         assertEq(accToke.balanceOf(address(this)), 0);
     }
 
@@ -1445,15 +1445,15 @@ contract AutopilotRouterTest is BaseTest {
 
         uint256[] memory lockupIds = new uint256[](1);
         lockupIds[0] = lockupId;
-        autoPoolRouter.unstakeAcc(address(accToke), lockupIds);
+        autoPoolRouter.unstakeAcc(address(accToke), lockupIds, address(this));
 
         vm.expectRevert(IAccToke.NotUnlockableYet.selector);
-        autoPoolRouter.unstakeAcc(address(newAccToke), lockupIds);
+        autoPoolRouter.unstakeAcc(address(newAccToke), lockupIds, address(this));
 
         // get to proper timestamp and unlock
         vm.warp(block.timestamp + 1);
-        autoPoolRouter.unstakeAcc(address(accToke), lockupIds);
-        autoPoolRouter.unstakeAcc(address(newAccToke), lockupIds);
+        autoPoolRouter.unstakeAcc(address(accToke), lockupIds, address(this));
+        autoPoolRouter.unstakeAcc(address(newAccToke), lockupIds, address(this));
 
         assertEq(accToke.balanceOf(address(this)), 0);
         assertEq(newAccToke.balanceOf(address(this)), 0);

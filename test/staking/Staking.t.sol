@@ -193,16 +193,16 @@ contract StakingTest is BaseTest {
 
         vm.startPrank(randomUser);
         vm.expectRevert(Errors.AccessDenied.selector);
-        accToke.unstake(lockupIds, user);
+        accToke.unstake(lockupIds, user, user);
         vm.stopPrank();
         vm.startPrank(router);
 
         //Cannot be unstaked for zeroAddress user
         vm.expectRevert(abi.encodeWithSelector(Errors.ZeroAddress.selector, "user"));
-        accToke.unstake(lockupIds, address(0));
+        accToke.unstake(lockupIds, address(0), address(0));
 
         //Unstake for user
-        accToke.unstake(lockupIds, user);
+        accToke.unstake(lockupIds, user, user);
         vm.stopPrank();
         assertEq(accToke.balanceOf(address(this)), 0);
     }

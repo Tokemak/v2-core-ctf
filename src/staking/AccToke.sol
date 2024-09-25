@@ -146,11 +146,12 @@ contract AccToke is IAccToke, ERC20Votes, Pausable, SystemComponent, SecurityBas
 
     /// @inheritdoc IAccToke
     function unstake(uint256[] memory lockupIds) external override {
-        unstake(lockupIds, msg.sender);
+        unstake(lockupIds, msg.sender, msg.sender);
     }
 
-    function unstake(uint256[] memory lockupIds, address user) public override whenNotPaused {
+    function unstake(uint256[] memory lockupIds, address user, address to) public override whenNotPaused {
         Errors.verifyNotZero(user, "user");
+        Errors.verifyNotZero(to, "to");
 
         if (msg.sender != user && msg.sender != address(systemRegistry.autoPoolRouter())) {
             revert Errors.AccessDenied();
@@ -202,7 +203,7 @@ contract AccToke is IAccToke, ERC20Votes, Pausable, SystemComponent, SecurityBas
         // wipe points
         _burn(user, totalPoints);
         // send staked toke back to user
-        toke.safeTransfer(user, totalAmount);
+        toke.safeTransfer(to, totalAmount);
     }
 
     /// @inheritdoc IAccToke
