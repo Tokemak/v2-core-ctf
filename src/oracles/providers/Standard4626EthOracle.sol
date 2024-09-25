@@ -10,7 +10,7 @@ import { IPriceOracle } from "src/interfaces/oracles/IPriceOracle.sol";
 import { SystemComponent } from "src/SystemComponent.sol";
 import { IERC20Metadata } from "openzeppelin-contracts/token/ERC20/extensions/IERC20Metadata.sol";
 
-/// @title Price oracle specifically for a 4626 Vault
+/// @title Price oracle for a 4626 Vault base asset priced through its conversion rate
 /// @dev getPriceEth is not a view fn to support reentrancy checks. Dont actually change state.
 contract Standard4626EthOracle is SystemComponent, IPriceOracle {
     IERC4626 public immutable vault;
