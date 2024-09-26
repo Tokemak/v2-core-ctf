@@ -63,7 +63,6 @@ interface IAccToke {
     event RewardsCollected(address indexed user, uint256 amount);
     event RewardsClaimed(address indexed user, address indexed recipient, uint256 amount);
     event AdminUnlockSet(bool newUnlockState);
-    
 
     ///////////////////////////////////////////////////////////////////
     //
