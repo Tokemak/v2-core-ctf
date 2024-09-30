@@ -125,7 +125,7 @@ contract DestinationIncentiveCheckerTest is Test {
         destinationVaultRegistry = new DestinationVaultRegistry(systemRegistry);
         systemRegistry.setDestinationVaultRegistry(address(destinationVaultRegistry));
 
-        // Destination vault facotry set up
+        // Destination vault factory set up
         destinationVaultFactory = new DestinationVaultFactory(systemRegistry, 100, 100);
         destinationVaultRegistry.setVaultFactory(address(destinationVaultFactory));
 
@@ -187,16 +187,37 @@ contract DestinationIncentiveCheckerTest is Test {
         // Create rewarder, stash, base token, etc for Bal
         address baseToken = makeAddr("baseToken");
         MockStashTokenBalAura stash = new MockStashTokenBalAura(baseToken, true);
-        MockExtraRewarderBalAura rewarder = new MockExtraRewarderBalAura(address(stash));
+        MockExtraRewarderBalAura rewarder = new MockExtraRewarderBalAura(address(stash), block.timestamp);
 
         // Prank reward Manager for Bal contract, add extra rewarder to rewards
         vm.prank(balAuraRewardManager);
-        BAL_AURA_RETH_WETH_REWARDER.call(abi.encodeWithSignature("addExtraReward(address)", address(rewarder)));
+        (bool result,) =
+            BAL_AURA_RETH_WETH_REWARDER.call(abi.encodeWithSignature("addExtraReward(address)", address(rewarder)));
 
         // Call check, make sure we are getting desired values
         address[] memory values = checker.check();
+        assertEq(result, true);
         assertEq(values.length, 1);
         assertEq(values[0], baseToken);
+    }
+
+    function test_FiltersExpiredUnregisteredTokenAddress() public {
+        address balAuraRewardManager = 0xBC8d9cAf4B6bf34773976c5707ad1F2778332DcA;
+
+        // Create rewarder, stash, base token, etc for Bal
+        address baseToken = makeAddr("baseToken");
+        MockStashTokenBalAura stash = new MockStashTokenBalAura(baseToken, true);
+        MockExtraRewarderBalAura rewarder = new MockExtraRewarderBalAura(address(stash), block.timestamp - 21 days - 1);
+
+        // Prank reward Manager for Bal contract, add extra rewarder to rewards
+        vm.prank(balAuraRewardManager);
+        (bool result,) =
+            BAL_AURA_RETH_WETH_REWARDER.call(abi.encodeWithSignature("addExtraReward(address)", address(rewarder)));
+
+        // Call check, make sure we are getting desired values
+        address[] memory values = checker.check();
+        assertEq(result, true, "result");
+        assertEq(values.length, 0, "len");
     }
 
     function _mockCalculatorLpAndPool(address calculator, address lpAndPool) internal {
@@ -213,8 +234,11 @@ contract DestinationIncentiveCheckerTest is Test {
 contract MockExtraRewarderBalAura {
     IERC20 public rewardToken;
 
-    constructor(address _rewardToken) {
+    uint256 public periodFinish;
+
+    constructor(address _rewardToken, uint256 _periodFinish) {
         rewardToken = IERC20(_rewardToken);
+        periodFinish = _periodFinish;
     }
 }
 

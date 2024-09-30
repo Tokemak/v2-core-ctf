@@ -25,8 +25,12 @@ contract DestinationIncentiveChecker is SystemComponent {
 
     constructor(ISystemRegistry _systemRegistry) SystemComponent(_systemRegistry) { }
 
+    function checkCount() public view returns (uint256) {
+        return check().length;
+    }
+
     /// @notice Checks for unregistered incentive tokens across all destinations and returns them
-    function check() external view returns (address[] memory) {
+    function check() public view returns (address[] memory) {
         // Get incentive tokens and destinations
         address[] memory registeredIncentiveTokens = systemRegistry.incentivePricing().getRegisteredTokens();
         address[] memory destinations = systemRegistry.destinationVaultRegistry().listVaults();
@@ -91,20 +95,22 @@ contract DestinationIncentiveChecker is SystemComponent {
         address[] memory destTrackedTokens = dest.trackedTokens();
 
         for (uint256 i = 0; i < extraRewardLength; ++i) {
-            // All extra reward tokens are stask tokens in Aura system
-            IAuraStashToken stashToken =
-                IAuraStashToken(address(IBaseRewardPool(rewardPool.extraRewards(i)).rewardToken()));
-            if (stashToken.isValid()) {
-                incentives[i] = stashToken.baseToken();
-            }
+            // All extra reward tokens are stash tokens in Aura system
+            IBaseRewardPool baseRewardPool = IBaseRewardPool(rewardPool.extraRewards(i));
+            if (baseRewardPool.periodFinish() > block.timestamp - 21 days) {
+                IAuraStashToken stashToken = IAuraStashToken(address(baseRewardPool.rewardToken()));
+                if (stashToken.isValid()) {
+                    incentives[i] = stashToken.baseToken();
+                }
 
-            // Dest tracked tokens are not tracked via incentives but can be returned via rewarders in some cases.
-            // Filter out to avoid false positives
-            if (incentives[i] != address(0)) {
-                for (uint256 j = 0; j < destTrackedTokens.length; ++j) {
-                    if (incentives[i] == destTrackedTokens[j]) {
-                        incentives[i] = address(0);
-                        break;
+                // Dest tracked tokens are not tracked via incentives but can be returned via rewarders in some cases.
+                // Filter out to avoid false positives
+                if (incentives[i] != address(0)) {
+                    for (uint256 j = 0; j < destTrackedTokens.length; ++j) {
+                        if (incentives[i] == destTrackedTokens[j]) {
+                            incentives[i] = address(0);
+                            break;
+                        }
                     }
                 }
             }
@@ -125,27 +131,30 @@ contract DestinationIncentiveChecker is SystemComponent {
         address[] memory destTrackedTokens = dest.trackedTokens();
 
         for (uint256 i = 0; i < extraRewardLength; ++i) {
-            address token = address(IBaseRewardPool(rewardPool.extraRewards(i)).rewardToken());
+            IBaseRewardPool baseRewardPool = IBaseRewardPool(rewardPool.extraRewards(i));
+            if (baseRewardPool.periodFinish() > block.timestamp - 21 days) {
+                address token = address(baseRewardPool.rewardToken());
 
-            // Check for stash token.  If we get a stash token get underlying incentive token
-            (success, retData) = token.staticcall(abi.encodeCall(IConvexStashToken.token, ()));
-            if (success && retData.length > 0) {
-                (, bytes memory isInvalidData) = token.staticcall(abi.encodeCall(IConvexStashToken.isInvalid, ()));
+                // Check for stash token.  If we get a stash token get underlying incentive token
+                (success, retData) = token.staticcall(abi.encodeCall(IConvexStashToken.token, ()));
+                if (success && retData.length > 0) {
+                    (, bytes memory isInvalidData) = token.staticcall(abi.encodeCall(IConvexStashToken.isInvalid, ()));
 
-                if (!abi.decode(isInvalidData, (bool))) {
-                    incentives[i] = abi.decode(retData, (address));
+                    if (!abi.decode(isInvalidData, (bool))) {
+                        incentives[i] = abi.decode(retData, (address));
+                    }
+                } else {
+                    incentives[i] = token;
                 }
-            } else {
-                incentives[i] = token;
-            }
 
-            // Dest tracked tokens are not tracked via incentives but can be returned via rewarders in some cases.
-            // Filter out to avoid false positives
-            if (incentives[i] != address(0)) {
-                for (uint256 j = 0; j < destTrackedTokens.length; ++j) {
-                    if (incentives[i] == destTrackedTokens[j]) {
-                        incentives[i] = address(0);
-                        break;
+                // Dest tracked tokens are not tracked via incentives but can be returned via rewarders in some cases.
+                // Filter out to avoid false positives
+                if (incentives[i] != address(0)) {
+                    for (uint256 j = 0; j < destTrackedTokens.length; ++j) {
+                        if (incentives[i] == destTrackedTokens[j]) {
+                            incentives[i] = address(0);
+                            break;
+                        }
                     }
                 }
             }
