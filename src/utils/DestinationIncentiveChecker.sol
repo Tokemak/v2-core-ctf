@@ -10,7 +10,7 @@ import { IBaseRewardPool } from "src/interfaces/external/convex/IBaseRewardPool.
 import { IAuraStashToken } from "src/interfaces/external/aura/IAuraStashToken.sol";
 import { IConvexStashToken } from "src/interfaces/external/convex/IConvexStashToken.sol";
 
-// slither-disable-start low-level-calls
+// slither-disable-start low-level-calls,timestamp
 
 /// @title Checks for destination incentive tokens that are not registered in `IncentivePricingStats.sol`
 contract DestinationIncentiveChecker is SystemComponent {
