@@ -236,7 +236,9 @@ contract TestCalculator is IStatsCalculator {
         uint256 initBaseApr;
     }
 
-    constructor(ISystemRegistry _systemRegistry) {
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) {
         systemRegistry = _systemRegistry;
     }
 

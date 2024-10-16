@@ -36,17 +36,16 @@ contract BalancerGyroscopeEthOracle is BalancerBaseOracle {
     }
 
     /// @inheritdoc BalancerBaseOracle
-    function getTotalSupply_(address lpToken) internal virtual override returns (uint256 totalSupply) {
+    function getTotalSupply_(
+        address lpToken
+    ) internal virtual override returns (uint256 totalSupply) {
         totalSupply = IBalancerGyroPool(lpToken).getActualSupply();
     }
 
     /// @inheritdoc BalancerBaseOracle
-    function getPoolTokens_(address pool)
-        internal
-        virtual
-        override
-        returns (IERC20[] memory tokens, uint256[] memory balances)
-    {
+    function getPoolTokens_(
+        address pool
+    ) internal virtual override returns (IERC20[] memory tokens, uint256[] memory balances) {
         (tokens, balances) = BalancerUtilities._getPoolTokens(balancerVault, pool);
     }
 

@@ -110,7 +110,9 @@ contract AerodromeStakingIncentiveCalculator is IDexLSTStats, BaseStatsCalculato
         address underlyerStats;
     }
 
-    constructor(ISystemRegistry _systemRegistry) BaseStatsCalculator(_systemRegistry) { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) BaseStatsCalculator(_systemRegistry) { }
 
     /// @inheritdoc IStatsCalculator
     function initialize(bytes32[] calldata, bytes calldata initData) external virtual override initializer {
@@ -292,7 +294,9 @@ contract AerodromeStakingIncentiveCalculator is IDexLSTStats, BaseStatsCalculato
         );
     }
 
-    function _getSnapshotStatus(uint256 currentRewardRate) internal view returns (SnapshotStatus) {
+    function _getSnapshotStatus(
+        uint256 currentRewardRate
+    ) internal view returns (SnapshotStatus) {
         if (lastSnapshotRewardPerToken == 0) {
             return SnapshotStatus.noSnapshot;
         }
@@ -366,7 +370,9 @@ contract AerodromeStakingIncentiveCalculator is IDexLSTStats, BaseStatsCalculato
         revert InvalidSnapshotStatus();
     }
 
-    function _getIncentivePrice(address _token) internal view returns (uint256) {
+    function _getIncentivePrice(
+        address _token
+    ) internal view returns (uint256) {
         IIncentivesPricingStats pricingStats = systemRegistry.incentivePricing();
         (uint256 fastPrice, uint256 slowPrice) = pricingStats.getPrice(_token, PRICE_STALE_CHECK);
         return Math.min(fastPrice, slowPrice);
@@ -385,7 +391,9 @@ contract AerodromeStakingIncentiveCalculator is IDexLSTStats, BaseStatsCalculato
         return safePrice;
     }
 
-    function _computeTotalAPR(bool performSnapshot) internal returns (uint256 apr) {
+    function _computeTotalAPR(
+        bool performSnapshot
+    ) internal returns (uint256 apr) {
         if (performSnapshot) {
             _snapshotRewarder();
         }

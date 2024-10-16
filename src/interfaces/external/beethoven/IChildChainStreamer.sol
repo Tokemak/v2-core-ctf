@@ -16,6 +16,8 @@ interface IChildChainStreamer {
     function reward_count() external view returns (uint256);
 
     /// @notice The address of the reward token at a given index
-    function reward_tokens(uint256 index) external view returns (IERC20);
+    function reward_tokens(
+        uint256 index
+    ) external view returns (IERC20);
 }
 // slither-disable-end naming-convention

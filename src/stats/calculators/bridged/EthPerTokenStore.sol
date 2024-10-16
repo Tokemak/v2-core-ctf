@@ -64,10 +64,9 @@ contract EthPerTokenStore is SystemComponent, SecurityBase, MessageReceiverBase 
     /// Functions - Constructor
     /// =====================================================
 
-    constructor(ISystemRegistry _systemRegistry)
-        SystemComponent(_systemRegistry)
-        SecurityBase(address(_systemRegistry.accessController()))
-    {
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) SystemComponent(_systemRegistry) SecurityBase(address(_systemRegistry.accessController())) {
         maxAgeSeconds = 3 days;
     }
 
@@ -77,7 +76,9 @@ contract EthPerTokenStore is SystemComponent, SecurityBase, MessageReceiverBase 
 
     /// @notice Set the max age in seconds before reads start to revert
     /// @param age New max age in seconds
-    function setMaxAgeSeconds(uint256 age) external hasRole(Roles.STATS_GENERAL_MANAGER) {
+    function setMaxAgeSeconds(
+        uint256 age
+    ) external hasRole(Roles.STATS_GENERAL_MANAGER) {
         Errors.verifyNotZero(age, "age");
 
         // Sanity check
@@ -91,7 +92,9 @@ contract EthPerTokenStore is SystemComponent, SecurityBase, MessageReceiverBase 
 
     /// @notice Register the specified token to allow it to be tracked
     /// @param token Token to register
-    function registerToken(address token) external hasRole(Roles.STATS_GENERAL_MANAGER) {
+    function registerToken(
+        address token
+    ) external hasRole(Roles.STATS_GENERAL_MANAGER) {
         Errors.verifyNotZero(token, "token");
 
         if (registered[token]) {
@@ -104,7 +107,9 @@ contract EthPerTokenStore is SystemComponent, SecurityBase, MessageReceiverBase 
     /// @notice Unregister the specified token
     /// @dev Will delete currently tracked data
     /// @param token Token to unregister
-    function unregisterToken(address token) external hasRole(Roles.STATS_GENERAL_MANAGER) {
+    function unregisterToken(
+        address token
+    ) external hasRole(Roles.STATS_GENERAL_MANAGER) {
         if (!registered[token]) {
             revert Errors.NotRegistered();
         }
@@ -116,7 +121,9 @@ contract EthPerTokenStore is SystemComponent, SecurityBase, MessageReceiverBase 
     /// @notice Returns the current value for the given token
     /// @dev Reverts if value stale or not registered. Same error for both conditions
     /// @param token Token to lookup value for
-    function getEthPerToken(address token) external view returns (uint256 ethPerToken, uint256 lastSetTimestamp) {
+    function getEthPerToken(
+        address token
+    ) external view returns (uint256 ethPerToken, uint256 lastSetTimestamp) {
         TokenTrack memory data = trackedTokens[token];
 
         // If stale or not registered revert

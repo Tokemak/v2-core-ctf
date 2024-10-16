@@ -1004,13 +1004,17 @@ contract MockMessageReceiver is MessageReceiverBase, SystemComponent {
 
     error Fail();
 
-    constructor(ISystemRegistry _systemRegistry) SystemComponent(_systemRegistry) { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) SystemComponent(_systemRegistry) { }
 
     function _onMessageReceive(bytes32, uint256, bytes memory) internal view override {
         if (receiveFail) revert Fail();
     }
 
-    function setFailure(bool toSet) external {
+    function setFailure(
+        bool toSet
+    ) external {
         receiveFail = toSet;
     }
 }

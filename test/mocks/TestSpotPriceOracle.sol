@@ -17,7 +17,9 @@ contract TestSpotPriceOracle is SystemComponent, ISpotPriceOracle {
     mapping(bytes32 => uint256) public lpSupply;
     mapping(bytes32 => ISpotPriceOracle.ReserveItemInfo[]) public reserveInfos;
 
-    constructor(ISystemRegistry _systemRegistry) SystemComponent(_systemRegistry) { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) SystemComponent(_systemRegistry) { }
 
     function getDescription() external pure override returns (string memory) {
         return "spot";

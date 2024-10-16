@@ -295,7 +295,9 @@ contract AuraCalculatorTest is Test {
         }
     }
 
-    function create2StepsSnapshotWithTotalSupplyIncrease(uint256 moveForwardInTime) internal {
+    function create2StepsSnapshotWithTotalSupplyIncrease(
+        uint256 moveForwardInTime
+    ) internal {
         mockSimpleMainRewarder();
         calculator.snapshot();
 

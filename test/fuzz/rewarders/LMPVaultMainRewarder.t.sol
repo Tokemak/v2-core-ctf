@@ -44,7 +44,9 @@ contract AutopoolMainRewarderTest is Test {
     }
 
     /// @notice Tests that users can't withdraw more than their staked amount.
-    function testFuzz_EnsureYouCannotWithdrawMoreThanYouPutIn(uint256[] memory withdrawAmounts) public {
+    function testFuzz_EnsureYouCannotWithdrawMoreThanYouPutIn(
+        uint256[] memory withdrawAmounts
+    ) public {
         uint256 length = withdrawAmounts.length;
         vm.assume(length < 100); // Limit array size for efficiency.
 

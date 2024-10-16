@@ -44,7 +44,9 @@ contract WstETHEthOracleTests is Test {
         _oracle.getPriceInEth(address(fakeAddr));
     }
 
-    function _generateToken(uint8 decimals) internal returns (address) {
+    function _generateToken(
+        uint8 decimals
+    ) internal returns (address) {
         address addr = vm.addr(239_874 + _addrIx++);
         vm.mockCall(addr, abi.encodeWithSelector(IERC20Metadata.decimals.selector), abi.encode(decimals));
         return addr;
@@ -58,7 +60,9 @@ contract WstETHEthOracleTests is Test {
         );
     }
 
-    function _generateSystemRegistry(address rootOracle) internal returns (ISystemRegistry) {
+    function _generateSystemRegistry(
+        address rootOracle
+    ) internal returns (ISystemRegistry) {
         address registry = vm.addr(327_849);
         vm.mockCall(registry, abi.encodeWithSelector(ISystemRegistry.rootPriceOracle.selector), abi.encode(rootOracle));
         return ISystemRegistry(registry);

@@ -10,7 +10,9 @@ import { ICurveOwner } from "src/interfaces/external/curve/ICurveOwner.sol";
 /// @title Curve V1 Pool With Rebasing Tokens
 /// @notice Calculate stats for a Curve V1 StableSwap pool
 contract CurveV1PoolRebasingStatsCalculator is CurvePoolRebasingCalculatorBase {
-    constructor(ISystemRegistry _systemRegistry) CurvePoolRebasingCalculatorBase(_systemRegistry) { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) CurvePoolRebasingCalculatorBase(_systemRegistry) { }
 
     function getVirtualPrice() internal override returns (uint256 virtualPrice) {
         ICurveV1StableSwap pool = ICurveV1StableSwap(poolAddress);

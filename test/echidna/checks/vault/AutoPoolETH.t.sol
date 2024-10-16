@@ -315,7 +315,9 @@ contract AutopoolETHTests is Test, AutopoolETHUsage {
         assertEq(_pool.getFeeSettings().periodicFeeBps, 800);
     }
 
-    function _runLossScenario(uint256 lossSub) private {
+    function _runLossScenario(
+        uint256 lossSub
+    ) private {
         userMint(0, 100e18, true);
 
         rebalance(250, 1, uint8(128), 0);

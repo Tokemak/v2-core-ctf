@@ -40,26 +40,34 @@ interface ILiquidationRow {
      * @notice Claim rewards from a list of vaults
      * @param vaults The list of vaults to claim rewards from
      */
-    function claimsVaultRewards(IDestinationVault[] memory vaults) external;
+    function claimsVaultRewards(
+        IDestinationVault[] memory vaults
+    ) external;
 
     /**
      * @notice Add a new swapper to the whitelist
      * @param swapper The address of the swapper to be added
      */
-    function addToWhitelist(address swapper) external;
+    function addToWhitelist(
+        address swapper
+    ) external;
 
     /**
      * @notice Remove a swapper from whitelist
      * @param swapper The address of the swapper to be removed
      */
-    function removeFromWhitelist(address swapper) external;
+    function removeFromWhitelist(
+        address swapper
+    ) external;
 
     /**
      * @notice Check if a swapper is whitelisted
      * @param swapper The address of the swapper to be checked
      * @return true if the swapper is allowed
      */
-    function isWhitelisted(address swapper) external view returns (bool);
+    function isWhitelisted(
+        address swapper
+    ) external view returns (bool);
 
     /**
      * @notice Sets the fee and the receiver of the fee.
@@ -74,7 +82,9 @@ interface ILiquidationRow {
      * @notice Sets the price margin in bps for swap validation
      * @param _priceMarginBps The price margin in basis points (bps)
      */
-    function setPriceMarginBps(uint256 _priceMarginBps) external;
+    function setPriceMarginBps(
+        uint256 _priceMarginBps
+    ) external;
 
     /**
      * @notice Get the balance of a specific token and vault
@@ -89,7 +99,9 @@ interface ILiquidationRow {
      * @param tokenAddress The address of the token
      * @return The total balance of the specific token across all vaults
      */
-    function totalBalanceOf(address tokenAddress) external view returns (uint256);
+    function totalBalanceOf(
+        address tokenAddress
+    ) external view returns (uint256);
 
     /**
      * @notice Get the list of reward tokens
@@ -102,7 +114,9 @@ interface ILiquidationRow {
      * @param tokenAddress The address of the token
      * @return An array of vault addresses associated with the given token
      */
-    function getVaultsForToken(address tokenAddress) external view returns (address[] memory);
+    function getVaultsForToken(
+        address tokenAddress
+    ) external view returns (address[] memory);
 
     /**
      * @notice Conducts the liquidation process for a specific token across a list of vaults,
@@ -111,12 +125,16 @@ interface ILiquidationRow {
      * remaining swapped tokens in the MainRewarder associated with each vault.
      * @param liquidationParams A LiquidationParams struct containing the necessary parameters for liquidation
      */
-    function liquidateVaultsForToken(LiquidationParams memory liquidationParams) external;
+    function liquidateVaultsForToken(
+        LiquidationParams memory liquidationParams
+    ) external;
 
     /**
      * @notice Same logic as liquidateVaultsForToken but for multiple tokens
      * @param liquidationParams An array of LiquidationParams structs containing the necessary parameters for
      * liquidation
      */
-    function liquidateVaultsForTokens(LiquidationParams[] memory liquidationParams) external;
+    function liquidateVaultsForTokens(
+        LiquidationParams[] memory liquidationParams
+    ) external;
 }

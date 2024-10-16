@@ -91,7 +91,9 @@ contract AutopoolMainRewarder is MainRewarder {
      * @param token Token to check.
      * @return bool True if token can be recovered.
      */
-    function canTokenBeRecovered(address token) public view override returns (bool) {
+    function canTokenBeRecovered(
+        address token
+    ) public view override returns (bool) {
         if (token == address(stakingToken)) {
             return false;
         }

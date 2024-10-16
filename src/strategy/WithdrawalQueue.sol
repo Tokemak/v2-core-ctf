@@ -20,23 +20,31 @@ library WithdrawalQueue {
     }
 
     /// @notice Returns the current head.
-    function peekHead(StructuredLinkedList.List storage queue) public view returns (address) {
+    function peekHead(
+        StructuredLinkedList.List storage queue
+    ) public view returns (address) {
         return _uintToAddress(StructuredLinkedList.getHead(queue));
     }
 
     /// @notice Returns the current tail.
-    function peekTail(StructuredLinkedList.List storage queue) public view returns (address) {
+    function peekTail(
+        StructuredLinkedList.List storage queue
+    ) public view returns (address) {
         return _uintToAddress(StructuredLinkedList.getTail(queue));
     }
 
     /// @notice Returns the number of items in the queue
-    function sizeOf(StructuredLinkedList.List storage queue) public view returns (uint256) {
+    function sizeOf(
+        StructuredLinkedList.List storage queue
+    ) public view returns (uint256) {
         return StructuredLinkedList.sizeOf(queue);
     }
 
     /// @notice Return all items in the queue
     /// @dev Enumerates from head to tail
-    function getList(StructuredLinkedList.List storage self) public view returns (address[] memory list) {
+    function getList(
+        StructuredLinkedList.List storage self
+    ) public view returns (address[] memory list) {
         uint256 size = self.sizeOf();
         list = new address[](size);
 
@@ -57,7 +65,9 @@ library WithdrawalQueue {
     }
 
     /// @notice Returns the current tail.
-    function popHead(StructuredLinkedList.List storage queue) public returns (address) {
+    function popHead(
+        StructuredLinkedList.List storage queue
+    ) public returns (address) {
         return _uintToAddress(StructuredLinkedList.popFront(queue));
     }
 
@@ -71,7 +81,9 @@ library WithdrawalQueue {
     }
 
     /// @notice returns true if there are no addresses in queue.
-    function isEmpty(StructuredLinkedList.List storage queue) public view returns (bool) {
+    function isEmpty(
+        StructuredLinkedList.List storage queue
+    ) public view returns (bool) {
         return !StructuredLinkedList.listExists(queue);
     }
 
@@ -116,11 +128,15 @@ library WithdrawalQueue {
         }
     }
 
-    function _addressToUint(address addr) private pure returns (uint256) {
+    function _addressToUint(
+        address addr
+    ) private pure returns (uint256) {
         return uint256(uint160(addr));
     }
 
-    function _uintToAddress(uint256 x) private pure returns (address) {
+    function _uintToAddress(
+        uint256 x
+    ) private pure returns (address) {
         return address(uint160(x));
     }
 }

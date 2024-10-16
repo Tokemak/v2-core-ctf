@@ -9,7 +9,9 @@ import { CurvePoolRebasingCalculatorBase } from "src/stats/calculators/base/Curv
 /// @title Curve V1 Pool With Rebasing Tokens that does not require reentrancy protection
 /// @notice Calculate stats for a Curve V1 StableSwap pool
 contract CurveV1PoolRebasingLockedStatsCalculator is CurvePoolRebasingCalculatorBase {
-    constructor(ISystemRegistry _systemRegistry) CurvePoolRebasingCalculatorBase(_systemRegistry) { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) CurvePoolRebasingCalculatorBase(_systemRegistry) { }
 
     function getVirtualPrice() internal view override returns (uint256 virtualPrice) {
         virtualPrice = ICurveV1StableSwap(poolAddress).get_virtual_price();

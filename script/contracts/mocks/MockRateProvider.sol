@@ -19,7 +19,9 @@ contract MockRateProvider is IRateProvider, Ownable {
         return rate;
     }
 
-    function setRate(uint256 _rate) external onlyOwner {
+    function setRate(
+        uint256 _rate
+    ) external onlyOwner {
         rate = _rate;
     }
 }

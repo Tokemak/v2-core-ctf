@@ -41,7 +41,9 @@ contract AutopoolETHUsage is BasePoolSetup, Numbers {
     /// Modifiers
     /// =====================================================
 
-    modifier opNoNavPerShareChange(IAutopool.TotalAssetPurpose purpose) {
+    modifier opNoNavPerShareChange(
+        IAutopool.TotalAssetPurpose purpose
+    ) {
         uint256 ts = _pool.totalSupply();
         uint256 start = 0;
         if (ts > 0) {
@@ -80,7 +82,9 @@ contract AutopoolETHUsage is BasePoolSetup, Numbers {
     /// Nav/Share Changing Ops
     /// =====================================================
 
-    function debtReport(uint256 numToProcess) public {
+    function debtReport(
+        uint256 numToProcess
+    ) public {
         _pool.updateDebtReporting(numToProcess > 3 ? 3 : numToProcess);
     }
 
@@ -140,15 +144,21 @@ contract AutopoolETHUsage is BasePoolSetup, Numbers {
     /// Fees
     /// =====================================================
 
-    function setStreamingFee(uint256 fee) public {
+    function setStreamingFee(
+        uint256 fee
+    ) public {
         _pool.setStreamingFeeBps(fee);
     }
 
-    function setPeriodicFee(uint256 fee) public {
+    function setPeriodicFee(
+        uint256 fee
+    ) public {
         _pool.setPeriodicFeeBps(fee);
     }
 
-    function setStreamingFeeSink(address sink) public {
+    function setStreamingFeeSink(
+        address sink
+    ) public {
         if (
             sink == address(_pool) || sink == address(_destVault1) || sink == address(_destVault2)
                 || sink == address(_destVault3) || sink == _user1 || sink == _user2 || sink == _user3
@@ -159,7 +169,9 @@ contract AutopoolETHUsage is BasePoolSetup, Numbers {
         _pool.setFeeSink(sink);
     }
 
-    function setPeriodicFeeSink(address sink) public {
+    function setPeriodicFeeSink(
+        address sink
+    ) public {
         if (
             sink == address(_pool) || sink == address(_destVault1) || sink == address(_destVault2)
                 || sink == address(_destVault3) || sink == _user1 || sink == _user2 || sink == _user3
@@ -304,13 +316,17 @@ contract AutopoolETHUsage is BasePoolSetup, Numbers {
     /// Private Helpers
     /// =====================================================
 
-    function _destVaultFromScale(uint8 userScale) private view returns (TestDestinationVault) {
+    function _destVaultFromScale(
+        uint8 userScale
+    ) private view returns (TestDestinationVault) {
         uint256 u = scaleTo(userScale, 2);
         address d = _destinations[u];
         return TestDestinationVault(d);
     }
 
-    function _userFromScale(uint8 userScale) private view returns (address) {
+    function _userFromScale(
+        uint8 userScale
+    ) private view returns (address) {
         uint256 u = scaleTo(userScale, 2);
         address user = _users[u];
         return user;
@@ -418,7 +434,9 @@ contract AutopoolETHUsage is BasePoolSetup, Numbers {
         }
     }
 
-    function _isValidImpersonatedUserAddress(address user) private view returns (bool) {
+    function _isValidImpersonatedUserAddress(
+        address user
+    ) private view returns (bool) {
         if (
             user == address(_pool) || user == address(_vaultAsset) || user == address(_toke) || user == address(_weth)
                 || user == address(_destVault1) || user == address(_destVault2) || user == address(_destVault3)

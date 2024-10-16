@@ -7,5 +7,7 @@ interface IWETH9 is IERC20 {
     function symbol() external view returns (string memory);
 
     function deposit() external payable;
-    function withdraw(uint256 amount) external;
+    function withdraw(
+        uint256 amount
+    ) external;
 }

@@ -9,11 +9,9 @@ import { IncentivePricingStats } from "src/stats/calculators/IncentivePricingSta
 contract ChainlinkIncentivePricesUpkeepV3 is Ownable2Step {
     uint256 public maxPerCheck = 20;
 
-    function checkUpkeep(bytes calldata checkData)
-        external
-        view
-        returns (bool upkeepNeeded, bytes memory performData)
-    {
+    function checkUpkeep(
+        bytes calldata checkData
+    ) external view returns (bool upkeepNeeded, bytes memory performData) {
         IncentivePricingStats incentivePricing = IncentivePricingStats(abi.decode(checkData, (address)));
         (address[] memory tokenAddresses, IncentivePricingStats.TokenSnapshotInfo[] memory infos) =
             incentivePricing.getTokenPricingInfo();
@@ -43,13 +41,17 @@ contract ChainlinkIncentivePricesUpkeepV3 is Ownable2Step {
         performData = abi.encode(address(incentivePricing), trimmed);
     }
 
-    function performUpkeep(bytes calldata performData) external {
+    function performUpkeep(
+        bytes calldata performData
+    ) external {
         (address incentivePricingAddr, address[] memory tokens) = abi.decode(performData, (address, address[]));
         IncentivePricingStats incentivePricing = IncentivePricingStats(incentivePricingAddr);
         incentivePricing.snapshot(tokens);
     }
 
-    function setMaxPerCheck(uint256 newValue) external onlyOwner {
+    function setMaxPerCheck(
+        uint256 newValue
+    ) external onlyOwner {
         Errors.verifyNotZero(newValue, "newValue");
 
         // slither-disable-next-line events-maths

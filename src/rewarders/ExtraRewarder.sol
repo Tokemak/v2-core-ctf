@@ -68,11 +68,15 @@ contract ExtraRewarder is AbstractRewarder, IExtraRewarder, ReentrancyGuard {
         return mainReward.totalSupply();
     }
 
-    function balanceOf(address account) public view override(AbstractRewarder, IBaseRewarder) returns (uint256) {
+    function balanceOf(
+        address account
+    ) public view override(AbstractRewarder, IBaseRewarder) returns (uint256) {
         return mainReward.balanceOf(account);
     }
 
-    function canTokenBeRecovered(address) public pure override returns (bool) {
+    function canTokenBeRecovered(
+        address
+    ) public pure override returns (bool) {
         return true;
     }
 }

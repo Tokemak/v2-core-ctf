@@ -48,7 +48,9 @@ contract BaseRewardPool {
         return _totalSupply;
     }
 
-    function balanceOf(address account) public view returns (uint256) {
+    function balanceOf(
+        address account
+    ) public view returns (uint256) {
         return _balances[account];
     }
 
@@ -56,7 +58,9 @@ contract BaseRewardPool {
         return extraRewards.length;
     }
 
-    function addExtraReward(address _reward) external returns (bool) {
+    function addExtraReward(
+        address _reward
+    ) external returns (bool) {
         require(_reward != address(0), "!reward setting");
 
         extraRewards.push(_reward);
@@ -67,7 +71,9 @@ contract BaseRewardPool {
         delete extraRewards;
     }
 
-    modifier updateReward(address account) {
+    modifier updateReward(
+        address account
+    ) {
         rewardPerTokenStored = rewardPerToken();
         lastUpdateTime = lastTimeRewardApplicable();
         if (account != address(0)) {
@@ -89,7 +95,9 @@ contract BaseRewardPool {
             rewardPerTokenStored + (((lastTimeRewardApplicable() - lastUpdateTime) * rewardRate * 1e18) / totalSupply());
     }
 
-    function earned(address account) public view returns (uint256) {
+    function earned(
+        address account
+    ) public view returns (uint256) {
         return ((balanceOf(account) * (rewardPerToken() - userRewardPerTokenPaid[account])) / 1e18) + rewards[account];
     }
 
@@ -133,7 +141,9 @@ contract BaseRewardPool {
         return true;
     }
 
-    function getReward(address _account) public updateReward(_account) returns (bool) {
+    function getReward(
+        address _account
+    ) public updateReward(_account) returns (bool) {
         uint256 reward = earned(_account);
         if (reward > 0) {
             rewards[_account] = 0;
@@ -149,13 +159,17 @@ contract BaseRewardPool {
         return true;
     }
 
-    function donate(uint256 _amount) external returns (bool) {
+    function donate(
+        uint256 _amount
+    ) external returns (bool) {
         IERC20(rewardToken).safeTransferFrom(msg.sender, address(this), _amount);
         queuedRewards = queuedRewards + _amount;
         return true;
     }
 
-    function queueNewRewards(uint256 _rewards) external returns (bool) {
+    function queueNewRewards(
+        uint256 _rewards
+    ) external returns (bool) {
         _rewards = _rewards + queuedRewards;
 
         if (block.timestamp >= periodFinish) {
@@ -179,7 +193,9 @@ contract BaseRewardPool {
         return true;
     }
 
-    function notifyRewardAmount(uint256 reward) internal updateReward(address(0)) {
+    function notifyRewardAmount(
+        uint256 reward
+    ) internal updateReward(address(0)) {
         historicalRewards = historicalRewards + (reward);
         if (block.timestamp >= periodFinish) {
             rewardRate = reward / (duration);

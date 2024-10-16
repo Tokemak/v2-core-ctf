@@ -13,18 +13,18 @@ contract CurveResolverMainnet is ICurveResolver {
 
     error CouldNotResolve(address poolAddress);
 
-    constructor(ICurveMetaRegistry _curveMetaRegistry) {
+    constructor(
+        ICurveMetaRegistry _curveMetaRegistry
+    ) {
         Errors.verifyNotZero(address(_curveMetaRegistry), "_curveMetaRegistry");
 
         curveMetaRegistry = _curveMetaRegistry;
     }
 
     /// @inheritdoc ICurveResolver
-    function resolve(address poolAddress)
-        public
-        view
-        returns (address[8] memory tokens, uint256 numTokens, bool isStableSwap)
-    {
+    function resolve(
+        address poolAddress
+    ) public view returns (address[8] memory tokens, uint256 numTokens, bool isStableSwap) {
         Errors.verifyNotZero(poolAddress, "poolAddress");
 
         // If a pool is not showing up in the registry, this will revert
@@ -60,17 +60,17 @@ contract CurveResolverMainnet is ICurveResolver {
     }
 
     /// @inheritdoc ICurveResolver
-    function resolveWithLpToken(address poolAddress)
-        external
-        view
-        returns (address[8] memory tokens, uint256 numTokens, address lpToken, bool isStableSwap)
-    {
+    function resolveWithLpToken(
+        address poolAddress
+    ) external view returns (address[8] memory tokens, uint256 numTokens, address lpToken, bool isStableSwap) {
         (tokens, numTokens, isStableSwap) = resolve(poolAddress);
         lpToken = getLpToken(poolAddress);
     }
 
     /// @inheritdoc ICurveResolver
-    function getLpToken(address poolAddress) public view returns (address) {
+    function getLpToken(
+        address poolAddress
+    ) public view returns (address) {
         // If a pool is not showing up in the registry, this will revert
         try curveMetaRegistry.get_lp_token(poolAddress) returns (address lpToken) {
             return lpToken;
@@ -99,7 +99,9 @@ contract CurveResolverMainnet is ICurveResolver {
     }
 
     /// @inheritdoc ICurveResolver
-    function getReservesInfo(address poolAddress) external view returns (uint256[8] memory ret) {
+    function getReservesInfo(
+        address poolAddress
+    ) external view returns (uint256[8] memory ret) {
         Errors.verifyNotZero(poolAddress, "poolAddress");
 
         // If a pool is not showing up in the registry, this will revert
@@ -130,7 +132,9 @@ contract CurveResolverMainnet is ICurveResolver {
         }
     }
 
-    function _isStableSwap(address pool) private view returns (bool) {
+    function _isStableSwap(
+        address pool
+    ) private view returns (bool) {
         // Using the presence of a gamma() fn as an indicator of pool type
         // Zero check for the poolAddress is above
         // slither-disable-start low-level-calls,missing-zero-check,unchecked-lowlevel

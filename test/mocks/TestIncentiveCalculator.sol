@@ -21,11 +21,15 @@ contract TestIncentiveCalculator {
         return _poolAddress;
     }
 
-    function setLpToken(address lpToken_) public {
+    function setLpToken(
+        address lpToken_
+    ) public {
         _lpToken = lpToken_;
     }
 
-    function setPoolAddress(address poolAddress_) public {
+    function setPoolAddress(
+        address poolAddress_
+    ) public {
         _poolAddress = poolAddress_;
     }
 

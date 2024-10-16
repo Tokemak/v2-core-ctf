@@ -10,5 +10,7 @@ interface IConvexStashToken {
 
     /// @notice Returns current balance of the given wallet
     /// @param wallet address to balance for
-    function balanceOf(address wallet) external view returns (uint256);
+    function balanceOf(
+        address wallet
+    ) external view returns (uint256);
 }

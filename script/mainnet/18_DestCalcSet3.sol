@@ -108,7 +108,9 @@ contract DestCalcSet3 is Script, Destinations {
         );
     }
 
-    function deployCurveV1NoRebasingPool(CurveNoRebasingConvexDestCalcSetup memory args) internal {
+    function deployCurveV1NoRebasingPool(
+        CurveNoRebasingConvexDestCalcSetup memory args
+    ) internal {
         IStatsCalculator poolCalc = IStatsCalculator(
             _setupCurvePoolNoRebasingCalculatorBase(
                 constants,
@@ -163,7 +165,9 @@ contract DestCalcSet3 is Script, Destinations {
         }
     }
 
-    function deployCurveV1RebasingPool(CurveRebasingConvexDestCalcSetup memory args) internal {
+    function deployCurveV1RebasingPool(
+        CurveRebasingConvexDestCalcSetup memory args
+    ) internal {
         IStatsCalculator poolCalc = IStatsCalculator(
             _setupCurvePoolRebasingCalculatorBase(
                 constants,
@@ -206,7 +210,9 @@ contract DestCalcSet3 is Script, Destinations {
         );
     }
 
-    function deployCurveV2NonRebasingPool(CurveNoRebasingConvexDestCalcSetup memory args) internal {
+    function deployCurveV2NonRebasingPool(
+        CurveNoRebasingConvexDestCalcSetup memory args
+    ) internal {
         IStatsCalculator poolCalc = IStatsCalculator(
             _setupCurvePoolNoRebasingCalculatorBase(
                 constants,

@@ -114,7 +114,9 @@ abstract contract SystemRegistryBase is ISystemRegistry, Ownable2Step {
     /// Functions - Constructor
     /// =====================================================
 
-    constructor(address _weth) {
+    constructor(
+        address _weth
+    ) {
         Errors.verifyNotZero(address(_weth), "_weth");
         weth = IWETH9(_weth);
     }
@@ -125,7 +127,9 @@ abstract contract SystemRegistryBase is ISystemRegistry, Ownable2Step {
 
     /// @notice Set the AccToke for this instance of the system
     /// @param newAccToke Address of the accToke contract
-    function setAccToke(address newAccToke) external virtual onlyOwner {
+    function setAccToke(
+        address newAccToke
+    ) external virtual onlyOwner {
         Errors.verifyNotZero(newAccToke, "newAccToke");
 
         if (address(_accToke) == newAccToke) {
@@ -142,7 +146,9 @@ abstract contract SystemRegistryBase is ISystemRegistry, Ownable2Step {
     /// @notice Set the AutopoolRegistry for this instance of the system
     /// @dev Should only be able to set this value one time
     /// @param registry Address of the registry
-    function setAutopoolRegistry(address registry) external onlyOwner {
+    function setAutopoolRegistry(
+        address registry
+    ) external onlyOwner {
         Errors.verifyNotZero(registry, "autoPoolRegistry");
 
         if (address(_autoPoolRegistry) == registry) {
@@ -159,7 +165,9 @@ abstract contract SystemRegistryBase is ISystemRegistry, Ownable2Step {
     /// @notice Set the AutopilotRouter for this instance of the system
     /// @dev allows setting multiple times
     /// @param router Address of the AutopilotRouter
-    function setAutopilotRouter(address router) external onlyOwner {
+    function setAutopilotRouter(
+        address router
+    ) external onlyOwner {
         Errors.verifyNotZero(router, "autoPoolRouter");
 
         if (address(_autoPoolRouter) == router) {
@@ -176,7 +184,9 @@ abstract contract SystemRegistryBase is ISystemRegistry, Ownable2Step {
     /// @notice Set the Destination Vault Registry for this instance of the system
     /// @dev Should only be able to set this value one time
     /// @param registry Address of the registry
-    function setDestinationVaultRegistry(address registry) external onlyOwner {
+    function setDestinationVaultRegistry(
+        address registry
+    ) external onlyOwner {
         Errors.verifyNotZero(registry, "destinationVaultRegistry");
 
         if (address(_destinationVaultRegistry) == registry) {
@@ -193,7 +203,9 @@ abstract contract SystemRegistryBase is ISystemRegistry, Ownable2Step {
     /// @notice Set the Access Controller for this instance of the system
     /// @dev Should only be able to set this value one time
     /// @param controller Address of the access controller
-    function setAccessController(address controller) external onlyOwner {
+    function setAccessController(
+        address controller
+    ) external onlyOwner {
         Errors.verifyNotZero(controller, "accessController");
 
         if (address(_accessController) != address(0)) {
@@ -210,7 +222,9 @@ abstract contract SystemRegistryBase is ISystemRegistry, Ownable2Step {
     /// @notice Set the Destination Template Registry for this instance of the system
     /// @dev Should only be able to set this value one time
     /// @param registry Address of the registry
-    function setDestinationTemplateRegistry(address registry) external onlyOwner {
+    function setDestinationTemplateRegistry(
+        address registry
+    ) external onlyOwner {
         Errors.verifyNotZero(registry, "destinationTemplateRegistry");
 
         if (address(_destinationTemplateRegistry) == registry) {
@@ -227,7 +241,9 @@ abstract contract SystemRegistryBase is ISystemRegistry, Ownable2Step {
     /// @notice Set the Stats Calculator Registry for this instance of the system
     /// @dev Should only be able to set this value one time
     /// @param registry Address of the registry
-    function setStatsCalculatorRegistry(address registry) external onlyOwner {
+    function setStatsCalculatorRegistry(
+        address registry
+    ) external onlyOwner {
         Errors.verifyNotZero(registry, "statsCalculatorRegistry");
 
         if (address(_statsCalculatorRegistry) == registry) {
@@ -244,7 +260,9 @@ abstract contract SystemRegistryBase is ISystemRegistry, Ownable2Step {
     /// @notice Set the Root Price Oracle for this instance of the system
     /// @dev This value can be set multiple times, but never back to 0
     /// @param oracle Address of the oracle
-    function setRootPriceOracle(address oracle) external onlyOwner {
+    function setRootPriceOracle(
+        address oracle
+    ) external onlyOwner {
         Errors.verifyNotZero(oracle, "oracle");
 
         if (oracle == address(_rootPriceOracle)) {
@@ -261,7 +279,9 @@ abstract contract SystemRegistryBase is ISystemRegistry, Ownable2Step {
     /// @notice Set the Incentive Pricing Stats for this instance of the system
     /// @dev This value can be set multiple times, but never back to 0
     /// @param incentivePricingStats Address of the IIncentivePricingStats
-    function setIncentivePricingStats(address incentivePricingStats) external onlyOwner {
+    function setIncentivePricingStats(
+        address incentivePricingStats
+    ) external onlyOwner {
         Errors.verifyNotZero(incentivePricingStats, "incentivePricingStats");
 
         if (incentivePricingStats == address(_incentivePricingStats)) {
@@ -278,7 +298,9 @@ abstract contract SystemRegistryBase is ISystemRegistry, Ownable2Step {
     /// @notice Set the Async Swapper Registry for this instance of the system
     /// @dev Should only be able to set this value one time
     /// @param registry Address of the registry
-    function setAsyncSwapperRegistry(address registry) external onlyOwner {
+    function setAsyncSwapperRegistry(
+        address registry
+    ) external onlyOwner {
         Errors.verifyNotZero(registry, "asyncSwapperRegistry");
 
         if (address(_asyncSwapperRegistry) == registry) {
@@ -295,7 +317,9 @@ abstract contract SystemRegistryBase is ISystemRegistry, Ownable2Step {
     /// @notice Set the Swap Router for this instance of the system
     /// @dev This value can be set multiple times, but never back to 0
     /// @param router Address of the router
-    function setSwapRouter(address router) external onlyOwner {
+    function setSwapRouter(
+        address router
+    ) external onlyOwner {
         Errors.verifyNotZero(router, "router");
 
         if (router == address(_swapRouter)) {
@@ -312,7 +336,9 @@ abstract contract SystemRegistryBase is ISystemRegistry, Ownable2Step {
     /// @notice Set the Curve Resolver for this instance of the system
     /// @dev This value can be set multiple times, but never back to 0
     /// @param resolver Address of the resolver
-    function setCurveResolver(address resolver) external onlyOwner {
+    function setCurveResolver(
+        address resolver
+    ) external onlyOwner {
         Errors.verifyNotZero(resolver, "resolver");
 
         if (resolver == address(_curveResolver)) {
@@ -330,7 +356,9 @@ abstract contract SystemRegistryBase is ISystemRegistry, Ownable2Step {
     /// @notice Register given address as a Reward Token
     /// @dev Reverts if address is 0 or token was already registered
     /// @param rewardToken token address to add
-    function addRewardToken(address rewardToken) external onlyOwner {
+    function addRewardToken(
+        address rewardToken
+    ) external onlyOwner {
         Errors.verifyNotZero(rewardToken, "rewardToken");
         bool success = _rewardTokens.add(rewardToken);
         if (!success) {
@@ -342,7 +370,9 @@ abstract contract SystemRegistryBase is ISystemRegistry, Ownable2Step {
     /// @notice Removes given address from Reward Token list
     /// @dev Reverts if address was not registered
     /// @param rewardToken token address to remove
-    function removeRewardToken(address rewardToken) external onlyOwner {
+    function removeRewardToken(
+        address rewardToken
+    ) external onlyOwner {
         Errors.verifyNotZero(rewardToken, "rewardToken");
         bool success = _rewardTokens.remove(rewardToken);
         if (!success) {
@@ -370,7 +400,9 @@ abstract contract SystemRegistryBase is ISystemRegistry, Ownable2Step {
 
     /// @notice Remove a previously configured Autopool factory
     /// @param vaultType Autopool type to remove the factory for
-    function removeAutopoolFactory(bytes32 vaultType) external onlyOwner {
+    function removeAutopoolFactory(
+        bytes32 vaultType
+    ) external onlyOwner {
         Errors.verifyNotZero(vaultType, "vaultType");
         address factoryAddress = address(_autoPoolFactoryByType[vaultType]);
 
@@ -387,7 +419,9 @@ abstract contract SystemRegistryBase is ISystemRegistry, Ownable2Step {
     /// @notice Set the System Security instance for this system
     /// @dev Should only be able to set this value one time
     /// @param security Address of the security contract
-    function setSystemSecurity(address security) external onlyOwner {
+    function setSystemSecurity(
+        address security
+    ) external onlyOwner {
         Errors.verifyNotZero(security, "security");
 
         if (address(_systemSecurity) == security) {
@@ -404,7 +438,9 @@ abstract contract SystemRegistryBase is ISystemRegistry, Ownable2Step {
     /// @notice Set Message Proxy instance for this system
     /// @dev Value can be replaced
     /// @param proxy Address of the Message Proxy
-    function setMessageProxy(address proxy) external onlyOwner {
+    function setMessageProxy(
+        address proxy
+    ) external onlyOwner {
         Errors.verifyNotZero(proxy, "messageProxy");
 
         if (proxy == address(_messageProxy)) {
@@ -422,7 +458,9 @@ abstract contract SystemRegistryBase is ISystemRegistry, Ownable2Step {
     /// @dev Value can be replaced
     /// @dev This is expected to be the zero address on a chain that is not receiving messages from other chains
     /// @param router Address of the Receiving Router
-    function setReceivingRouter(address router) external onlyOwner {
+    function setReceivingRouter(
+        address router
+    ) external onlyOwner {
         Errors.verifyNotZero(router, "receivingRouter");
 
         if (router == _receivingRouter) {
@@ -499,7 +537,9 @@ abstract contract SystemRegistryBase is ISystemRegistry, Ownable2Step {
 
     /// @notice Unset a unique contract instance by type in the system
     /// @param contractType Type of contract to register
-    function unsetUniqueContract(bytes32 contractType) external onlyOwner {
+    function unsetUniqueContract(
+        bytes32 contractType
+    ) external onlyOwner {
         Errors.verifyNotZero(contractType, "contractType");
 
         if (_uniqueContracts[contractType] == address(0)) {
@@ -515,7 +555,9 @@ abstract contract SystemRegistryBase is ISystemRegistry, Ownable2Step {
     }
 
     /// @inheritdoc ISystemRegistry
-    function getUniqueContract(bytes32 contractType) external view returns (address) {
+    function getUniqueContract(
+        bytes32 contractType
+    ) external view returns (address) {
         Errors.verifyNotZero(contractType, "contractType");
 
         address ret = _uniqueContracts[contractType];
@@ -546,7 +588,9 @@ abstract contract SystemRegistryBase is ISystemRegistry, Ownable2Step {
     }
 
     /// @inheritdoc ISystemRegistry
-    function listAdditionalContracts(bytes32 contractType) external view returns (address[] memory) {
+    function listAdditionalContracts(
+        bytes32 contractType
+    ) external view returns (address[] memory) {
         return _additionalContracts[contractType].values();
     }
 
@@ -581,7 +625,9 @@ abstract contract SystemRegistryBase is ISystemRegistry, Ownable2Step {
     }
 
     /// @inheritdoc ISystemRegistry
-    function getAutopoolFactoryByType(bytes32 vaultType) external view returns (IAutopoolFactory vaultFactory) {
+    function getAutopoolFactoryByType(
+        bytes32 vaultType
+    ) external view returns (IAutopoolFactory vaultFactory) {
         if (!_autoPoolFactoryTypes.contains(vaultType)) {
             revert Errors.ItemNotFound();
         }
@@ -625,7 +671,9 @@ abstract contract SystemRegistryBase is ISystemRegistry, Ownable2Step {
     }
 
     /// @inheritdoc ISystemRegistry
-    function isRewardToken(address rewardToken) external view returns (bool) {
+    function isRewardToken(
+        address rewardToken
+    ) external view returns (bool) {
         return _rewardTokens.contains(rewardToken);
     }
 
@@ -646,7 +694,9 @@ abstract contract SystemRegistryBase is ISystemRegistry, Ownable2Step {
     /// @notice Verifies that a system bound contract matches this contract
     /// @dev All system bound contracts must match a registry contract. Will revert on mismatch
     /// @param dep The contract to check
-    function _verifySystemsAgree(address dep) internal view {
+    function _verifySystemsAgree(
+        address dep
+    ) internal view {
         // slither-disable-start low-level-calls
         // solhint-disable-next-line avoid-low-level-calls
         (bool success, bytes memory data) = dep.staticcall(abi.encodeCall(ISystemComponent.getSystemRegistry, ()));

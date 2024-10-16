@@ -4,7 +4,9 @@ pragma solidity 0.8.17;
 // solhint-disable func-name-mixedcase
 
 interface ICurveV2Swap {
-    function coins(uint256 i) external view returns (address);
+    function coins(
+        uint256 i
+    ) external view returns (address);
 
     function exchange(
         uint256 sellTokenIndex,

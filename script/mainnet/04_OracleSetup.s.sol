@@ -145,7 +145,9 @@ contract OracleSetup is Script, Oracle {
         }
     }
 
-    function _registerBalancerMeta(BalancerLPMetaStableEthOracle balMetaOracle) internal {
+    function _registerBalancerMeta(
+        BalancerLPMetaStableEthOracle balMetaOracle
+    ) internal {
         // Register balancer pools
         address balancerWstEthWethPool = 0x32296969Ef14EB0c6d29669C550D4a0449130230;
         address balancerRethWethPool = 0x1E19CF2D73a72Ef1332C882F20534B6519Be0276;
@@ -154,7 +156,9 @@ contract OracleSetup is Script, Oracle {
         _registerPoolMapping(rootPriceOracle, balMetaOracle, balancerRethWethPool, true);
     }
 
-    function _registerCurveSet2(CurveV2CryptoEthOracle curveV2Oracle) internal {
+    function _registerCurveSet2(
+        CurveV2CryptoEthOracle curveV2Oracle
+    ) internal {
         address curveV2RethEthPool = 0x0f3159811670c117c372428D4E69AC32325e4D0F;
         address curveV2RethEthLpToken = 0x6c38cE8984a890F5e46e6dF6117C26b3F1EcfC9C;
 
@@ -168,7 +172,9 @@ contract OracleSetup is Script, Oracle {
         _registerPoolMapping(rootPriceOracle, curveV2Oracle, curveV2cbEthEthPool, true);
     }
 
-    function _registerCurveSet1(CurveV1StableEthOracle curveV1Oracle) internal {
+    function _registerCurveSet1(
+        CurveV1StableEthOracle curveV1Oracle
+    ) internal {
         address curveStEthOriginalPool = 0xDC24316b9AE028F1497c275EB9192a3Ea0f67022;
         address curveStEthOriginalLpToken = 0x06325440D014e39736583c165C2963BA99fAf14E;
 
@@ -200,7 +206,9 @@ contract OracleSetup is Script, Oracle {
         _registerPoolMapping(rootPriceOracle, curveV1Oracle, curveOsEthRethPool, true);
     }
 
-    function _registerRedstoneOracles(RedstoneOracle oracle) internal {
+    function _registerRedstoneOracles(
+        RedstoneOracle oracle
+    ) internal {
         oracle.registerOracle(
             values.tokens.osEth,
             IAggregatorV3Interface(REDSTONE_OSETH_PRICE_FEED),
@@ -218,7 +226,9 @@ contract OracleSetup is Script, Oracle {
         _registerMapping(rootPriceOracle, oracle, values.tokens.swEth, true);
     }
 
-    function _registerChainlinkOracles(ChainlinkOracle chainlinkOracle) internal {
+    function _registerChainlinkOracles(
+        ChainlinkOracle chainlinkOracle
+    ) internal {
         // Chainlink setup
         chainlinkOracle.registerOracle(
             values.tokens.rEth,

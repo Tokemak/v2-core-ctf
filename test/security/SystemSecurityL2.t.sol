@@ -48,7 +48,9 @@ contract SystemSecurityL2Tests is SystemSecurityBaseTests {
         checker.setSequencerReturnValue(true);
     }
 
-    function _mockHasRoleSequencerOverrideManager(bool hasRole) internal {
+    function _mockHasRoleSequencerOverrideManager(
+        bool hasRole
+    ) internal {
         vm.mockCall(
             address(_accessController),
             abi.encodeWithSignature("hasRole(bytes32,address)", Roles.SEQUENCER_OVERRIDE_MANAGER, address(this)),
@@ -185,7 +187,9 @@ contract MockSequencerChecker {
         return sequencerReturnValue;
     }
 
-    function setSequencerReturnValue(bool set) external {
+    function setSequencerReturnValue(
+        bool set
+    ) external {
         sequencerReturnValue = set;
     }
 }

@@ -143,13 +143,17 @@ contract DestinationVaultRegistryBaseTests is Test {
         registry.setVaultFactory(newFactory);
     }
 
-    function generateFactory(ISystemRegistry sysRegistry) internal returns (address) {
+    function generateFactory(
+        ISystemRegistry sysRegistry
+    ) internal returns (address) {
         address f = vm.addr(7);
         vm.mockCall(f, abi.encodeWithSelector(ISystemComponent.getSystemRegistry.selector), abi.encode(sysRegistry));
         return f;
     }
 
-    function generateDestinationVault(ISystemRegistry sysRegistry) internal returns (address) {
+    function generateDestinationVault(
+        ISystemRegistry sysRegistry
+    ) internal returns (address) {
         destinationVaultCounter++;
         address v = vm.addr(destinationVaultCounter);
         vm.mockCall(v, abi.encodeWithSelector(ISystemComponent.getSystemRegistry.selector), abi.encode(sysRegistry));

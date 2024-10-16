@@ -15,7 +15,9 @@ import { IPriceOracle } from "src/interfaces/oracles/IPriceOracle.sol";
  * @dev Returns 18 decimals of precision.
  */
 contract RedstoneOracle is BaseAggregatorV3OracleInformation {
-    constructor(ISystemRegistry _systemRegistry) BaseAggregatorV3OracleInformation(_systemRegistry) { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) BaseAggregatorV3OracleInformation(_systemRegistry) { }
 
     /// @inheritdoc IPriceOracle
     function getDescription() external pure override returns (string memory) {
@@ -23,7 +25,9 @@ contract RedstoneOracle is BaseAggregatorV3OracleInformation {
     }
 
     /// @inheritdoc IPriceOracle
-    function getPriceInEth(address token) external returns (uint256 priceInEth) {
+    function getPriceInEth(
+        address token
+    ) external returns (uint256 priceInEth) {
         OracleInfo memory oracleInfo = BaseAggregatorV3OracleInformation._getOracleInfo(token);
         // slither-disable-next-line unused-return
         (, int256 price,, uint256 updatedAt,) = oracleInfo.oracle.latestRoundData();

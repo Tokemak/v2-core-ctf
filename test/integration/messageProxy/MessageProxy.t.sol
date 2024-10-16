@@ -130,7 +130,9 @@ contract MessageProxyIntegTests is BaseTest {
     }
 
     // Add up and return total fees
-    function _getTotalFee(uint256[] memory feesArr) internal pure returns (uint256 totalFee) {
+    function _getTotalFee(
+        uint256[] memory feesArr
+    ) internal pure returns (uint256 totalFee) {
         for (uint256 i = 0; i < feesArr.length; ++i) {
             totalFee += feesArr[i];
         }

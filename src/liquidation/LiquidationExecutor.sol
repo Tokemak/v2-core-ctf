@@ -13,7 +13,9 @@ import { ILiquidationRow } from "src/interfaces/liquidation/ILiquidationRow.sol"
 contract LiquidationExecutor is Ownable {
     ILiquidationRow public immutable liquidationRow;
 
-    constructor(address _liquidationRow) {
+    constructor(
+        address _liquidationRow
+    ) {
         liquidationRow = ILiquidationRow(_liquidationRow);
     }
 

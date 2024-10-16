@@ -29,23 +29,28 @@ contract DestinationVaultRegistry is SystemComponent, IDestinationVaultRegistry,
     error OnlyFactory();
     error AlreadyRegistered(address vaultAddress);
 
-    constructor(ISystemRegistry _systemRegistry)
-        SystemComponent(_systemRegistry)
-        SecurityBase(address(_systemRegistry.accessController()))
-    { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) SystemComponent(_systemRegistry) SecurityBase(address(_systemRegistry.accessController())) { }
 
     /// @inheritdoc IDestinationVaultRegistry
-    function isRegistered(address destinationVault) external view returns (bool) {
+    function isRegistered(
+        address destinationVault
+    ) external view returns (bool) {
         return vaults.contains(destinationVault);
     }
 
     /// @inheritdoc IDestinationVaultRegistry
-    function verifyIsRegistered(address destinationVault) external view override {
+    function verifyIsRegistered(
+        address destinationVault
+    ) external view override {
         if (!vaults.contains(destinationVault)) revert Errors.NotRegistered();
     }
 
     /// @inheritdoc IDestinationVaultRegistry
-    function register(address newDestinationVault) external onlyFactory {
+    function register(
+        address newDestinationVault
+    ) external onlyFactory {
         Errors.verifyNotZero(newDestinationVault, "newDestinationVault");
 
         if (!vaults.add(newDestinationVault)) {
@@ -63,7 +68,9 @@ contract DestinationVaultRegistry is SystemComponent, IDestinationVaultRegistry,
     /// @notice Changes the factory that is allowed to register new vaults
     /// @dev Systems must match
     /// @param newAddress Address of the new factory
-    function setVaultFactory(address newAddress) external hasRole(Roles.DESTINATION_VAULT_REGISTRY_MANAGER) {
+    function setVaultFactory(
+        address newAddress
+    ) external hasRole(Roles.DESTINATION_VAULT_REGISTRY_MANAGER) {
         Errors.verifyNotZero(newAddress, "newAddress");
         Errors.verifySystemsMatch(address(this), newAddress);
 

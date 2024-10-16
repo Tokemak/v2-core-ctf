@@ -76,7 +76,9 @@ contract MaverickCalculator is BaseStatsCalculator, IDexLSTStats {
         uint256 decayInitTimestamp
     );
 
-    constructor(ISystemRegistry _systemRegistry) BaseStatsCalculator(_systemRegistry) { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) BaseStatsCalculator(_systemRegistry) { }
 
     /// @inheritdoc IStatsCalculator
     function initialize(bytes32[] calldata, bytes calldata initData) public virtual override initializer {
@@ -240,7 +242,9 @@ contract MaverickCalculator is BaseStatsCalculator, IDexLSTStats {
      * @param info Information about the reward token and the rate of rewards
      * @return The snapshot status for the given rewarder, based on the last snapshot and current block time.
      */
-    function _snapshotRewarderStatus(IReward.RewardInfo memory info) public view returns (SnapshotStatus) {
+    function _snapshotRewarderStatus(
+        IReward.RewardInfo memory info
+    ) public view returns (SnapshotStatus) {
         if (lastSnapshotRewardPerTokens[address(info.rewardToken)] == 0) {
             return SnapshotStatus.noSnapshot;
         }
@@ -387,7 +391,9 @@ contract MaverickCalculator is BaseStatsCalculator, IDexLSTStats {
         }
     }
 
-    function _getIncentivePrice(address _token) internal view returns (uint256) {
+    function _getIncentivePrice(
+        address _token
+    ) internal view returns (uint256) {
         IIncentivesPricingStats pricingStats = systemRegistry.incentivePricing();
         (uint256 fastPrice, uint256 slowPrice) = pricingStats.getPrice(_token, PRICE_STALE_CHECK);
         return Math.min(fastPrice, slowPrice);

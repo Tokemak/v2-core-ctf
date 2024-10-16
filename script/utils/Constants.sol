@@ -139,7 +139,9 @@ library Constants {
         External ext;
     }
 
-    function get(Systems system) internal view returns (Values memory) {
+    function get(
+        Systems system
+    ) internal view returns (Values memory) {
         if (system == Systems.LST_GEN1_MAINNET) {
             return getLstGen1Mainnet();
         } else if (system == Systems.LST_GEN2_MAINNET) {

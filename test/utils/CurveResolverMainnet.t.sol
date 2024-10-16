@@ -11,7 +11,9 @@ import { ICurveMetaRegistry } from "src/interfaces/external/curve/ICurveMetaRegi
 contract CurveResolverMainnetTests is Test {
     CurveResolverMainnet internal resolver;
 
-    function _setUp(uint256 blockNumber) internal {
+    function _setUp(
+        uint256 blockNumber
+    ) internal {
         uint256 mainnetFork = vm.createFork(vm.envString("MAINNET_RPC_URL"), blockNumber);
         vm.selectFork(mainnetFork);
 

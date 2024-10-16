@@ -45,7 +45,9 @@ contract ConvexCalculator is IncentiveCalculatorBase {
 
     /// @notice If the pool id is >= 151, then it is a stash token that should be unwrapped:
     /// Ref: https://docs.convexfinance.com/convexfinanceintegration/baserewardpool
-    function resolveRewardToken(address extraRewarder) public view override returns (address rewardToken) {
+    function resolveRewardToken(
+        address extraRewarder
+    ) public view override returns (address rewardToken) {
         rewardToken = address(IBaseRewardPool(extraRewarder).rewardToken());
 
         // Taking PID from base rewarder

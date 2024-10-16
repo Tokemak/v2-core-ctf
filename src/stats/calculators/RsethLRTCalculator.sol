@@ -11,7 +11,9 @@ contract RsethLRTCalculator is LSTCalculatorBase {
     /// @notice Constant key for getting oracle address from KelpDAO LRTConfig contract.
     bytes32 public constant LRT_ORACLE = keccak256("LRT_ORACLE");
 
-    constructor(ISystemRegistry _systemRegistry) LSTCalculatorBase(_systemRegistry) { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) LSTCalculatorBase(_systemRegistry) { }
 
     /// @inheritdoc LSTCalculatorBase
     function usePriceAsDiscount() public pure override returns (bool) {

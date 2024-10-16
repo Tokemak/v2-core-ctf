@@ -55,10 +55,9 @@ contract LiquidationRow is ILiquidationRow, ReentrancyGuard, SystemComponent, Se
 
     uint256 public constant MAX_PCT = 10_000;
 
-    constructor(ISystemRegistry _systemRegistry)
-        SystemComponent(_systemRegistry)
-        SecurityBase(address(_systemRegistry.accessController()))
-    {
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) SystemComponent(_systemRegistry) SecurityBase(address(_systemRegistry.accessController())) {
         destinationVaultRegistry = _systemRegistry.destinationVaultRegistry();
 
         // System registry must be properly initialized first
@@ -68,7 +67,9 @@ contract LiquidationRow is ILiquidationRow, ReentrancyGuard, SystemComponent, Se
     }
 
     /// @notice Restricts access to whitelisted swappers
-    modifier onlyWhitelistedSwapper(address swapper) {
+    modifier onlyWhitelistedSwapper(
+        address swapper
+    ) {
         if (!whitelistedSwappers.contains(swapper)) {
             revert Errors.AccessDenied();
         }
@@ -76,20 +77,26 @@ contract LiquidationRow is ILiquidationRow, ReentrancyGuard, SystemComponent, Se
     }
 
     /// @inheritdoc ILiquidationRow
-    function addToWhitelist(address swapper) external hasRole(Roles.REWARD_LIQUIDATION_MANAGER) {
+    function addToWhitelist(
+        address swapper
+    ) external hasRole(Roles.REWARD_LIQUIDATION_MANAGER) {
         Errors.verifyNotZero(swapper, "swapper");
         if (!whitelistedSwappers.add(swapper)) revert Errors.ItemExists();
         emit SwapperAdded(swapper);
     }
 
     /// @inheritdoc ILiquidationRow
-    function removeFromWhitelist(address swapper) external hasRole(Roles.REWARD_LIQUIDATION_MANAGER) {
+    function removeFromWhitelist(
+        address swapper
+    ) external hasRole(Roles.REWARD_LIQUIDATION_MANAGER) {
         if (!whitelistedSwappers.remove(swapper)) revert Errors.ItemNotFound();
         emit SwapperRemoved(swapper);
     }
 
     /// @inheritdoc ILiquidationRow
-    function isWhitelisted(address swapper) external view returns (bool) {
+    function isWhitelisted(
+        address swapper
+    ) external view returns (bool) {
         return whitelistedSwappers.contains(swapper);
     }
 
@@ -109,20 +116,22 @@ contract LiquidationRow is ILiquidationRow, ReentrancyGuard, SystemComponent, Se
     }
 
     /// @inheritdoc ILiquidationRow
-    function setPriceMarginBps(uint256 _priceMarginBps) external hasRole(Roles.REWARD_LIQUIDATION_MANAGER) {
+    function setPriceMarginBps(
+        uint256 _priceMarginBps
+    ) external hasRole(Roles.REWARD_LIQUIDATION_MANAGER) {
         _setPriceMarginBps(_priceMarginBps);
     }
 
-    function calculateFee(uint256 amount) public view returns (uint256) {
+    function calculateFee(
+        uint256 amount
+    ) public view returns (uint256) {
         return (amount * feeBps) / MAX_PCT;
     }
 
     /// @inheritdoc ILiquidationRow
-    function claimsVaultRewards(IDestinationVault[] memory vaults)
-        external
-        nonReentrant
-        hasRole(Roles.REWARD_LIQUIDATION_EXECUTOR)
-    {
+    function claimsVaultRewards(
+        IDestinationVault[] memory vaults
+    ) external nonReentrant hasRole(Roles.REWARD_LIQUIDATION_EXECUTOR) {
         if (vaults.length == 0) revert Errors.InvalidParam("vaults");
 
         for (uint256 i = 0; i < vaults.length; ++i) {
@@ -153,7 +162,9 @@ contract LiquidationRow is ILiquidationRow, ReentrancyGuard, SystemComponent, Se
     }
 
     /// @inheritdoc ILiquidationRow
-    function totalBalanceOf(address tokenAddress) external view returns (uint256) {
+    function totalBalanceOf(
+        address tokenAddress
+    ) external view returns (uint256) {
         return totalTokenBalances[tokenAddress];
     }
 
@@ -163,16 +174,16 @@ contract LiquidationRow is ILiquidationRow, ReentrancyGuard, SystemComponent, Se
     }
 
     /// @inheritdoc ILiquidationRow
-    function getVaultsForToken(address tokenAddress) external view returns (address[] memory) {
+    function getVaultsForToken(
+        address tokenAddress
+    ) external view returns (address[] memory) {
         return tokenVaults[tokenAddress].values();
     }
 
     /// @inheritdoc ILiquidationRow
-    function liquidateVaultsForTokens(LiquidationParams[] memory liquidationParams)
-        external
-        nonReentrant
-        hasRole(Roles.REWARD_LIQUIDATION_EXECUTOR)
-    {
+    function liquidateVaultsForTokens(
+        LiquidationParams[] memory liquidationParams
+    ) external nonReentrant hasRole(Roles.REWARD_LIQUIDATION_EXECUTOR) {
         uint256 len = liquidationParams.length;
         Errors.verifyNotZero(len, "len");
         for (uint256 i = 0; i < len;) {
@@ -190,11 +201,9 @@ contract LiquidationRow is ILiquidationRow, ReentrancyGuard, SystemComponent, Se
     }
 
     /// @inheritdoc ILiquidationRow
-    function liquidateVaultsForToken(LiquidationParams memory liquidationParams)
-        external
-        nonReentrant
-        hasRole(Roles.REWARD_LIQUIDATION_EXECUTOR)
-    {
+    function liquidateVaultsForToken(
+        LiquidationParams memory liquidationParams
+    ) external nonReentrant hasRole(Roles.REWARD_LIQUIDATION_EXECUTOR) {
         _liquidateVaultsForToken(
             liquidationParams.fromToken,
             liquidationParams.asyncSwapper,
@@ -428,7 +437,9 @@ contract LiquidationRow is ILiquidationRow, ReentrancyGuard, SystemComponent, Se
         emit BalanceUpdated(tokenAddress, vaultAddress, currentBalance + balance);
     }
 
-    function _setPriceMarginBps(uint256 _priceMarginBps) private {
+    function _setPriceMarginBps(
+        uint256 _priceMarginBps
+    ) private {
         // Want to limit the price margin to 10%.
         if (_priceMarginBps > MAX_PCT / 10) revert Errors.InvalidParam("priceMarginBps");
         priceMarginBps = _priceMarginBps;

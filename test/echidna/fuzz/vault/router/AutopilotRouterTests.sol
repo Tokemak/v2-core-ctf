@@ -23,7 +23,9 @@ import { TestWETH9, TestERC20 } from "test/mocks/TestWETH9.sol";
 contract TestRouter is AutopilotRouter {
     using SafeERC20 for IERC20;
 
-    constructor(ISystemRegistry _systemRegistry) AutopilotRouter(_systemRegistry) { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) AutopilotRouter(_systemRegistry) { }
 
     /// @notice Intentionally vulnerable. Will filter out for normal runs but used to test checks are working
     function pullTokenFrom(IERC20 token, uint256 amount, address from, address recipient) public payable {
@@ -38,9 +40,13 @@ contract TestRouter is AutopilotRouter {
 
 /// @dev Custom mocked swapper for testing to represent a 1:1 swap
 contract SwapperMock is BaseAsyncSwapper {
-    constructor(address _aggregator) BaseAsyncSwapper(_aggregator) { }
+    constructor(
+        address _aggregator
+    ) BaseAsyncSwapper(_aggregator) { }
 
-    function swap(SwapParams memory params) public override returns (uint256 buyTokenAmountReceived) {
+    function swap(
+        SwapParams memory params
+    ) public override returns (uint256 buyTokenAmountReceived) {
         // Mock 1:1 swap
         TestERC20(params.buyTokenAddress).mint(address(this), params.buyAmount);
         // Burn sell token to 0x0 to simulate a transfer of a sell token during a swap
@@ -144,7 +150,9 @@ abstract contract AutopilotRouterUsage is BasePoolSetup, PropertiesAsserts {
         _stopPrank();
     }
 
-    function approveAssetsToRouter(uint256 amount) public updateUser1Balance {
+    function approveAssetsToRouter(
+        uint256 amount
+    ) public updateUser1Balance {
         _startPrank(msg.sender);
         _vaultAsset.approve(address(autoPoolRouter), amount);
         _stopPrank();
@@ -156,19 +164,25 @@ abstract contract AutopilotRouterUsage is BasePoolSetup, PropertiesAsserts {
         queuedCalls.push(abi.encodeWithSelector(autoPoolRouter.approve.selector, _pool, to, amount));
     }
 
-    function approveSharesToRouter(uint256 amount) public updateUser1Balance {
+    function approveSharesToRouter(
+        uint256 amount
+    ) public updateUser1Balance {
         _startPrank(msg.sender);
         _pool.approve(address(autoPoolRouter), amount);
         _stopPrank();
     }
 
-    function approveRewarder(uint256 amount) public updateUser1Balance {
+    function approveRewarder(
+        uint256 amount
+    ) public updateUser1Balance {
         _startPrank(msg.sender);
         autoPoolRouter.approve(_pool, address(_mainRewarder), amount);
         _stopPrank();
     }
 
-    function queueApproveRewarder(uint256 amount) public updateUser1Balance {
+    function queueApproveRewarder(
+        uint256 amount
+    ) public updateUser1Balance {
         queuedCalls.push(abi.encodeWithSelector(autoPoolRouter.approve.selector, _pool, _mainRewarder, amount));
     }
 
@@ -345,25 +359,33 @@ abstract contract AutopilotRouterUsage is BasePoolSetup, PropertiesAsserts {
         queuedCalls.push(abi.encodeWithSelector(autoPoolRouter.pullToken.selector, _pool, amount, recipient));
     }
 
-    function pullTokenAssetToRouter(uint256 amount) public updateUser1Balance {
+    function pullTokenAssetToRouter(
+        uint256 amount
+    ) public updateUser1Balance {
         _startPrank(msg.sender);
         autoPoolRouter.pullToken(_vaultAsset, amount, address(autoPoolRouter));
         _stopPrank();
     }
 
-    function queuePullTokenAssetToRouter(uint256 amount) public updateUser1Balance {
+    function queuePullTokenAssetToRouter(
+        uint256 amount
+    ) public updateUser1Balance {
         queuedCalls.push(
             abi.encodeWithSelector(autoPoolRouter.pullToken.selector, _vaultAsset, amount, address(autoPoolRouter))
         );
     }
 
-    function pullTokenShareToRouter(uint256 amount) public updateUser1Balance {
+    function pullTokenShareToRouter(
+        uint256 amount
+    ) public updateUser1Balance {
         _startPrank(msg.sender);
         autoPoolRouter.pullToken(_pool, amount, address(autoPoolRouter));
         _stopPrank();
     }
 
-    function queuePullTokenShareToRouter(uint256 amount) public updateUser1Balance {
+    function queuePullTokenShareToRouter(
+        uint256 amount
+    ) public updateUser1Balance {
         queuedCalls.push(
             abi.encodeWithSelector(autoPoolRouter.pullToken.selector, _pool, amount, address(autoPoolRouter))
         );
@@ -644,13 +666,17 @@ abstract contract AutopilotRouterUsage is BasePoolSetup, PropertiesAsserts {
     }
 
     // Stake Vault Token
-    function stakeVaultToken(uint256 amount) public updateUser1Balance {
+    function stakeVaultToken(
+        uint256 amount
+    ) public updateUser1Balance {
         _startPrank(msg.sender);
         autoPoolRouter.stakeVaultToken(IERC20(address(_pool)), amount);
         _stopPrank();
     }
 
-    function stakeVaultTokenFull(uint256 amount) public updateUser1Balance {
+    function stakeVaultTokenFull(
+        uint256 amount
+    ) public updateUser1Balance {
         _vaultAsset.mint(address(autoPoolRouter), amount);
 
         _startPrank(msg.sender);
@@ -670,7 +696,9 @@ abstract contract AutopilotRouterUsage is BasePoolSetup, PropertiesAsserts {
         _stopPrank();
     }
 
-    function queueStakeVaultToken(uint256 amount) public updateUser1Balance {
+    function queueStakeVaultToken(
+        uint256 amount
+    ) public updateUser1Balance {
         queuedCalls.push(
             abi.encodeWithSelector(autoPoolRouter.stakeVaultToken.selector, IERC20(address(_pool)), amount)
         );
@@ -708,7 +736,9 @@ abstract contract AutopilotRouterUsage is BasePoolSetup, PropertiesAsserts {
     }
 
     // Utils
-    function _startPrank(address user) internal virtual {
+    function _startPrank(
+        address user
+    ) internal virtual {
         hevm.prank(user);
     }
 
@@ -718,13 +748,17 @@ abstract contract AutopilotRouterUsage is BasePoolSetup, PropertiesAsserts {
         // a prank while one is already in process
     }
 
-    function _resolveUserFromSeed(uint256 userSeed) internal returns (address) {
+    function _resolveUserFromSeed(
+        uint256 userSeed
+    ) internal returns (address) {
         uint256 userClamped = clampBetween(userSeed, 1, 3);
         address to = userClamped == 1 ? _user1 : userClamped == 2 ? _user2 : _user3;
         return to;
     }
 
-    function _resolveUserPrivateKeyFromSeed(uint256 userSeed) private returns (uint256) {
+    function _resolveUserPrivateKeyFromSeed(
+        uint256 userSeed
+    ) private returns (uint256) {
         uint256 userClamped = clampBetween(userSeed, 1, 3);
         uint256 key = userClamped == 1 ? _user1PrivateKey : userClamped == 2 ? _user2PrivateKey : _user3PrivateKey;
         return key;

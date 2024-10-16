@@ -53,7 +53,9 @@ library AutopoolFees {
         }
     }
 
-    function initializeFeeSettings(IAutopool.AutopoolFeeSettings storage settings) external {
+    function initializeFeeSettings(
+        IAutopool.AutopoolFeeSettings storage settings
+    ) external {
         uint256 timestamp = block.timestamp;
         settings.lastPeriodicFeeTake = timestamp; // Stops fees from being able to be claimed before init timestamp.
         settings.navPerShareLastFeeMark = FEE_DIVISOR;

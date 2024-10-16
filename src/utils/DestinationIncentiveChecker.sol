@@ -23,7 +23,9 @@ contract DestinationIncentiveChecker is SystemComponent {
     /// @notice Hash of curve exchange name.  Name matches return from `exchangeName()` on Curve dest vaults
     bytes32 public constant CURVE = keccak256("curve");
 
-    constructor(ISystemRegistry _systemRegistry) SystemComponent(_systemRegistry) { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) SystemComponent(_systemRegistry) { }
 
     function checkCount() public view returns (uint256) {
         return check().length;
@@ -82,7 +84,9 @@ contract DestinationIncentiveChecker is SystemComponent {
 
     /// @dev Handles getting tokens from a Balancer / Aura destination
     /// @return incentives Array of incentive tokens for destination, if any
-    function _handleBalancer(DestinationVault dest) private view returns (address[] memory incentives) {
+    function _handleBalancer(
+        DestinationVault dest
+    ) private view returns (address[] memory incentives) {
         // Get aura staking from destination
         // NOTE: Aura staking does not exist for all Balancer destination vaults
         (bool success, bytes memory retData) = address(dest).staticcall(abi.encodeWithSignature("auraStaking()"));
@@ -119,7 +123,9 @@ contract DestinationIncentiveChecker is SystemComponent {
 
     /// @dev Handles getting tokens from a Curve / Convex destination
     /// @return incentives Array of incentive tokens for destination, if any
-    function _handleCurve(DestinationVault dest) private view returns (address[] memory incentives) {
+    function _handleCurve(
+        DestinationVault dest
+    ) private view returns (address[] memory incentives) {
         // Get convex staking from destination vault
         (bool success, bytes memory retData) = address(dest).staticcall(abi.encodeWithSignature("convexStaking()"));
         if (!success || retData.length == 0) return incentives;

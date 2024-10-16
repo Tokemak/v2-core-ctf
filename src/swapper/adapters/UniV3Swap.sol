@@ -28,7 +28,9 @@ import { LibAdapter } from "src/libs/LibAdapter.sol";
 contract UniV3Swap is BaseAdapter {
     using Path for bytes;
 
-    constructor(address _router) BaseAdapter(_router) { }
+    constructor(
+        address _router
+    ) BaseAdapter(_router) { }
 
     /// @inheritdoc ISyncSwapper
     function validate(address fromAddress, ISwapRouter.SwapData memory swapData) external pure override {
@@ -71,7 +73,9 @@ contract UniV3Swap is BaseAdapter {
      * @return sellAddress The address of the token being sold (first tokenIn).
      * @return buyAddress The address of the token being purchased (last tokenOut).
      */
-    function _decodePath(bytes memory path) private pure returns (address sellAddress, address buyAddress) {
+    function _decodePath(
+        bytes memory path
+    ) private pure returns (address sellAddress, address buyAddress) {
         bool hasMultiplePools = path.hasMultiplePools();
         // slither-disable-next-line unused-return
         (sellAddress, buyAddress,) = path.decodeFirstPool();

@@ -49,7 +49,9 @@ contract Destinations is Calculators {
         bytes32[] dependentPoolCalculators;
     }
 
-    constructor(VmSafe _vm) Calculators(_vm) { }
+    constructor(
+        VmSafe _vm
+    ) Calculators(_vm) { }
 
     function setupBalancerGyroAuraDestinationVault(
         Constants.Values memory constants,

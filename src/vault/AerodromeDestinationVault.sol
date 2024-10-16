@@ -149,12 +149,16 @@ contract AerodromeDestinationVault is DestinationVault {
     }
 
     /// @inheritdoc DestinationVault
-    function _onDeposit(uint256 amount) internal virtual override {
+    function _onDeposit(
+        uint256 amount
+    ) internal virtual override {
         AerodromeStakingAdapter.stakeLPs(aerodromeGauge, amount);
     }
 
     /// @inheritdoc DestinationVault
-    function _ensureLocalUnderlyingBalance(uint256 amount) internal virtual override {
+    function _ensureLocalUnderlyingBalance(
+        uint256 amount
+    ) internal virtual override {
         AerodromeStakingAdapter.unstakeLPs(aerodromeGauge, amount);
     }
 
@@ -164,12 +168,9 @@ contract AerodromeDestinationVault is DestinationVault {
     }
 
     /// @inheritdoc DestinationVault
-    function _burnUnderlyer(uint256 underlyerAmount)
-        internal
-        virtual
-        override
-        returns (address[] memory tokens, uint256[] memory amounts)
-    {
+    function _burnUnderlyer(
+        uint256 underlyerAmount
+    ) internal virtual override returns (address[] memory tokens, uint256[] memory amounts) {
         tokens = new address[](2);
         tokens[0] = constituentTokens[0];
         tokens[1] = constituentTokens[1];
@@ -194,7 +195,9 @@ contract AerodromeDestinationVault is DestinationVault {
         return _underlying;
     }
 
-    function _validateCalculator(address incentiveCalculator) internal view override {
+    function _validateCalculator(
+        address incentiveCalculator
+    ) internal view override {
         address calcLp = IncentiveCalculatorBase(incentiveCalculator).lpToken();
         address calcPool = IncentiveCalculatorBase(incentiveCalculator).pool();
         address poolAndLp = _underlying;

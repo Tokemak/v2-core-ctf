@@ -15,7 +15,9 @@ contract ChainlinkEthPerTokenSenderUpkeep {
     /// Functions - External
     /// =====================================================
 
-    function performUpkeep(bytes calldata performData) external {
+    function performUpkeep(
+        bytes calldata performData
+    ) external {
         (address senderAddr, address[] memory addrs) = abi.decode(performData, (address, address[]));
         if (addrs.length > 0) {
             EthPerTokenSender(senderAddr).execute(addrs);
@@ -24,11 +26,9 @@ contract ChainlinkEthPerTokenSenderUpkeep {
         }
     }
 
-    function checkUpkeep(bytes calldata checkData)
-        external
-        view
-        returns (bool upkeepNeeded, bytes memory performData)
-    {
+    function checkUpkeep(
+        bytes calldata checkData
+    ) external view returns (bool upkeepNeeded, bytes memory performData) {
         EthPerTokenSender sender = EthPerTokenSender(abi.decode(checkData, (address)));
         address[] memory sendFor = sender.shouldSend(0, type(uint256).max);
 

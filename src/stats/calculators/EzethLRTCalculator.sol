@@ -35,7 +35,9 @@ contract EzethLRTCalculator is LSTCalculatorBase {
     /// Functions - Constructor/Init
     /// =====================================================
 
-    constructor(ISystemRegistry _systemRegistry) LSTCalculatorBase(_systemRegistry) { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) LSTCalculatorBase(_systemRegistry) { }
 
     function initialize(bytes32[] calldata dependentCalcIds, bytes memory initData) public virtual override {
         EzEthInitData memory decodedInitData = abi.decode(initData, (EzEthInitData));
@@ -72,7 +74,9 @@ contract EzethLRTCalculator is LSTCalculatorBase {
     /// @notice Set a new restake manager for the token
     /// @dev Requires STATS_GENERAL_MANAGER role
     /// @param newRestakeManager Address of the new restake manager
-    function setRenzoRestakeManager(address newRestakeManager) external hasRole(Roles.STATS_GENERAL_MANAGER) {
+    function setRenzoRestakeManager(
+        address newRestakeManager
+    ) external hasRole(Roles.STATS_GENERAL_MANAGER) {
         _setRenzoRestakeManager(newRestakeManager);
     }
 
@@ -80,7 +84,9 @@ contract EzethLRTCalculator is LSTCalculatorBase {
     /// Private Helpers
     /// =====================================================
 
-    function _setRenzoRestakeManager(address newRestakeManager) private {
+    function _setRenzoRestakeManager(
+        address newRestakeManager
+    ) private {
         Errors.verifyNotZero(newRestakeManager, "newRestakeManager");
 
         renzoRestakeManger = IRestakeManager(newRestakeManager);

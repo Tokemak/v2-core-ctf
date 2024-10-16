@@ -314,7 +314,9 @@ contract WithdrawalQueueTest is Test {
 
     // ############################## HELPER FUNCTIONS ##############################
 
-    function verifyEmptyQueue(StructuredLinkedList.List storage _queue) internal {
+    function verifyEmptyQueue(
+        StructuredLinkedList.List storage _queue
+    ) internal {
         assertTrue(WithdrawalQueue.isEmpty(_queue));
     }
 

@@ -70,7 +70,9 @@ contract ViolationTrackingTest is Test {
         assertEq(state.violationCount, 0);
     }
 
-    function testFuzzInsertsAndViolationCount(bool[] memory toInsert) public {
+    function testFuzzInsertsAndViolationCount(
+        bool[] memory toInsert
+    ) public {
         for (uint256 i = 0; i < toInsert.length; ++i) {
             state.insert(toInsert[i]);
         }
@@ -110,7 +112,9 @@ contract ViolationTrackingTest is Test {
         tracker.insert(true);
     }
 
-    function countViolations(bool[] memory inserted) private pure returns (uint8) {
+    function countViolations(
+        bool[] memory inserted
+    ) private pure returns (uint8) {
         uint256 numInserts = inserted.length;
 
         uint8 maxCount = 10;
@@ -135,7 +139,9 @@ contract ViolationTrackingGasChecker {
 
     ViolationTracking.State public state;
 
-    function insert(bool isViolation) public {
+    function insert(
+        bool isViolation
+    ) public {
         state.insert(isViolation);
     }
 }

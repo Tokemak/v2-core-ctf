@@ -10,7 +10,9 @@ import { ISystemRegistry } from "src/interfaces/ISystemRegistry.sol";
 contract SystemRegistryMocks {
     Vm private vm;
 
-    constructor(Vm _vm) {
+    constructor(
+        Vm _vm
+    ) {
         vm = _vm;
     }
 

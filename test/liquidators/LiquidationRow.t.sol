@@ -48,13 +48,17 @@ contract AsyncSwapperMock is BaseAsyncSwapper {
         liquidationRow = _liquidationRow;
     }
 
-    function setOverrideReceivedAmount(uint256 _overrideReceivedAmount) external {
+    function setOverrideReceivedAmount(
+        uint256 _overrideReceivedAmount
+    ) external {
         assembly {
             sstore(SLOT, _overrideReceivedAmount)
         }
     }
 
-    function swap(SwapParams memory params) public override returns (uint256 buyTokenAmountReceived) {
+    function swap(
+        SwapParams memory params
+    ) public override returns (uint256 buyTokenAmountReceived) {
         uint256 amountToMint = params.buyAmount;
         assembly {
             let overrideAmount := sload(SLOT)
@@ -72,7 +76,9 @@ contract AsyncSwapperMock is BaseAsyncSwapper {
  */
 
 contract LiquidationRowWrapper is LiquidationRow {
-    constructor(ISystemRegistry _systemRegistry) LiquidationRow(ISystemRegistry(_systemRegistry)) { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) LiquidationRow(ISystemRegistry(_systemRegistry)) { }
 
     function exposed_increaseBalance(address tokenAddress, address vaultAddress, uint256 tokenAmount) public {
         _increaseBalance(tokenAddress, vaultAddress, tokenAmount);
@@ -257,7 +263,9 @@ contract LiquidationRowTest is Test {
      * This token will be collected by the vault during the liquidation process.
      * This is used for testing basic scenarios where the vault has only one type of reward token.
      */
-    function _mockSimpleScenario(address vault) internal {
+    function _mockSimpleScenario(
+        address vault
+    ) internal {
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 100_000;
 
@@ -274,7 +282,9 @@ contract LiquidationRowTest is Test {
      * These tokens will be collected by the vault during the liquidation process.
      * This is used for testing more complex scenarios where the vault has multiple types of reward tokens.
      */
-    function _mockComplexScenario(address vault) internal {
+    function _mockComplexScenario(
+        address vault
+    ) internal {
         uint256[] memory amounts = new uint256[](5);
         amounts[0] = 100_000;
         amounts[1] = 100_000;
@@ -292,7 +302,9 @@ contract LiquidationRowTest is Test {
         _mockCollectRewardsCalls(vault, amounts, tokens);
     }
 
-    function _mockSimpleScenarioWithTargetToken(address vault) internal {
+    function _mockSimpleScenarioWithTargetToken(
+        address vault
+    ) internal {
         uint256[] memory amounts = new uint256[](2);
         amounts[0] = 100_000;
         amounts[1] = 100_000;
@@ -524,7 +536,9 @@ contract SetPriceMarginBps is LiquidationRowTest {
 contract ClaimsVaultRewards is LiquidationRowTest {
     // ⬇️ private functions use for the tests ⬇️
 
-    function _mockRewardTokenHasZeroAmount(address vault) internal {
+    function _mockRewardTokenHasZeroAmount(
+        address vault
+    ) internal {
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 0;
 
@@ -534,7 +548,9 @@ contract ClaimsVaultRewards is LiquidationRowTest {
         _mockCollectRewardsCalls(vault, amounts, tokens);
     }
 
-    function _mockRewardTokenHasZeroAddress(address vault) internal {
+    function _mockRewardTokenHasZeroAddress(
+        address vault
+    ) internal {
         uint256[] memory amounts = new uint256[](1);
         amounts[0] = 100_000;
 

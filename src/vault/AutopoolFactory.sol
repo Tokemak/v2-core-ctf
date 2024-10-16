@@ -99,7 +99,9 @@ contract AutopoolFactory is SystemComponent, IAutopoolFactory, SecurityBase {
     /// Functions - External
     /// =====================================================
 
-    function addStrategyTemplate(address strategyTemplate) external hasRole(Roles.AUTO_POOL_FACTORY_MANAGER) {
+    function addStrategyTemplate(
+        address strategyTemplate
+    ) external hasRole(Roles.AUTO_POOL_FACTORY_MANAGER) {
         Errors.verifySystemsMatch(address(this), strategyTemplate);
 
         if (!_strategyTemplates.add(strategyTemplate)) {
@@ -109,7 +111,9 @@ contract AutopoolFactory is SystemComponent, IAutopoolFactory, SecurityBase {
         emit StrategyTemplateAdded(strategyTemplate);
     }
 
-    function removeStrategyTemplate(address strategyTemplate) external hasRole(Roles.AUTO_POOL_FACTORY_MANAGER) {
+    function removeStrategyTemplate(
+        address strategyTemplate
+    ) external hasRole(Roles.AUTO_POOL_FACTORY_MANAGER) {
         if (!_strategyTemplates.remove(strategyTemplate)) {
             revert Errors.ItemNotFound();
         }
@@ -117,11 +121,15 @@ contract AutopoolFactory is SystemComponent, IAutopoolFactory, SecurityBase {
         emit StrategyTemplateRemoved(strategyTemplate);
     }
 
-    function setDefaultRewardRatio(uint256 rewardRatio) external hasRole(Roles.AUTO_POOL_FACTORY_MANAGER) {
+    function setDefaultRewardRatio(
+        uint256 rewardRatio
+    ) external hasRole(Roles.AUTO_POOL_FACTORY_MANAGER) {
         _setDefaultRewardRatio(rewardRatio);
     }
 
-    function setDefaultRewardBlockDuration(uint256 blockDuration) external hasRole(Roles.AUTO_POOL_FACTORY_MANAGER) {
+    function setDefaultRewardBlockDuration(
+        uint256 blockDuration
+    ) external hasRole(Roles.AUTO_POOL_FACTORY_MANAGER) {
         _setDefaultRewardBlockDuration(blockDuration);
     }
 
@@ -172,7 +180,9 @@ contract AutopoolFactory is SystemComponent, IAutopoolFactory, SecurityBase {
         return _strategyTemplates.values();
     }
 
-    function isStrategyTemplate(address addr) public view returns (bool) {
+    function isStrategyTemplate(
+        address addr
+    ) public view returns (bool) {
         return _strategyTemplates.contains(addr);
     }
 
@@ -180,13 +190,17 @@ contract AutopoolFactory is SystemComponent, IAutopoolFactory, SecurityBase {
     /// Functions - Private
     /// =====================================================
 
-    function _setDefaultRewardRatio(uint256 rewardRatio) private {
+    function _setDefaultRewardRatio(
+        uint256 rewardRatio
+    ) private {
         defaultRewardRatio = rewardRatio;
 
         emit DefaultRewardRatioSet(rewardRatio);
     }
 
-    function _setDefaultRewardBlockDuration(uint256 blockDuration) private {
+    function _setDefaultRewardBlockDuration(
+        uint256 blockDuration
+    ) private {
         defaultRewardBlockDuration = blockDuration;
 
         emit DefaultBlockDurationSet(blockDuration);

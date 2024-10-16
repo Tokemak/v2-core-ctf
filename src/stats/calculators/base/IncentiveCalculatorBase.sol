@@ -93,7 +93,9 @@ abstract contract IncentiveCalculatorBase is BaseStatsCalculator, IDexLSTStats {
         uint256 safeTotalSupply
     );
 
-    constructor(ISystemRegistry _systemRegistry) BaseStatsCalculator(_systemRegistry) { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) BaseStatsCalculator(_systemRegistry) { }
 
     /// @inheritdoc IStatsCalculator
     function initialize(bytes32[] calldata, bytes calldata initData) public virtual override initializer {
@@ -488,7 +490,9 @@ abstract contract IncentiveCalculatorBase is BaseStatsCalculator, IDexLSTStats {
         }
     }
 
-    function _getIncentivePrice(address _token) internal view returns (uint256) {
+    function _getIncentivePrice(
+        address _token
+    ) internal view returns (uint256) {
         IIncentivesPricingStats pricingStats = systemRegistry.incentivePricing();
         (uint256 fastPrice, uint256 slowPrice) = pricingStats.getPrice(_token, PRICE_STALE_CHECK);
         return Math.min(fastPrice, slowPrice);
@@ -505,17 +509,17 @@ abstract contract IncentiveCalculatorBase is BaseStatsCalculator, IDexLSTStats {
         return safePrice;
     }
 
-    function _getRewardPoolMetrics(address _rewarder)
-        internal
-        view
-        returns (uint256 rewardRate, uint256 totalSupply, uint256 periodFinish)
-    {
+    function _getRewardPoolMetrics(
+        address _rewarder
+    ) internal view returns (uint256 rewardRate, uint256 totalSupply, uint256 periodFinish) {
         rewardRate = IBaseRewardPool(_rewarder).rewardRate();
         totalSupply = IBaseRewardPool(_rewarder).totalSupply();
         periodFinish = IBaseRewardPool(_rewarder).periodFinish();
     }
 
-    function _computeTotalAPR(bool performSnapshot) internal returns (uint256 apr) {
+    function _computeTotalAPR(
+        bool performSnapshot
+    ) internal returns (uint256 apr) {
         // Get reward pool metrics for the main rewarder and take a snapshot if necessary
         (uint256 rewardRate, uint256 totalSupply, uint256 periodFinish) = _getRewardPoolMetrics(address(rewarder));
         if (performSnapshot && _shouldSnapshot(address(rewarder), rewardRate, periodFinish, totalSupply)) {
@@ -581,5 +585,7 @@ abstract contract IncentiveCalculatorBase is BaseStatsCalculator, IDexLSTStats {
     ) public view virtual returns (uint256);
 
     /// @notice returns the address of the stash token for Convex & Aura
-    function resolveRewardToken(address extraRewarder) public view virtual returns (address rewardToken);
+    function resolveRewardToken(
+        address extraRewarder
+    ) public view virtual returns (address rewardToken);
 }

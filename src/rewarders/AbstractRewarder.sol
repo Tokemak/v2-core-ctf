@@ -121,7 +121,9 @@ abstract contract AbstractRewarder is IBaseRewarder, SecurityBase {
      * @notice Internal function that updates the user's rewards.
      * @param account The address of the user to update the rewards for.
      */
-    function _updateReward(address account) internal {
+    function _updateReward(
+        address account
+    ) internal {
         uint256 earnedRewards = 0;
         rewardPerTokenStored = rewardPerToken();
         lastUpdateBlock = lastBlockRewardApplicable();
@@ -170,7 +172,9 @@ abstract contract AbstractRewarder is IBaseRewarder, SecurityBase {
      * - Finally, the function adds the rewards that have not yet been claimed by the
      *   user to find the total amount of earned rewards.
      */
-    function earned(address account) public view returns (uint256) {
+    function earned(
+        address account
+    ) public view returns (uint256) {
         return (balanceOf(account) * (rewardPerToken() - userRewardPerTokenPaid[account]) / 1e18) + rewards[account];
     }
 
@@ -182,7 +186,9 @@ abstract contract AbstractRewarder is IBaseRewarder, SecurityBase {
      *      are too large relative to the new rewards (i.e., queuedRatio is greater than newRewardRatio), the new
      *      rewards will be added to the queue rather than being immediately distributed.
      */
-    function queueNewRewards(uint256 newRewards) external onlyWhitelisted {
+    function queueNewRewards(
+        uint256 newRewards
+    ) external onlyWhitelisted {
         uint256 startingQueuedRewards = queuedRewards;
         uint256 startingNewRewards = newRewards;
 
@@ -221,7 +227,9 @@ abstract contract AbstractRewarder is IBaseRewarder, SecurityBase {
      *      and will be distributed gradually over the remaining duration.
      *      If the current block number exceeds the reward period, the remaining reward is distributed immediately.
      */
-    function notifyRewardAmount(uint256 reward) internal {
+    function notifyRewardAmount(
+        uint256 reward
+    ) internal {
         historicalRewards += reward;
 
         // Correctly calculate leftover reward when totalSupply() is 0.
@@ -258,7 +266,9 @@ abstract contract AbstractRewarder is IBaseRewarder, SecurityBase {
      * @dev If the lock duration is greater than 0, it should be long enough to satisfy the minimum staking duration
      * requirement of the accToke contract.
      */
-    function setTokeLockDuration(uint256 _tokeLockDuration) external hasRole(rewardRole) {
+    function setTokeLockDuration(
+        uint256 _tokeLockDuration
+    ) external hasRole(rewardRole) {
         // if duration is not set to 0 (that would turn off functionality), make sure it's long enough for accToke
         if (_tokeLockDuration > 0) {
             Errors.verifyNotZero(address(systemRegistry.accToke()), "accToke");
@@ -272,7 +282,9 @@ abstract contract AbstractRewarder is IBaseRewarder, SecurityBase {
     }
 
     /// @inheritdoc IBaseRewarder
-    function addToWhitelist(address wallet) external override hasRole(rewardRole) {
+    function addToWhitelist(
+        address wallet
+    ) external override hasRole(rewardRole) {
         Errors.verifyNotZero(wallet, "wallet");
         if (whitelistedAddresses[wallet]) {
             revert Errors.ItemExists();
@@ -283,7 +295,9 @@ abstract contract AbstractRewarder is IBaseRewarder, SecurityBase {
     }
 
     /// @inheritdoc IBaseRewarder
-    function removeFromWhitelist(address wallet) external override hasRole(rewardRole) {
+    function removeFromWhitelist(
+        address wallet
+    ) external override hasRole(rewardRole) {
         if (!whitelistedAddresses[wallet]) {
             revert Errors.ItemNotFound();
         }
@@ -294,7 +308,9 @@ abstract contract AbstractRewarder is IBaseRewarder, SecurityBase {
     }
 
     /// @inheritdoc IBaseRewarder
-    function isWhitelisted(address wallet) external view override returns (bool) {
+    function isWhitelisted(
+        address wallet
+    ) external view override returns (bool) {
         return whitelistedAddresses[wallet];
     }
 
@@ -396,8 +412,12 @@ abstract contract AbstractRewarder is IBaseRewarder, SecurityBase {
      * @param token The address to be checked.
      * @return bool indicating if the token is recoverable.
      */
-    function canTokenBeRecovered(address token) public view virtual returns (bool);
+    function canTokenBeRecovered(
+        address token
+    ) public view virtual returns (bool);
 
     /// @inheritdoc IBaseRewarder
-    function balanceOf(address account) public view virtual returns (uint256);
+    function balanceOf(
+        address account
+    ) public view virtual returns (uint256);
 }

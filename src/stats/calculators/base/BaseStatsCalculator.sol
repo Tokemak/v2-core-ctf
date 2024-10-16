@@ -21,10 +21,9 @@ abstract contract BaseStatsCalculator is IStatsCalculator, SecurityBase, SystemC
         _;
     }
 
-    constructor(ISystemRegistry _systemRegistry)
-        SystemComponent(_systemRegistry)
-        SecurityBase(address(_systemRegistry.accessController()))
-    {
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) SystemComponent(_systemRegistry) SecurityBase(address(_systemRegistry.accessController())) {
         _disableInitializers();
     }
 

@@ -25,7 +25,9 @@ interface IPoolFactory {
 
     /// @notice Is a valid pool created by this factory.
     /// @param .
-    function isPool(address pool) external view returns (bool);
+    function isPool(
+        address pool
+    ) external view returns (bool);
 
     /// @notice Return address of pool created by this factory
     /// @param tokenA .
@@ -44,13 +46,21 @@ interface IPoolFactory {
     ///      to call this contract method, so once set it's immutable.
     ///      This also follows convention of setVoterAndDistributor() in VotingEscrow.sol
     /// @param _voter .
-    function setVoter(address _voter) external;
+    function setVoter(
+        address _voter
+    ) external;
 
-    function setPauser(address _pauser) external;
+    function setPauser(
+        address _pauser
+    ) external;
 
-    function setPauseState(bool _state) external;
+    function setPauseState(
+        bool _state
+    ) external;
 
-    function setFeeManager(address _feeManager) external;
+    function setFeeManager(
+        address _feeManager
+    ) external;
 
     /// @notice Set default fee for stable and volatile pools.
     /// @dev Throws if higher than maximum fee.

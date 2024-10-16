@@ -67,7 +67,9 @@ contract AerodromeStakingAdapterTest is Test {
         verifyStakingUnstakingOnPool(0xA6385c73961dd9C58db2EF0c4EB98cE4B60651e8);
     }
 
-    function verifyStakingUnstakingOnPool(address pool) public {
+    function verifyStakingUnstakingOnPool(
+        address pool
+    ) public {
         IERC20 lpToken = IERC20(pool);
         deal(address(lpToken), address(this), 10 * 1e18);
 

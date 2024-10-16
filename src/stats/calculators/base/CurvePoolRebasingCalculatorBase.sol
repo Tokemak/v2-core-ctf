@@ -65,7 +65,9 @@ abstract contract CurvePoolRebasingCalculatorBase is IDexLSTStats, BaseStatsCalc
     error InvalidPool(address poolAddress);
     error InvalidRebasingTokenIndex(uint256 index, uint256 numTokens);
 
-    constructor(ISystemRegistry _systemRegistry) BaseStatsCalculator(_systemRegistry) { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) BaseStatsCalculator(_systemRegistry) { }
 
     /// @inheritdoc IStatsCalculator
     function getAddressId() external view returns (address) {

@@ -10,7 +10,9 @@ import { SystemComponent } from "src/SystemComponent.sol";
 /// @title Price oracle for tokens we want to configure 1:1 to ETH. WETH for example
 /// @dev getPriceEth is not a view fn to support reentrancy checks. Doesn't actually change state.
 contract EthPeggedOracle is SystemComponent, IPriceOracle {
-    constructor(ISystemRegistry _systemRegistry) SystemComponent(_systemRegistry) { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) SystemComponent(_systemRegistry) { }
 
     /// @inheritdoc IPriceOracle
     function getDescription() external pure override returns (string memory) {
@@ -18,7 +20,9 @@ contract EthPeggedOracle is SystemComponent, IPriceOracle {
     }
 
     /// @inheritdoc IPriceOracle
-    function getPriceInEth(address) external pure returns (uint256 price) {
+    function getPriceInEth(
+        address
+    ) external pure returns (uint256 price) {
         price = 1e18;
     }
 }

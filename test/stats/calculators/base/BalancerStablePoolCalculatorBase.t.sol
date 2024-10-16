@@ -350,7 +350,9 @@ contract BalancerStablePoolCalculatorBaseTest is Test {
         calculator.initialize(depAprIds, initData);
     }
 
-    function getInitData(address poolAddress) internal pure returns (bytes memory) {
+    function getInitData(
+        address poolAddress
+    ) internal pure returns (bytes memory) {
         return abi.encode(BalancerStablePoolCalculatorBase.InitData({ poolAddress: poolAddress }));
     }
 
@@ -401,7 +403,9 @@ contract BalancerStablePoolCalculatorBaseTest is Test {
         vm.mockCall(token, abi.encodeWithSelector(IERC20Metadata.decimals.selector), abi.encode(decimals));
     }
 
-    function mockVirtualPrice(uint256 virtualPrice) internal {
+    function mockVirtualPrice(
+        uint256 virtualPrice
+    ) internal {
         vm.mockCall(
             RETH_WETH_BAL_POOL,
             abi.encodeWithSelector(IBalancerMetaStablePool.getRate.selector),

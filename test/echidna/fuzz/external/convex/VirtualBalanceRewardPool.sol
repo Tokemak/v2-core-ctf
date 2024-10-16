@@ -19,7 +19,9 @@ contract VirtualBalanceWrapper {
         return deposits.totalSupply();
     }
 
-    function balanceOf(address account) public view returns (uint256) {
+    function balanceOf(
+        address account
+    ) public view returns (uint256) {
         return deposits.balanceOf(account);
     }
 }
@@ -52,7 +54,9 @@ contract VirtualBalanceRewardPool is VirtualBalanceWrapper {
         rewardToken = IERC20(reward_);
     }
 
-    modifier updateReward(address account) {
+    modifier updateReward(
+        address account
+    ) {
         rewardPerTokenStored = rewardPerToken();
         lastUpdateTime = lastTimeRewardApplicable();
         if (account != address(0)) {
@@ -74,7 +78,9 @@ contract VirtualBalanceRewardPool is VirtualBalanceWrapper {
             rewardPerTokenStored + (((lastTimeRewardApplicable() - lastUpdateTime) * rewardRate * 1e18) / totalSupply());
     }
 
-    function earned(address account) public view returns (uint256) {
+    function earned(
+        address account
+    ) public view returns (uint256) {
         return ((balanceOf(account) * (rewardPerToken() - userRewardPerTokenPaid[account])) / 1e18) + rewards[account];
     }
 
@@ -92,7 +98,9 @@ contract VirtualBalanceRewardPool is VirtualBalanceWrapper {
         emit Withdrawn(_account, amount);
     }
 
-    function getReward(address _account) public updateReward(_account) {
+    function getReward(
+        address _account
+    ) public updateReward(_account) {
         uint256 reward = earned(_account);
         if (reward > 0) {
             rewards[_account] = 0;
@@ -105,12 +113,16 @@ contract VirtualBalanceRewardPool is VirtualBalanceWrapper {
         getReward(msg.sender);
     }
 
-    function donate(uint256 _amount) external {
+    function donate(
+        uint256 _amount
+    ) external {
         IERC20(rewardToken).safeTransferFrom(msg.sender, address(this), _amount);
         queuedRewards = queuedRewards + _amount;
     }
 
-    function queueNewRewards(uint256 _rewards) external {
+    function queueNewRewards(
+        uint256 _rewards
+    ) external {
         _rewards = _rewards + queuedRewards;
 
         if (block.timestamp >= periodFinish) {
@@ -132,7 +144,9 @@ contract VirtualBalanceRewardPool is VirtualBalanceWrapper {
         }
     }
 
-    function notifyRewardAmount(uint256 reward) internal updateReward(address(0)) {
+    function notifyRewardAmount(
+        uint256 reward
+    ) internal updateReward(address(0)) {
         historicalRewards = historicalRewards + reward;
         if (block.timestamp >= periodFinish) {
             rewardRate = reward / duration;

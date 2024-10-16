@@ -9,7 +9,9 @@ import { CurvePoolNoRebasingCalculatorBase } from "src/stats/calculators/base/Cu
 /// @title Curve V2 Pool No Rebasing with reentrancy protection
 /// @notice Calculate stats for a Curve V2 CryptoSwap pool
 contract CurveV2PoolNoRebasingStatsCalculator is CurvePoolNoRebasingCalculatorBase {
-    constructor(ISystemRegistry _systemRegistry) CurvePoolNoRebasingCalculatorBase(_systemRegistry) { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) CurvePoolNoRebasingCalculatorBase(_systemRegistry) { }
 
     function getVirtualPrice() internal override returns (uint256 virtualPrice) {
         ICryptoSwapPool(poolAddress).claim_admin_fees();

@@ -21,16 +21,17 @@ contract SwapRouter is SystemComponent, ISwapRouter, SecurityBase, ReentrancyGua
     // slither-disable-next-line uninitialized-state
     mapping(address => mapping(address => SwapData[])) public swapRoutes;
 
-    modifier onlyDestinationVault(address vaultAddress) {
+    modifier onlyDestinationVault(
+        address vaultAddress
+    ) {
         IDestinationVaultRegistry destinationVaultRegistry = systemRegistry.destinationVaultRegistry();
         if (!destinationVaultRegistry.isRegistered(vaultAddress)) revert Errors.AccessDenied();
         _;
     }
 
-    constructor(ISystemRegistry _systemRegistry)
-        SystemComponent(_systemRegistry)
-        SecurityBase(address(_systemRegistry.accessController()))
-    { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) SystemComponent(_systemRegistry) SecurityBase(address(_systemRegistry.accessController())) { }
 
     /// @inheritdoc ISwapRouter
     function setSwapRoute(

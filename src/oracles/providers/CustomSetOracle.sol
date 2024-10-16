@@ -58,7 +58,9 @@ contract CustomSetOracle is SystemComponent, SecurityBase, IPriceOracle {
 
     /// @notice Change the max allowable per-token age
     /// @param age New allowed age
-    function setMaxAge(uint256 age) external hasRole(Roles.ORACLE_MANAGER) {
+    function setMaxAge(
+        uint256 age
+    ) external hasRole(Roles.ORACLE_MANAGER) {
         _setMaxAge(age);
     }
 
@@ -81,7 +83,9 @@ contract CustomSetOracle is SystemComponent, SecurityBase, IPriceOracle {
 
     /// @notice Unregister tokens that have been previously configured
     /// @param tokens addresses of the tokens to unregister
-    function unregisterTokens(address[] memory tokens) external hasRole(Roles.ORACLE_MANAGER) {
+    function unregisterTokens(
+        address[] memory tokens
+    ) external hasRole(Roles.ORACLE_MANAGER) {
         uint256 len = tokens.length;
         Errors.verifyNotZero(len, "len");
 
@@ -163,12 +167,16 @@ contract CustomSetOracle is SystemComponent, SecurityBase, IPriceOracle {
 
     /// @notice Returns true for a token that is registered with this oracle
     /// @param token address to check
-    function isRegistered(address token) external view returns (bool) {
+    function isRegistered(
+        address token
+    ) external view returns (bool) {
         return prices[token].maxAge > 0;
     }
 
     /// @inheritdoc IPriceOracle
-    function getPriceInEth(address token) external view returns (uint256 price) {
+    function getPriceInEth(
+        address token
+    ) external view returns (uint256 price) {
         Price memory data = prices[token];
 
         // MaxAge == 0 is our check for registered tokens. 0 isn't allowed
@@ -185,7 +193,9 @@ contract CustomSetOracle is SystemComponent, SecurityBase, IPriceOracle {
         price = data.price;
     }
 
-    function _setMaxAge(uint256 _maxAge) private {
+    function _setMaxAge(
+        uint256 _maxAge
+    ) private {
         Errors.verifyNotZero(_maxAge, "maxAge");
         if (_maxAge > type(uint32).max) {
             revert InvalidAge(_maxAge);

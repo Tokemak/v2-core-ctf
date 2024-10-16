@@ -8,7 +8,9 @@ interface ICurveMetaRegistry {
     /// @dev For metapools, these are the wrapped coin addresses
     /// @param _pool Pool address
     /// @return List of coin addresses
-    function get_coins(address _pool) external view returns (address[8] memory);
+    function get_coins(
+        address _pool
+    ) external view returns (address[8] memory);
 
     /// @notice Get the coins within a pool
     /// @dev For metapools, these are the wrapped coin addresses
@@ -21,7 +23,9 @@ interface ICurveMetaRegistry {
     /// @dev For metapools, it is tokens + wrapping/lending token (no underlying)
     /// @param _pool Pool address
     /// @return Number of coins
-    function get_n_coins(address _pool) external view returns (uint256);
+    function get_n_coins(
+        address _pool
+    ) external view returns (uint256);
 
     /// @notice Get the number of coins in a pool
     /// @dev For metapools, it is tokens + wrapping/lending token (no underlying)
@@ -33,7 +37,9 @@ interface ICurveMetaRegistry {
     /// @notice Get the address of the LP token of a pool
     /// @param _pool Pool address
     /// @return Address of the LP token
-    function get_lp_token(address _pool) external view returns (address);
+    function get_lp_token(
+        address _pool
+    ) external view returns (address);
 
     /// @notice Get the address of the LP token of a pool
     /// @param _pool Pool address
@@ -45,6 +51,8 @@ interface ICurveMetaRegistry {
     /// @dev For metapools, these are the wrapped coin addresses
     /// @param _pool Pool address
     /// @return List of balances
-    function get_balances(address _pool) external view returns (uint256[8] memory);
+    function get_balances(
+        address _pool
+    ) external view returns (uint256[8] memory);
 }
 // slither-disable-end naming-convention

@@ -15,9 +15,13 @@ interface IPoolPositionSlim is IERC20Metadata {
 
     function allBinIds() external view returns (uint128[] memory);
 
-    function binIds(uint256) external view returns (uint128);
+    function binIds(
+        uint256
+    ) external view returns (uint128);
 
-    function ratios(uint256) external view returns (uint128);
+    function ratios(
+        uint256
+    ) external view returns (uint128);
 
     /// @notice tokenId that holds PP assets
     function tokenId() external view returns (uint256);
@@ -31,10 +35,9 @@ interface IPoolPositionSlim is IERC20Metadata {
 
     /// @notice Returns struct array of bin lp amounts that need to be transfered for a mint
     /// @param  binZeroLpAddAmount LP amount of bin[0] to be added
-    function binLpAddAmountRequirement(uint128 binZeroLpAddAmount)
-        external
-        view
-        returns (IPool.RemoveLiquidityParams[] memory params);
+    function binLpAddAmountRequirement(
+        uint128 binZeroLpAddAmount
+    ) external view returns (IPool.RemoveLiquidityParams[] memory params);
 
     /// @notice Burns PoolPosition ERC20 tokens from given account and
     //trasnfers Pool liquidity position to toTokenId

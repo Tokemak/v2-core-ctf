@@ -24,7 +24,9 @@ import { MockERC20 } from "test/mocks/MockERC20.sol";
 import { TestERC20 } from "test/mocks/TestERC20.sol";
 
 contract RootPriceOracleWrapper is RootPriceOracle {
-    constructor(SystemRegistry _systemRegistry) RootPriceOracle(_systemRegistry) { }
+    constructor(
+        SystemRegistry _systemRegistry
+    ) RootPriceOracle(_systemRegistry) { }
 
     function exposeCalculateReservesAndPrice(
         address pool,

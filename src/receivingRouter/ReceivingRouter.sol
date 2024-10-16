@@ -106,7 +106,9 @@ contract ReceivingRouter is CCIPReceiver, SystemComponent, SecurityBase {
     /// @inheritdoc CCIPReceiver
     /// @dev This function can fail if incorrect data comes in on the Any2EVMMessage.data field. Special care
     ///   should be taken care to make sure versions always match
-    function _ccipReceive(Client.Any2EVMMessage memory ccipMessage) internal override {
+    function _ccipReceive(
+        Client.Any2EVMMessage memory ccipMessage
+    ) internal override {
         uint64 sourceChainSelector = ccipMessage.sourceChainSelector;
         bytes memory messageData = ccipMessage.data;
 
@@ -319,7 +321,9 @@ contract ReceivingRouter is CCIPReceiver, SystemComponent, SecurityBase {
 
     /// @notice Returns array of source chain senders
     /// @param sourceChainSelector Selector of the source chain for a sender
-    function getSourceChainSenders(uint64 sourceChainSelector) external view returns (address[] memory senders) {
+    function getSourceChainSenders(
+        uint64 sourceChainSelector
+    ) external view returns (address[] memory senders) {
         senders = new address[](2);
         for (uint256 i = 0; i < 2; ++i) {
             senders[i] = sourceChainSenders[sourceChainSelector][i];
@@ -331,7 +335,9 @@ contract ReceivingRouter is CCIPReceiver, SystemComponent, SecurityBase {
     /// =====================================================
 
     /// @dev Decodes CCUtils.Message struct sent from source chain
-    function decodeMessage(bytes memory encodedMessage) private pure returns (CCUtils.Message memory) {
+    function decodeMessage(
+        bytes memory encodedMessage
+    ) private pure returns (CCUtils.Message memory) {
         return abi.decode(encodedMessage, (CCUtils.Message));
     }
 

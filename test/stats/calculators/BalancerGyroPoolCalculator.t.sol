@@ -97,7 +97,9 @@ contract BalancerGyroPoolCalculatorTest is Test {
         );
     }
 
-    function mockGetInvariantDivActualSupply(uint256 value) internal {
+    function mockGetInvariantDivActualSupply(
+        uint256 value
+    ) internal {
         vm.mockCall(
             mockCbethWethGyroPool,
             abi.encodeWithSelector(IBalancerGyroPool.getInvariantDivActualSupply.selector),
@@ -105,7 +107,9 @@ contract BalancerGyroPoolCalculatorTest is Test {
         );
     }
 
-    function getInitData(address poolAddress) internal pure returns (bytes memory) {
+    function getInitData(
+        address poolAddress
+    ) internal pure returns (bytes memory) {
         return abi.encode(BalancerStablePoolCalculatorBase.InitData({ poolAddress: poolAddress }));
     }
 
@@ -131,7 +135,9 @@ contract BalancerGyroPoolCalculatorTest is Test {
         calculator.initialize(depAprIds, initData);
     }
 
-    function mockPoolId(bytes32 res) internal {
+    function mockPoolId(
+        bytes32 res
+    ) internal {
         vm.mockCall(mockCbethWethGyroPool, abi.encodeWithSelector(IBalancerPool.getPoolId.selector), abi.encode(res));
     }
 
@@ -278,7 +284,9 @@ contract TestOnChainDataBalancerGyroPoolCalculator is Test {
     TestBalancerCalculator private calculator;
     address internal constant GYRO_WSTETH_CBETH_POOL = 0xF7A826D47c8E02835D94fb0Aa40F0cC9505cb134;
 
-    function getInitData(address poolAddress) internal pure returns (bytes memory) {
+    function getInitData(
+        address poolAddress
+    ) internal pure returns (bytes memory) {
         return abi.encode(BalancerStablePoolCalculatorBase.InitData({ poolAddress: poolAddress }));
     }
 

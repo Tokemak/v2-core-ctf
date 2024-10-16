@@ -107,7 +107,9 @@ contract MessageProxyTests is Test, SystemRegistryMocks, AccessControllerMocks {
         return keccak256(encodedMsg);
     }
 
-    function _mockRouterGetFeeAll(uint256 fee) internal {
+    function _mockRouterGetFeeAll(
+        uint256 fee
+    ) internal {
         vm.mockCall(address(_routerClient), abi.encodeWithSelector(IRouterClient.getFee.selector), abi.encode(fee));
     }
 
@@ -129,7 +131,9 @@ contract MessageProxyTests is Test, SystemRegistryMocks, AccessControllerMocks {
         );
     }
 
-    function _mockRouterCcipSendAll(bytes32 resultingMessageId) internal {
+    function _mockRouterCcipSendAll(
+        bytes32 resultingMessageId
+    ) internal {
         vm.mockCall(
             address(_routerClient),
             abi.encodeWithSelector(IRouterClient.ccipSend.selector),

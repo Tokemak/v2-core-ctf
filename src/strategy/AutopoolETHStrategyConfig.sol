@@ -87,7 +87,9 @@ library AutopoolETHStrategyConfig {
 
     // slither-disable-start cyclomatic-complexity
 
-    function validate(StrategyConfig memory config) internal pure {
+    function validate(
+        StrategyConfig memory config
+    ) internal pure {
         // Swap Cost Offset Config
 
         if (
@@ -231,7 +233,9 @@ library AutopoolETHStrategyConfig {
     }
 
     // Checks to make sure that there are no zero address gaps in hooks array
-    function _validateHooks(address[5] memory hooks) private pure {
+    function _validateHooks(
+        address[5] memory hooks
+    ) private pure {
         // slither-disable-next-line uninitialized-local
         bool zeroAddressReached;
         for (uint256 i = 0; i < 5; ++i) {

@@ -30,16 +30,22 @@ interface IRewards {
     /// @notice Check the amount an account has already claimed
     /// @param account Account to check
     /// @return Amount already claimed
-    function claimedAmounts(address account) external view returns (uint256);
+    function claimedAmounts(
+        address account
+    ) external view returns (uint256);
 
     /// @notice Get the amount that is claimable based on the provided payload
     /// @param recipient Published rewards payload
     /// @return Amount claimable if the payload is signed
-    function getClaimableAmount(Recipient calldata recipient) external view returns (uint256);
+    function getClaimableAmount(
+        Recipient calldata recipient
+    ) external view returns (uint256);
 
     /// @notice Change the signer used to validate payloads
     /// @param newSigner The new address that will be signing rewards payloads
-    function setSigner(address newSigner) external;
+    function setSigner(
+        address newSigner
+    ) external;
 
     /// @notice Claim your rewards
     /// @param recipient Published rewards payload
@@ -58,5 +64,7 @@ interface IRewards {
     /// @notice Generate the hash of the payload
     /// @param recipient Published rewards payload
     /// @return Hash of the payload
-    function genHash(Recipient memory recipient) external view returns (bytes32);
+    function genHash(
+        Recipient memory recipient
+    ) external view returns (bytes32);
 }

@@ -6,7 +6,9 @@ import { LSTCalculatorBase } from "src/stats/calculators/base/LSTCalculatorBase.
 import { ISystemRegistry } from "src/interfaces/ISystemRegistry.sol";
 
 contract PxEthLSTCalculator is LSTCalculatorBase {
-    constructor(ISystemRegistry _systemRegistry) LSTCalculatorBase(_systemRegistry) { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) LSTCalculatorBase(_systemRegistry) { }
 
     /// @inheritdoc LSTCalculatorBase
     function calculateEthPerToken() public pure override returns (uint256) {

@@ -159,7 +159,9 @@ contract CurveIntegrationTest is LiquidationRowTest {
         destinationTemplateRegistry.register(dvTypes, dvAddresses);
     }
 
-    function runScenario(CurvePoolInfo memory poolInfo) public {
+    function runScenario(
+        CurvePoolInfo memory poolInfo
+    ) public {
         address underlyer = poolInfo.curveLpToken;
         testIncentiveCalculator = new TestIncentiveCalculator();
         testIncentiveCalculator.setLpToken(underlyer);
@@ -382,7 +384,9 @@ contract BalancerAuraDestinationVaultIntegrationTest is LiquidationRowTest {
         destinationTemplateRegistry.register(dvTypes, dvAddresses);
     }
 
-    function runScenario(BalancerPoolInfo memory poolInfo) public {
+    function runScenario(
+        BalancerPoolInfo memory poolInfo
+    ) public {
         address underlyer = poolInfo.balancerLpToken;
         testIncentiveCalculator = new TestIncentiveCalculator();
         testIncentiveCalculator.setLpToken(address(underlyer));

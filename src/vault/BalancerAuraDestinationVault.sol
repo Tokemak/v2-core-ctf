@@ -185,7 +185,9 @@ contract BalancerAuraDestinationVault is DestinationVault {
     }
 
     /// @inheritdoc DestinationVault
-    function _onDeposit(uint256 amount) internal virtual override {
+    function _onDeposit(
+        uint256 amount
+    ) internal virtual override {
         // We should verify if pool tokens didn't change before staking to make sure we're staking for the same tokens
         // slither-disable-next-line unused-return
         (IERC20[] memory queriedPoolTokens,) = BalancerUtilities._getPoolTokens(balancerVault, balancerPool);
@@ -206,7 +208,9 @@ contract BalancerAuraDestinationVault is DestinationVault {
     }
 
     /// @inheritdoc DestinationVault
-    function _ensureLocalUnderlyingBalance(uint256 amount) internal virtual override {
+    function _ensureLocalUnderlyingBalance(
+        uint256 amount
+    ) internal virtual override {
         AuraStaking.withdrawStake(balancerPool, auraStaking, amount);
     }
 
@@ -216,12 +220,9 @@ contract BalancerAuraDestinationVault is DestinationVault {
     }
 
     /// @inheritdoc DestinationVault
-    function _burnUnderlyer(uint256 underlyerAmount)
-        internal
-        virtual
-        override
-        returns (address[] memory tokens, uint256[] memory amounts)
-    {
+    function _burnUnderlyer(
+        uint256 underlyerAmount
+    ) internal virtual override returns (address[] memory tokens, uint256[] memory amounts) {
         // Min amounts are intentionally 0. This fn is only called during a
         // user initiated withdrawal where they've accounted for slippage
         // at the router or otherwise
@@ -236,7 +237,9 @@ contract BalancerAuraDestinationVault is DestinationVault {
         return balancerPool;
     }
 
-    function _validateCalculator(address incentiveCalculator) internal view override {
+    function _validateCalculator(
+        address incentiveCalculator
+    ) internal view override {
         address calcLp = IncentiveCalculatorBase(incentiveCalculator).lpToken();
         address calcPool = IncentiveCalculatorBase(incentiveCalculator).pool();
 

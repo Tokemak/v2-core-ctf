@@ -24,14 +24,18 @@ abstract contract ERC4626Prop is Test {
 
     // asset
     // "MUST NOT revert."
-    function prop_asset(address caller) public {
+    function prop_asset(
+        address caller
+    ) public {
         vm.prank(caller);
         IERC4626(_vault_).asset();
     }
 
     // totalAssets
     // "MUST NOT revert."
-    function prop_totalAssets(address caller) public {
+    function prop_totalAssets(
+        address caller
+    ) public {
         vm.prank(caller);
         IERC4626(_vault_).totalAssets();
     }
@@ -357,43 +361,63 @@ abstract contract ERC4626Prop is Test {
     //
     // utils
     //
-    function vault_convertToShares(uint256 assets) internal returns (uint256) {
+    function vault_convertToShares(
+        uint256 assets
+    ) internal returns (uint256) {
         return _call_vault(abi.encodeWithSelector(IERC4626.convertToShares.selector, assets));
     }
 
-    function vault_convertToAssets(uint256 shares) internal returns (uint256) {
+    function vault_convertToAssets(
+        uint256 shares
+    ) internal returns (uint256) {
         return _call_vault(abi.encodeWithSelector(IERC4626.convertToAssets.selector, shares));
     }
 
-    function vault_maxDeposit(address receiver) internal returns (uint256) {
+    function vault_maxDeposit(
+        address receiver
+    ) internal returns (uint256) {
         return _call_vault(abi.encodeWithSelector(IERC4626.maxDeposit.selector, receiver));
     }
 
-    function vault_maxMint(address receiver) internal returns (uint256) {
+    function vault_maxMint(
+        address receiver
+    ) internal returns (uint256) {
         return _call_vault(abi.encodeWithSelector(IERC4626.maxMint.selector, receiver));
     }
 
-    function vault_maxWithdraw(address owner) internal returns (uint256) {
+    function vault_maxWithdraw(
+        address owner
+    ) internal returns (uint256) {
         return _call_vault(abi.encodeWithSelector(IERC4626.maxWithdraw.selector, owner));
     }
 
-    function vault_maxRedeem(address owner) internal returns (uint256) {
+    function vault_maxRedeem(
+        address owner
+    ) internal returns (uint256) {
         return _call_vault(abi.encodeWithSelector(IERC4626.maxRedeem.selector, owner));
     }
 
-    function vault_previewDeposit(uint256 assets) internal returns (uint256) {
+    function vault_previewDeposit(
+        uint256 assets
+    ) internal returns (uint256) {
         return _call_vault(abi.encodeWithSelector(IERC4626.previewDeposit.selector, assets));
     }
 
-    function vault_previewMint(uint256 shares) internal returns (uint256) {
+    function vault_previewMint(
+        uint256 shares
+    ) internal returns (uint256) {
         return _call_vault(abi.encodeWithSelector(IERC4626.previewMint.selector, shares));
     }
 
-    function vault_previewWithdraw(uint256 assets) internal returns (uint256) {
+    function vault_previewWithdraw(
+        uint256 assets
+    ) internal returns (uint256) {
         return _call_vault(abi.encodeWithSelector(IERC4626.previewWithdraw.selector, assets));
     }
 
-    function vault_previewRedeem(uint256 shares) internal returns (uint256) {
+    function vault_previewRedeem(
+        uint256 shares
+    ) internal returns (uint256) {
         return _call_vault(abi.encodeWithSelector(IERC4626.previewRedeem.selector, shares));
     }
 
@@ -413,7 +437,9 @@ abstract contract ERC4626Prop is Test {
         return _call_vault(abi.encodeWithSelector(IERC4626.redeem.selector, shares, receiver, owner));
     }
 
-    function _call_vault(bytes memory data) internal returns (uint256) {
+    function _call_vault(
+        bytes memory data
+    ) internal returns (uint256) {
         (bool success, bytes memory returnData) = _vault_.call(data);
         if (success) return abi.decode(returnData, (uint256));
         vm.assume(false);

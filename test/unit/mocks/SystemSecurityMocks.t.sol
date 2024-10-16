@@ -10,11 +10,15 @@ import { ISystemSecurity } from "src/interfaces/security/ISystemSecurity.sol";
 contract SystemSecurityMocks {
     Vm private vm;
 
-    constructor(Vm _vm) {
+    constructor(
+        Vm _vm
+    ) {
         vm = _vm;
     }
 
-    function _mockSysSecurityInit(ISystemSecurity systemSecurity) internal {
+    function _mockSysSecurityInit(
+        ISystemSecurity systemSecurity
+    ) internal {
         _mockSysSecurityNavOpsInProgress(systemSecurity, 0);
         _mockSysSecurityIsSystemPaused(systemSecurity, false);
 

@@ -497,23 +497,33 @@ contract CalculatorsDeploy is Script, Calculators {
         );
     }
 
-    function _deployCurveV1NoRebaseConvexCalculators(CurveNoRebasingConvexSetup memory args) private {
+    function _deployCurveV1NoRebaseConvexCalculators(
+        CurveNoRebasingConvexSetup memory args
+    ) private {
         _deployCurveNoRebasingConvexCalculators(constants, args, curveNRTemplateId, convexTemplateId);
     }
 
-    function _deployCurveV1RebaseLockedConvexCalculators(CurveRebasingConvexSetup memory args) private {
+    function _deployCurveV1RebaseLockedConvexCalculators(
+        CurveRebasingConvexSetup memory args
+    ) private {
         _deployCurveRebasingConvexCalculators(constants, args, curveRLockedTemplateId, convexTemplateId);
     }
 
-    function _deployBalancerMetaAuraCalc(BalancerAuraDestCalcSetup memory args) private {
+    function _deployBalancerMetaAuraCalc(
+        BalancerAuraDestCalcSetup memory args
+    ) private {
         _deployBalancerMetaStableAuraCalculators(constants, args, balMetaTemplateId, auraTemplateId);
     }
 
-    function _deployBalancerCompAuraCalc(BalancerAuraDestCalcSetup memory args) private {
+    function _deployBalancerCompAuraCalc(
+        BalancerAuraDestCalcSetup memory args
+    ) private {
         _deployBalancerCompStableAuraCalculators(constants, args, balCompTemplateId, auraTemplateId);
     }
 
-    function _deployBalancerGyroAuraCalc(BalancerAuraDestCalcSetup memory args) private {
+    function _deployBalancerGyroAuraCalc(
+        BalancerAuraDestCalcSetup memory args
+    ) private {
         _deployBalancerGyroAuraCalculators(constants, args, balGyroTemplateId, auraTemplateId);
     }
 

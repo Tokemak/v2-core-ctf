@@ -55,7 +55,9 @@ abstract contract MainRewarder is AbstractRewarder, IMainRewarder, ReentrancyGua
     }
 
     /// @inheritdoc IMainRewarder
-    function addExtraReward(address reward) external hasRole(rewardRole) {
+    function addExtraReward(
+        address reward
+    ) external hasRole(rewardRole) {
         if (!allowExtraRewards) {
             revert ExtraRewardsNotAllowed();
         }
@@ -72,7 +74,9 @@ abstract contract MainRewarder is AbstractRewarder, IMainRewarder, ReentrancyGua
     }
 
     /// @inheritdoc IMainRewarder
-    function getExtraRewarder(uint256 index) external view returns (IExtraRewarder rewarder) {
+    function getExtraRewarder(
+        uint256 index
+    ) external view returns (IExtraRewarder rewarder) {
         return IExtraRewarder(_extraRewards.at(index));
     }
 
@@ -134,7 +138,9 @@ abstract contract MainRewarder is AbstractRewarder, IMainRewarder, ReentrancyGua
     }
 
     /// @inheritdoc IBaseRewarder
-    function balanceOf(address account) public view override(AbstractRewarder, IBaseRewarder) returns (uint256) {
+    function balanceOf(
+        address account
+    ) public view override(AbstractRewarder, IBaseRewarder) returns (uint256) {
         return _balances[account];
     }
 

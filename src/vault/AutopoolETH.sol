@@ -184,7 +184,9 @@ contract AutopoolETH is ISystemComponent, Initializable, IAutopool, IStrategy, S
 
     /// @notice Reverts if nav/share decreases during a deposit/mint/withdraw/redeem
     /// @dev Increases are allowed. Ignored when supply is 0
-    modifier noNavPerShareDecrease(TotalAssetPurpose purpose) {
+    modifier noNavPerShareDecrease(
+        TotalAssetPurpose purpose
+    ) {
         (uint256 oldNav, uint256 startingTotalSupply) = _snapStartNav(purpose);
         _;
         _ensureNoNavPerShareDecrease(oldNav, startingTotalSupply, purpose);
@@ -391,44 +393,58 @@ contract AutopoolETH is ISystemComponent, Initializable, IAutopool, IStrategy, S
 
     /// @notice Enable or disable the high water mark on the rebalance fee
     /// @dev Will revert if set to the same value
-    function setRebalanceFeeHighWaterMarkEnabled(bool enabled) external hasRole(Roles.AUTO_POOL_FEE_UPDATER) {
+    function setRebalanceFeeHighWaterMarkEnabled(
+        bool enabled
+    ) external hasRole(Roles.AUTO_POOL_FEE_UPDATER) {
         AutopoolFees.setRebalanceFeeHighWaterMarkEnabled(_feeSettings, enabled);
     }
 
     /// @notice Set the fee that will be taken when profit is realized
     /// @dev Resets the high water to current value
     /// @param fee Percent. 100% == 10000
-    function setStreamingFeeBps(uint256 fee) external nonReentrant hasRole(Roles.AUTO_POOL_FEE_UPDATER) {
+    function setStreamingFeeBps(
+        uint256 fee
+    ) external nonReentrant hasRole(Roles.AUTO_POOL_FEE_UPDATER) {
         AutopoolFees.setStreamingFeeBps(_feeSettings, fee, oldestDebtReporting(), _debtReportQueue.size);
     }
 
     /// @notice Set the periodic fee taken.
     /// @dev Depending on time until next fee take, may update periodicFeeBps directly or queue fee.
     /// @param fee Fee to update periodic fee to.
-    function setPeriodicFeeBps(uint256 fee) external hasRole(Roles.AUTO_POOL_PERIODIC_FEE_UPDATER) {
+    function setPeriodicFeeBps(
+        uint256 fee
+    ) external hasRole(Roles.AUTO_POOL_PERIODIC_FEE_UPDATER) {
         AutopoolFees.setPeriodicFeeBps(_feeSettings, fee, oldestDebtReporting(), _debtReportQueue.size);
     }
 
     /// @notice Set the address that will receive fees
     /// @param newFeeSink Address that will receive fees
-    function setFeeSink(address newFeeSink) external hasRole(Roles.AUTO_POOL_FEE_UPDATER) {
+    function setFeeSink(
+        address newFeeSink
+    ) external hasRole(Roles.AUTO_POOL_FEE_UPDATER) {
         AutopoolFees.setFeeSink(_feeSettings, newFeeSink);
     }
 
     /// @notice Sets the address that will receive periodic fees.
     /// @dev Zero address allowable.  Disables fees.
     /// @param newPeriodicFeeSink New periodic fee address.
-    function setPeriodicFeeSink(address newPeriodicFeeSink) external hasRole(Roles.AUTO_POOL_PERIODIC_FEE_UPDATER) {
+    function setPeriodicFeeSink(
+        address newPeriodicFeeSink
+    ) external hasRole(Roles.AUTO_POOL_PERIODIC_FEE_UPDATER) {
         AutopoolFees.setPeriodicFeeSink(_feeSettings, newPeriodicFeeSink);
     }
 
-    function setProfitUnlockPeriod(uint48 newUnlockPeriodSeconds) external hasRole(Roles.AUTO_POOL_MANAGER) {
+    function setProfitUnlockPeriod(
+        uint48 newUnlockPeriodSeconds
+    ) external hasRole(Roles.AUTO_POOL_MANAGER) {
         AutopoolFees.setProfitUnlockPeriod(_profitUnlockSettings, _tokenData, newUnlockPeriodSeconds);
     }
 
     /// @notice Set the rewarder contract used by the vault.
     /// @param _rewarder Address of new rewarder.
-    function setRewarder(address _rewarder) external {
+    function setRewarder(
+        address _rewarder
+    ) external {
         // Factory needs to be able to call for vault creation.
         if (msg.sender != factory && !_hasRole(Roles.AUTO_POOL_REWARD_MANAGER, msg.sender)) {
             revert Errors.AccessDenied();
@@ -458,7 +474,9 @@ contract AutopoolETH is ISystemComponent, Initializable, IAutopool, IStrategy, S
     }
 
     /// @inheritdoc IAutopool
-    function isPastRewarder(address _pastRewarder) external view returns (bool) {
+    function isPastRewarder(
+        address _pastRewarder
+    ) external view returns (bool) {
         return _pastRewarders.contains(_pastRewarder);
     }
 
@@ -532,7 +550,9 @@ contract AutopoolETH is ISystemComponent, Initializable, IAutopool, IStrategy, S
     /// usage
     /// @dev Value changes based on purpose. Global is an avg. Deposit is valued higher. Withdraw is valued lower.
     /// @param purpose The calculation the total assets will be used in
-    function totalAssets(TotalAssetPurpose purpose) public view returns (uint256) {
+    function totalAssets(
+        TotalAssetPurpose purpose
+    ) public view returns (uint256) {
         return Autopool4626.totalAssets(_assetBreakdown, purpose);
     }
 
@@ -542,7 +562,9 @@ contract AutopoolETH is ISystemComponent, Initializable, IAutopool, IStrategy, S
 
     /// @notice Returns the amount of shares that the Vault would exchange for the amount of assets provided,
     /// in an ideal scenario where all the conditions are met
-    function convertToShares(uint256 assets) public view virtual returns (uint256 shares) {
+    function convertToShares(
+        uint256 assets
+    ) public view virtual returns (uint256 shares) {
         shares = convertToShares(assets, totalAssets(TotalAssetPurpose.Global), totalSupply(), Math.Rounding.Down);
     }
 
@@ -561,7 +583,9 @@ contract AutopoolETH is ISystemComponent, Initializable, IAutopool, IStrategy, S
     /// @notice Returns the amount of assets that the Vault would exchange for the amount of shares provided, in an
     /// ideal
     /// scenario where all the conditions are met.
-    function convertToAssets(uint256 shares) external view virtual returns (uint256 assets) {
+    function convertToAssets(
+        uint256 shares
+    ) external view virtual returns (uint256 assets) {
         assets = convertToAssets(shares, totalAssets(TotalAssetPurpose.Global), totalSupply(), Math.Rounding.Down);
     }
 
@@ -591,13 +615,17 @@ contract AutopoolETH is ISystemComponent, Initializable, IAutopool, IStrategy, S
 
     /// @notice Returns the amount of tokens owned by account.
     /// @dev Subtracts any unlocked profit shares that will be burned when account is the Vault itself
-    function balanceOf(address account) public view override(IERC20) returns (uint256) {
+    function balanceOf(
+        address account
+    ) public view override(IERC20) returns (uint256) {
         return Autopool4626.balanceOf(_tokenData, _profitUnlockSettings, account);
     }
 
     /// @notice Returns the amount of tokens owned by wallet.
     /// @dev Does not subtract any unlocked profit shares that should be burned when wallet is the Vault itself
-    function balanceOfActual(address account) public view returns (uint256) {
+    function balanceOfActual(
+        address account
+    ) public view returns (uint256) {
         return _tokenData.balances[account];
     }
 
@@ -625,7 +653,9 @@ contract AutopoolETH is ISystemComponent, Initializable, IAutopool, IStrategy, S
     }
 
     /// @notice Returns the next unused nonce for an address.
-    function nonces(address owner) public view virtual returns (uint256) {
+    function nonces(
+        address owner
+    ) public view virtual returns (uint256) {
         return _tokenData.nonces[owner];
     }
 
@@ -660,7 +690,9 @@ contract AutopoolETH is ISystemComponent, Initializable, IAutopool, IStrategy, S
 
     /// @notice Returns the maximum amount of the underlying asset that can be
     /// deposited into the Vault for the receiver, through a deposit call
-    function maxDeposit(address wallet) public virtual override returns (uint256 maxAssets) {
+    function maxDeposit(
+        address wallet
+    ) public virtual override returns (uint256 maxAssets) {
         maxAssets = _maxDeposit(wallet, _totalAssetsTimeChecked(TotalAssetPurpose.Deposit));
     }
 
@@ -670,7 +702,9 @@ contract AutopoolETH is ISystemComponent, Initializable, IAutopool, IStrategy, S
     }
 
     /// @notice Simulate the effects of the deposit at the current block, given current on-chain conditions.
-    function previewDeposit(uint256 assets) public virtual returns (uint256 shares) {
+    function previewDeposit(
+        uint256 assets
+    ) public virtual returns (uint256 shares) {
         shares = convertToShares(
             assets, _totalAssetsTimeChecked(TotalAssetPurpose.Deposit), totalSupply(), Math.Rounding.Down
         );
@@ -678,7 +712,9 @@ contract AutopoolETH is ISystemComponent, Initializable, IAutopool, IStrategy, S
 
     /// @notice Returns the maximum amount of the Vault shares that
     /// can be minted for the receiver, through a mint call.
-    function maxMint(address wallet) public virtual override returns (uint256 maxShares) {
+    function maxMint(
+        address wallet
+    ) public virtual override returns (uint256 maxShares) {
         maxShares = Autopool4626.maxMint(
             _tokenData, _profitUnlockSettings, _debtReportQueue, _destinationInfo, wallet, paused(), _shutdown
         );
@@ -686,7 +722,9 @@ contract AutopoolETH is ISystemComponent, Initializable, IAutopool, IStrategy, S
 
     /// @notice Returns the maximum amount of the underlying asset that can
     /// be withdrawn from the owner balance in the Vault, through a withdraw call
-    function maxWithdraw(address owner) public virtual returns (uint256 maxAssets) {
+    function maxWithdraw(
+        address owner
+    ) public virtual returns (uint256 maxAssets) {
         uint256 ownerShareBalance = balanceOf(owner);
         uint256 taChecked = _totalAssetsTimeChecked(TotalAssetPurpose.Withdraw);
 
@@ -710,7 +748,9 @@ contract AutopoolETH is ISystemComponent, Initializable, IAutopool, IStrategy, S
 
     /// @notice Returns the maximum amount of Vault shares that can be redeemed
     /// from the owner balance in the Vault, through a redeem call
-    function maxRedeem(address owner) public virtual returns (uint256 maxShares) {
+    function maxRedeem(
+        address owner
+    ) public virtual returns (uint256 maxShares) {
         maxShares = _maxRedeem(owner, _totalAssetsTimeChecked(TotalAssetPurpose.Withdraw));
     }
 
@@ -722,19 +762,25 @@ contract AutopoolETH is ISystemComponent, Initializable, IAutopool, IStrategy, S
         }
     }
 
-    function _totalAssetsTimeChecked(TotalAssetPurpose purpose) private returns (uint256) {
+    function _totalAssetsTimeChecked(
+        TotalAssetPurpose purpose
+    ) private returns (uint256) {
         return AutopoolDebt.totalAssetsTimeChecked(_debtReportQueue, _destinationInfo, purpose);
     }
 
     /// @notice Simulate the effects of a mint at the current block, given current on-chain conditions
-    function previewMint(uint256 shares) public virtual returns (uint256 assets) {
+    function previewMint(
+        uint256 shares
+    ) public virtual returns (uint256 assets) {
         uint256 ta = _totalAssetsTimeChecked(TotalAssetPurpose.Deposit);
         assets = convertToAssets(shares, ta, totalSupply(), Math.Rounding.Up);
         Errors.verifyNotZero(assets, "assets");
     }
 
     /// @notice Simulate the effects of their withdrawal at the current block, given current on-chain conditions.
-    function previewWithdraw(uint256 assets) public virtual returns (uint256 shares) {
+    function previewWithdraw(
+        uint256 assets
+    ) public virtual returns (uint256 shares) {
         // slither-disable-next-line unused-return
         (, shares) = AutopoolDebt.preview(
             true,
@@ -748,7 +794,9 @@ contract AutopoolETH is ISystemComponent, Initializable, IAutopool, IStrategy, S
     }
 
     /// @notice Simulate the effects of their redemption at the current block, given current on-chain conditions.
-    function previewRedeem(uint256 shares) public virtual override returns (uint256 assets) {
+    function previewRedeem(
+        uint256 shares
+    ) public virtual override returns (uint256 assets) {
         // These values are not needed until the recursive call, gas savings.
         uint256 applicableTotalAssets = 0;
         uint256 convertedAssets = 0;
@@ -783,7 +831,9 @@ contract AutopoolETH is ISystemComponent, Initializable, IAutopool, IStrategy, S
     }
 
     /// @inheritdoc IAutopool
-    function shutdown(VaultShutdownStatus reason) external hasRole(Roles.AUTO_POOL_MANAGER) {
+    function shutdown(
+        VaultShutdownStatus reason
+    ) external hasRole(Roles.AUTO_POOL_MANAGER) {
         if (reason == VaultShutdownStatus.Active) {
             revert InvalidShutdownStatus(reason);
         }
@@ -800,12 +850,9 @@ contract AutopoolETH is ISystemComponent, Initializable, IAutopool, IStrategy, S
         );
     }
 
-    function updateDebtReporting(uint256 numToProcess)
-        external
-        nonReentrant
-        hasRole(Roles.AUTO_POOL_REPORTING_EXECUTOR)
-        trackNavOps
-    {
+    function updateDebtReporting(
+        uint256 numToProcess
+    ) external nonReentrant hasRole(Roles.AUTO_POOL_REPORTING_EXECUTOR) trackNavOps {
         // Persist our change in idle and debt
         uint256 startingIdle = _assetBreakdown.totalIdle;
         uint256 startingDebt = _assetBreakdown.totalDebt;
@@ -877,15 +924,21 @@ contract AutopoolETH is ISystemComponent, Initializable, IAutopool, IStrategy, S
     }
 
     /// @inheritdoc IAutopool
-    function isDestinationRegistered(address destination) external view returns (bool) {
+    function isDestinationRegistered(
+        address destination
+    ) external view returns (bool) {
         return _destinations.contains(destination);
     }
 
-    function addDestinations(address[] calldata destinations) public hasRole(Roles.AUTO_POOL_DESTINATION_UPDATER) {
+    function addDestinations(
+        address[] calldata destinations
+    ) public hasRole(Roles.AUTO_POOL_DESTINATION_UPDATER) {
         AutopoolDestinations.addDestinations(_removalQueue, _destinations, destinations, _systemRegistry);
     }
 
-    function removeDestinations(address[] calldata destinations) public hasRole(Roles.AUTO_POOL_DESTINATION_UPDATER) {
+    function removeDestinations(
+        address[] calldata destinations
+    ) public hasRole(Roles.AUTO_POOL_DESTINATION_UPDATER) {
         AutopoolDestinations.removeDestinations(_removalQueue, _destinations, destinations);
     }
 
@@ -894,7 +947,9 @@ contract AutopoolETH is ISystemComponent, Initializable, IAutopool, IStrategy, S
     }
 
     /// @inheritdoc IAutopool
-    function getDestinationInfo(address destVault) external view returns (AutopoolDebt.DestinationInfo memory) {
+    function getDestinationInfo(
+        address destVault
+    ) external view returns (AutopoolDebt.DestinationInfo memory) {
         return _destinationInfo[destVault];
     }
 
@@ -977,7 +1032,9 @@ contract AutopoolETH is ISystemComponent, Initializable, IAutopool, IStrategy, S
     }
 
     /// @inheritdoc IAutopool
-    function isDestinationQueuedForRemoval(address dest) external view returns (bool) {
+    function isDestinationQueuedForRemoval(
+        address dest
+    ) external view returns (bool) {
         return _removalQueue.contains(dest);
     }
 
@@ -992,11 +1049,9 @@ contract AutopoolETH is ISystemComponent, Initializable, IAutopool, IStrategy, S
         }
     }
 
-    function _snapStartNav(TotalAssetPurpose purpose)
-        private
-        view
-        returns (uint256 oldNav, uint256 startingTotalSupply)
-    {
+    function _snapStartNav(
+        TotalAssetPurpose purpose
+    ) private view returns (uint256 oldNav, uint256 startingTotalSupply) {
         startingTotalSupply = totalSupply();
         // slither-disable-next-line incorrect-equality
         if (startingTotalSupply == 0) {

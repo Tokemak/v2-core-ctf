@@ -9,7 +9,9 @@ import { Vm } from "forge-std/Vm.sol";
 contract DestinationVaultMocks {
     Vm private vm;
 
-    constructor(Vm _vm) {
+    constructor(
+        Vm _vm
+    ) {
         vm = _vm;
     }
 

@@ -7,7 +7,9 @@ import { IOEth } from "src/interfaces/external/origin/IOEth.sol";
 import { LSTCalculatorBase } from "src/stats/calculators/base/LSTCalculatorBase.sol";
 
 contract OethLSTCalculator is LSTCalculatorBase {
-    constructor(ISystemRegistry _systemRegistry) LSTCalculatorBase(_systemRegistry) { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) LSTCalculatorBase(_systemRegistry) { }
 
     /// @inheritdoc LSTCalculatorBase
     function calculateEthPerToken() public view override returns (uint256) {

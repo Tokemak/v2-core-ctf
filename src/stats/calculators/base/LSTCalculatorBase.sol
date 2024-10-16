@@ -78,7 +78,9 @@ abstract contract LSTCalculatorBase is ILSTStats, BaseStatsCalculator {
 
     event DestinationMessageSendSet(bool destinationMessageSend);
 
-    constructor(ISystemRegistry _systemRegistry) BaseStatsCalculator(_systemRegistry) { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) BaseStatsCalculator(_systemRegistry) { }
 
     /// @inheritdoc IStatsCalculator
     function initialize(bytes32[] calldata, bytes memory initData) public virtual override initializer {
@@ -194,7 +196,9 @@ abstract contract LSTCalculatorBase is ILSTStats, BaseStatsCalculator {
         });
     }
 
-    function calculateDiscount(uint256 backing) private returns (int256) {
+    function calculateDiscount(
+        uint256 backing
+    ) private returns (int256) {
         IRootPriceOracle pricer = systemRegistry.rootPriceOracle();
 
         // slither-disable-next-line reentrancy-benign
@@ -238,7 +242,9 @@ abstract contract LSTCalculatorBase is ILSTStats, BaseStatsCalculator {
         }
     }
 
-    function updateDiscountHistory(uint256 backing) internal {
+    function updateDiscountHistory(
+        uint256 backing
+    ) internal {
         // reduce precision from 18 to 7 to reduce costs
         int256 discount = calculateDiscount(backing) / 1e11;
         uint24 trackedDiscount;

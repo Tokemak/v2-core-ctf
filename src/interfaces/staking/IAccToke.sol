@@ -18,7 +18,9 @@ interface IAccToke {
         uint256 points;
     }
 
-    function getLockups(address user) external view returns (Lockup[] memory);
+    function getLockups(
+        address user
+    ) external view returns (Lockup[] memory);
     function toke() external view returns (IERC20Metadata);
 
     ///////////////////////////////////////////////////////////////////
@@ -99,7 +101,9 @@ interface IAccToke {
      * @notice Collect staked TOKE for a lockup and any earned rewards.
      * @param lockupIds the id of the lockup to unstake
      */
-    function unstake(uint256[] memory lockupIds) external;
+    function unstake(
+        uint256[] memory lockupIds
+    ) external;
 
     /**
      * @notice Collect staked TOKE for a lockup and any earned rewards.
@@ -137,7 +141,9 @@ interface IAccToke {
 
     /// @notice Rewards claimed by a specific wallet
     /// @param user Address of the wallet to check
-    function rewardsClaimed(address user) external returns (uint256);
+    function rewardsClaimed(
+        address user
+    ) external returns (uint256);
 
     /**
      * @notice Preview the number of points that would be returned for the
@@ -154,7 +160,9 @@ interface IAccToke {
     function previewRewards() external view returns (uint256);
 
     /// @notice Preview the reward amount a specified wallet can claim
-    function previewRewards(address user) external view returns (uint256);
+    function previewRewards(
+        address user
+    ) external view returns (uint256);
 
     /// @notice Claim rewards for the caller
     function collectRewards() external returns (uint256);
@@ -163,5 +171,7 @@ interface IAccToke {
     function collectRewards(address user, address recipient) external returns (uint256);
 
     /// @notice Check if amount can be staked
-    function isStakeableAmount(uint256 amount) external pure returns (bool);
+    function isStakeableAmount(
+        uint256 amount
+    ) external pure returns (bool);
 }

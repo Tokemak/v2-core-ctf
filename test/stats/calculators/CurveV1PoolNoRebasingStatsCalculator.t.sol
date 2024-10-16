@@ -372,7 +372,9 @@ contract CurveV1PoolNoRebasingStatsCalculatorTest is Test {
         vm.mockCall(stats, abi.encodeWithSelector(IStatsCalculator.getAddressId.selector), abi.encode(res));
     }
 
-    function mockVirtualPrice(uint256 virtualPrice) internal {
+    function mockVirtualPrice(
+        uint256 virtualPrice
+    ) internal {
         vm.mockCall(
             RETH_WSTETH_CURVE_POOL,
             abi.encodeWithSelector(ICurveV1StableSwap.get_virtual_price.selector),
@@ -402,7 +404,9 @@ contract CurveV1PoolNoRebasingStatsCalculatorTest is Test {
         vm.mockCall(stats, abi.encodeWithSelector(ILSTStats.current.selector), abi.encode(res));
     }
 
-    function getInitData(address poolAddress) internal pure returns (bytes memory) {
+    function getInitData(
+        address poolAddress
+    ) internal pure returns (bytes memory) {
         return abi.encode(CurvePoolNoRebasingCalculatorBase.InitData({ poolAddress: poolAddress }));
     }
 

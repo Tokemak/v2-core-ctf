@@ -28,12 +28,9 @@ contract CurveNGConvexDestinationVault is CurveConvexDestinationVault {
     }
 
     /// @inheritdoc DestinationVault
-    function _burnUnderlyer(uint256 underlyerAmount)
-        internal
-        virtual
-        override
-        returns (address[] memory tokens, uint256[] memory amounts)
-    {
+    function _burnUnderlyer(
+        uint256 underlyerAmount
+    ) internal virtual override returns (address[] memory tokens, uint256[] memory amounts) {
         // re: minAmount == 0, this call is only made during a user initiated withdraw where slippage is
         // controlled for at the router
 

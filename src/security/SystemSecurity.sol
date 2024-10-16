@@ -33,10 +33,9 @@ abstract contract SystemSecurity is SystemComponent, SecurityBase, ISystemSecuri
         _;
     }
 
-    constructor(ISystemRegistry _systemRegistry)
-        SystemComponent(_systemRegistry)
-        SecurityBase(address(_systemRegistry.accessController()))
-    { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) SystemComponent(_systemRegistry) SecurityBase(address(_systemRegistry.accessController())) { }
 
     /// @inheritdoc ISystemSecurity
     /// @notice Enters a NAV/share changing operation from an Autopool

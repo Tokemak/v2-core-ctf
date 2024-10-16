@@ -16,7 +16,9 @@ import { AutopilotRouterUsage } from "test/echidna/fuzz/vault/router/AutopilotRo
 contract UsageTest is AutopilotRouterUsage {
     Vm private _vm;
 
-    constructor(Vm vm) AutopilotRouterUsage() {
+    constructor(
+        Vm vm
+    ) AutopilotRouterUsage() {
         _vm = vm;
     }
 
@@ -44,7 +46,9 @@ contract UsageTest is AutopilotRouterUsage {
         return address(_weth);
     }
 
-    function _startPrank(address user) internal override {
+    function _startPrank(
+        address user
+    ) internal override {
         _vm.startPrank(user);
     }
 
@@ -56,7 +60,9 @@ contract UsageTest is AutopilotRouterUsage {
         return _toke;
     }
 
-    function resolveUserFromSeed(uint256 userSeed) public returns (address) {
+    function resolveUserFromSeed(
+        uint256 userSeed
+    ) public returns (address) {
         return _resolveUserFromSeed(userSeed);
     }
 }

@@ -33,7 +33,9 @@ contract PufEthLRTCalculator is LSTCalculatorBase {
     /// Functions - Constructor/Init
     /// =====================================================
 
-    constructor(ISystemRegistry _systemRegistry) LSTCalculatorBase(_systemRegistry) { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) LSTCalculatorBase(_systemRegistry) { }
 
     function initialize(bytes32[] calldata dependentCalcIds, bytes memory initData) public virtual override {
         PufEthInitData memory decodedInitData = abi.decode(initData, (PufEthInitData));
@@ -50,7 +52,9 @@ contract PufEthLRTCalculator is LSTCalculatorBase {
     /// @notice Sets the new PufEthVault
     /// @dev Requires STATS_GENERAL_MANAGER role
     /// @param newPufferVault Address of the new Puffer Vault
-    function setPufEthVault(address newPufferVault) external hasRole(Roles.STATS_GENERAL_MANAGER) {
+    function setPufEthVault(
+        address newPufferVault
+    ) external hasRole(Roles.STATS_GENERAL_MANAGER) {
         _setPufEthVault(newPufferVault);
     }
 
@@ -73,7 +77,9 @@ contract PufEthLRTCalculator is LSTCalculatorBase {
     /// Private Helpers
     /// =====================================================
 
-    function _setPufEthVault(address _pufferVault) private {
+    function _setPufEthVault(
+        address _pufferVault
+    ) private {
         Errors.verifyNotZero(_pufferVault, "_pufferVault");
 
         pufferVault = IPufferVault(_pufferVault);

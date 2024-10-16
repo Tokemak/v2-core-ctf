@@ -39,7 +39,9 @@ contract BalancerGyroscopeEthOracleTestsBase is Test {
         oracle = new BalancerGyroscopeEthOracle(systemRegistry, VAULT);
     }
 
-    function generateSystemRegistry(address rootOracle) internal returns (ISystemRegistry) {
+    function generateSystemRegistry(
+        address rootOracle
+    ) internal returns (ISystemRegistry) {
         address registry = vm.addr(327_849);
         vm.mockCall(registry, abi.encodeWithSelector(ISystemRegistry.rootPriceOracle.selector), abi.encode(rootOracle));
         return ISystemRegistry(registry);
@@ -87,11 +89,9 @@ contract BalancerGyroscopeEthOracleTestsBase is Test {
     }
 
     /// @dev Get tokens in pool from vault.  Tokens sorted, this returns them in order.
-    function _getTokensAndBalances(address pool)
-        internal
-        view
-        returns (IERC20[] memory tokens, uint256[] memory balances)
-    {
+    function _getTokensAndBalances(
+        address pool
+    ) internal view returns (IERC20[] memory tokens, uint256[] memory balances) {
         (tokens, balances,) = VAULT.getPoolTokens(IBasePool(pool).getPoolId());
     }
 

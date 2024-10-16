@@ -33,26 +33,34 @@ library Stats {
     /// @notice Generate an id for a stat calc representing a base ERC20
     /// @dev For rETH/stETH/cbETH etc. Do not use for pools, LP tokens, staking platforms.
     /// @param tokenAddress address of the token
-    function generateRawTokenIdentifier(address tokenAddress) internal pure returns (bytes32) {
+    function generateRawTokenIdentifier(
+        address tokenAddress
+    ) internal pure returns (bytes32) {
         return keccak256(abi.encode("erc20", tokenAddress));
     }
 
     /// @notice Generate an aprId for a curve pool
     /// @param poolAddress address of the curve pool
-    function generateCurvePoolIdentifier(address poolAddress) internal pure returns (bytes32) {
+    function generateCurvePoolIdentifier(
+        address poolAddress
+    ) internal pure returns (bytes32) {
         return keccak256(abi.encode("curve", poolAddress));
     }
 
     /// @notice Generate an aprId for a balancer pool
     /// @param poolAddress address of the balancer pool
-    function generateBalancerPoolIdentifier(address poolAddress) internal pure returns (bytes32) {
+    function generateBalancerPoolIdentifier(
+        address poolAddress
+    ) internal pure returns (bytes32) {
         return keccak256(abi.encode("balancer", poolAddress));
     }
 
     //slither-disable-start dead-code
     /// @notice Generate an aprId for a proxy lst calc
     /// @param tokenAddress address of token
-    function generateProxyIdentifier(address tokenAddress) internal pure returns (bytes32) {
+    function generateProxyIdentifier(
+        address tokenAddress
+    ) internal pure returns (bytes32) {
         return keccak256(abi.encode("proxy", tokenAddress));
     }
     //slither-disable-end dead-code

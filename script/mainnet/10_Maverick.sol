@@ -171,7 +171,9 @@ contract Maverick is Script {
         return addr;
     }
 
-    function setupMaverickDestinationVault(MaverickSetup memory args) internal {
+    function setupMaverickDestinationVault(
+        MaverickSetup memory args
+    ) internal {
         MaverickDestinationVault.InitParams memory initParams = MaverickDestinationVault.InitParams({
             maverickRouter: args.mavRouter,
             maverickBoostedPosition: args.mavBoostedPosition,

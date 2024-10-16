@@ -48,7 +48,9 @@ contract MaverickDexCalculator is IDexLSTStats, BaseStatsCalculator {
     error DependentAprIdsNot2();
     error BoostedPositionPoolDoesNotMatchInitPool();
 
-    constructor(ISystemRegistry _systemRegistry) BaseStatsCalculator(_systemRegistry) { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) BaseStatsCalculator(_systemRegistry) { }
 
     function initialize(bytes32[] calldata dependentAprIds, bytes calldata initData) external override initializer {
         InitData memory decodedInitData = abi.decode(initData, (InitData));

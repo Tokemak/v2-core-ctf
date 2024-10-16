@@ -115,7 +115,9 @@ contract StakingTest is BaseTest {
         assertFalse(accToke.isStakeableAmount(MAX_STAKE_AMOUNT + 1));
     }
 
-    function testStakingAndUnstaking(uint256 amount) public {
+    function testStakingAndUnstaking(
+        uint256 amount
+    ) public {
         _checkFuzz(amount);
 
         prepareFunds(address(this), amount);
@@ -155,7 +157,9 @@ contract StakingTest is BaseTest {
         assertEq(accToke.balanceOf(address(this)), 0);
     }
 
-    function testStakingAndUnstakingNotByUser(uint256 amount) public {
+    function testStakingAndUnstakingNotByUser(
+        uint256 amount
+    ) public {
         _checkFuzz(amount);
 
         prepareFunds(address(this), amount);
@@ -207,7 +211,9 @@ contract StakingTest is BaseTest {
         assertEq(accToke.balanceOf(address(this)), 0);
     }
 
-    function testMultipleStakingAndUnstaking(uint256 amount) public {
+    function testMultipleStakingAndUnstaking(
+        uint256 amount
+    ) public {
         _checkFuzz(amount);
         vm.assume(amount >= 40_000);
 
@@ -265,7 +271,9 @@ contract StakingTest is BaseTest {
         assertEq(lockup.amount, 0, "Lockup amount incorrect");
     }
 
-    function testStakingMultipleTimePeriods(uint256 amount) public {
+    function testStakingMultipleTimePeriods(
+        uint256 amount
+    ) public {
         _checkFuzz(amount);
         prepareFunds(address(this), amount * 2);
 
@@ -315,7 +323,9 @@ contract StakingTest is BaseTest {
         assertEq(weth.balanceOf(address(accToke)), accTokeBefore + stakeAmount);
     }
 
-    function testExtend(uint256 amount) public {
+    function testExtend(
+        uint256 amount
+    ) public {
         _checkFuzz(amount);
         prepareFunds(address(this), amount);
 
@@ -339,7 +349,9 @@ contract StakingTest is BaseTest {
         assert(lockup.points > pointsBefore);
     }
 
-    function testMultipleExtend(uint256 amount) public {
+    function testMultipleExtend(
+        uint256 amount
+    ) public {
         _checkFuzz(amount);
 
         vm.assume(amount >= 40_000);
@@ -466,7 +478,9 @@ contract StakingTest is BaseTest {
     /* 									Rewards										*/
     /* **************************************************************************** */
 
-    function test_StakingRewards_SingleUser_OneStake(uint256 amount) public {
+    function test_StakingRewards_SingleUser_OneStake(
+        uint256 amount
+    ) public {
         _checkFuzz(amount);
 
         prepareFunds(address(this), amount);
@@ -492,7 +506,9 @@ contract StakingTest is BaseTest {
         assertApproxEqRel(accToke.rewardsClaimed(address(this)), amount, TOLERANCE);
     }
 
-    function test_StakingRewards_SingleUser_OneStakeClaimRewardsOnBehalfOfUser(uint256 amount) public {
+    function test_StakingRewards_SingleUser_OneStakeClaimRewardsOnBehalfOfUser(
+        uint256 amount
+    ) public {
         _checkFuzz(amount);
 
         prepareFunds(address(this), amount);
@@ -538,7 +554,9 @@ contract StakingTest is BaseTest {
         accToke.collectRewards(user, address(0));
     }
 
-    function test_StakingRewards_SingleUser_MultipleStakes(uint256 amount) public {
+    function test_StakingRewards_SingleUser_MultipleStakes(
+        uint256 amount
+    ) public {
         _checkFuzz(amount);
 
         prepareFunds(address(this), amount * 2); // "*2" in order to account for reward topping up
@@ -571,7 +589,9 @@ contract StakingTest is BaseTest {
         );
     }
 
-    function test_StakingRewards_MultiUser(uint256 amount) public {
+    function test_StakingRewards_MultiUser(
+        uint256 amount
+    ) public {
         _checkFuzz(amount);
 
         prepareFunds(address(this), amount * 3); // "*3" in order to account for reward topping up
@@ -765,7 +785,9 @@ contract StakingTest is BaseTest {
     /* 						Rewards helper methods									*/
 
     // @dev Top off rewards to make sure there is enough to claim
-    function topOffRewards(uint256 _amount) private {
+    function topOffRewards(
+        uint256 _amount
+    ) private {
         vm.assume(_amount < MAX_REWARD_ADD);
 
         // get some weth if not enough to top off rewards
@@ -784,7 +806,9 @@ contract StakingTest is BaseTest {
         assertEq(weth.balanceOf(address(accToke)), wethStakingBalanceBefore + _amount);
     }
 
-    function collectRewards(address user) private {
+    function collectRewards(
+        address user
+    ) private {
         vm.startPrank(user);
 
         uint256 claimTargetAmount = accToke.previewRewards();
@@ -796,7 +820,9 @@ contract StakingTest is BaseTest {
         vm.stopPrank();
     }
 
-    function collectRewardsOnBehalfOfUser(address user) private {
+    function collectRewardsOnBehalfOfUser(
+        address user
+    ) private {
         address router = address(systemRegistry.autoPoolRouter());
         vm.startPrank(router);
 
@@ -818,7 +844,9 @@ contract StakingTest is BaseTest {
         weth.approve(address(accToke), amount);
     }
 
-    function _checkFuzz(uint256 amount) private {
+    function _checkFuzz(
+        uint256 amount
+    ) private {
         vm.assume(amount >= 10_000 && amount <= MAX_STAKE_AMOUNT);
 
         // adjust tolerance for small amounts to account for rounding errors

@@ -100,7 +100,9 @@ contract EzethLRTCalculatorTests is Test {
         _calculator.setRenzoRestakeManager(address(1));
     }
 
-    function _setUp(uint256 targetBlock) private returns (EzethLRTCalculator) {
+    function _setUp(
+        uint256 targetBlock
+    ) private returns (EzethLRTCalculator) {
         uint256 mainnetFork = vm.createFork(vm.envString("MAINNET_RPC_URL"), targetBlock);
         vm.selectFork(mainnetFork);
 

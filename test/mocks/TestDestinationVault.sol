@@ -17,13 +17,17 @@ contract TestDestinationVault is DestinationVault {
     uint256 private _externalQueriedBalance;
     address private _pool;
 
-    constructor(ISystemRegistry systemRegistry) DestinationVault(systemRegistry) { }
+    constructor(
+        ISystemRegistry systemRegistry
+    ) DestinationVault(systemRegistry) { }
 
     /*//////////////////////////////////////////////////////////////
                             TEST HELPERS
     //////////////////////////////////////////////////////////////*/
 
-    function setPool(address pool) public {
+    function setPool(
+        address pool
+    ) public {
         _pool = pool;
     }
 
@@ -35,35 +39,51 @@ contract TestDestinationVault is DestinationVault {
         _burn(account, amount);
     }
 
-    function setDebtValue(uint256 val) public {
+    function setDebtValue(
+        uint256 val
+    ) public {
         _debtVault = val;
     }
 
-    function setClaimVested(uint256 val) public {
+    function setClaimVested(
+        uint256 val
+    ) public {
         _claimVested = val;
     }
 
-    function setReclaimDebtAmount(uint256 val) public {
+    function setReclaimDebtAmount(
+        uint256 val
+    ) public {
         _reclaimDebtAmount = val;
     }
 
-    function setReclaimDebtLoss(uint256 val) public {
+    function setReclaimDebtLoss(
+        uint256 val
+    ) public {
         _reclaimDebtLoss = val;
     }
 
-    function setDebt(uint256 val) public {
+    function setDebt(
+        uint256 val
+    ) public {
         //debt = val;
     }
 
-    function setExternalDebtBalance(uint256 val) public {
+    function setExternalDebtBalance(
+        uint256 val
+    ) public {
         _externalDebtBalance = val;
     }
 
-    function setInternalDebtBalance(uint256 val) public {
+    function setInternalDebtBalance(
+        uint256 val
+    ) public {
         _internalDebtBalance = val;
     }
 
-    function setExternalQueriedBalance(uint256 val) public {
+    function setExternalQueriedBalance(
+        uint256 val
+    ) public {
         _externalQueriedBalance = val;
     }
 
@@ -105,12 +125,9 @@ contract TestDestinationVault is DestinationVault {
         amounts[0] = 0;
     }
 
-    function _burnUnderlyer(uint256)
-        internal
-        virtual
-        override
-        returns (address[] memory tokens, uint256[] memory amounts)
-    {
+    function _burnUnderlyer(
+        uint256
+    ) internal virtual override returns (address[] memory tokens, uint256[] memory amounts) {
         tokens = new address[](1);
         tokens[0] = address(0);
 
@@ -118,9 +135,13 @@ contract TestDestinationVault is DestinationVault {
         amounts[0] = 0;
     }
 
-    function _ensureLocalUnderlyingBalance(uint256 amount) internal virtual override { }
+    function _ensureLocalUnderlyingBalance(
+        uint256 amount
+    ) internal virtual override { }
 
-    function _onDeposit(uint256 amount) internal virtual override { }
+    function _onDeposit(
+        uint256 amount
+    ) internal virtual override { }
 
     function _collectRewards() internal override returns (uint256[] memory amounts, address[] memory tokens) { }
 
@@ -142,7 +163,9 @@ contract TestDestinationVault is DestinationVault {
         return _pool;
     }
 
-    function _validateCalculator(address incentiveCalculator) internal view override {
+    function _validateCalculator(
+        address incentiveCalculator
+    ) internal view override {
         address lp = IncentiveCalculatorBase(incentiveCalculator).lpToken();
         if (lp != _underlying) {
             revert InvalidIncentiveCalculator(lp, _underlying, "lp");

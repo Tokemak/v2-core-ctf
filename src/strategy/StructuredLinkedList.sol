@@ -26,7 +26,9 @@ library StructuredLinkedList {
      * @param self stored linked list from contract
      * @return bool true if list exists, false otherwise
      */
-    function listExists(List storage self) public view returns (bool) {
+    function listExists(
+        List storage self
+    ) public view returns (bool) {
         // if the head nodes previous or next pointers both point to itself, then there are no items in the list
         if (self.list[_HEAD][_PREV] != _HEAD || self.list[_HEAD][_NEXT] != _HEAD) {
             return true;
@@ -59,7 +61,9 @@ library StructuredLinkedList {
      * @return uint256
      */
     // slither-disable-next-line dead-code
-    function sizeOf(List storage self) public view returns (uint256) {
+    function sizeOf(
+        List storage self
+    ) public view returns (uint256) {
         return self.size;
     }
 
@@ -68,7 +72,9 @@ library StructuredLinkedList {
      * @param self stored linked list from contract
      * @return uint256 the head of the list
      */
-    function getHead(List storage self) public view returns (uint256) {
+    function getHead(
+        List storage self
+    ) public view returns (uint256) {
         return self.list[_HEAD][_NEXT];
     }
 
@@ -77,7 +83,9 @@ library StructuredLinkedList {
      * @param self stored linked list from contract
      * @return uint256 the head of the list
      */
-    function getTail(List storage self) public view returns (uint256) {
+    function getTail(
+        List storage self
+    ) public view returns (uint256) {
         return self.list[_HEAD][_PREV];
     }
 
@@ -204,7 +212,9 @@ library StructuredLinkedList {
      * @return uint256 the removed node
      */
     // slither-disable-next-line dead-code
-    function popFront(List storage self) public returns (uint256) {
+    function popFront(
+        List storage self
+    ) public returns (uint256) {
         return _pop(self, _NEXT);
     }
 
@@ -214,7 +224,9 @@ library StructuredLinkedList {
      * @return uint256 the removed node
      */
     // slither-disable-next-line dead-code
-    function popBack(List storage self) public returns (uint256) {
+    function popBack(
+        List storage self
+    ) public returns (uint256) {
         return _pop(self, _PREV);
     }
 

@@ -11,11 +11,15 @@ import { IStrategy } from "src/interfaces/strategy/IStrategy.sol";
 contract AutopoolStrategyMocks {
     Vm private vm;
 
-    constructor(Vm _vm) {
+    constructor(
+        Vm _vm
+    ) {
         vm = _vm;
     }
 
-    function _mockSuccessfulRebalance(address strategy) internal {
+    function _mockSuccessfulRebalance(
+        address strategy
+    ) internal {
         _mockVerifyRebalance(strategy, true, "");
         _mockNavUpdate(strategy);
         _mockRebalanceSuccessfullyExecuted(strategy);
@@ -47,17 +51,23 @@ contract AutopoolStrategyMocks {
         );
     }
 
-    function _mockNavUpdate(address strategy) internal {
+    function _mockNavUpdate(
+        address strategy
+    ) internal {
         vm.mockCall(strategy, abi.encodeWithSelector(IAutopoolStrategy.navUpdate.selector), abi.encode(""));
     }
 
-    function _mockRebalanceSuccessfullyExecuted(address strategy) internal {
+    function _mockRebalanceSuccessfullyExecuted(
+        address strategy
+    ) internal {
         vm.mockCall(
             strategy, abi.encodeWithSelector(IAutopoolStrategy.rebalanceSuccessfullyExecuted.selector), abi.encode("")
         );
     }
 
-    function _mockGetRebalanceOutSummaryStats(address strategy) internal {
+    function _mockGetRebalanceOutSummaryStats(
+        address strategy
+    ) internal {
         IStrategy.SummaryStats memory ret;
 
         vm.mockCall(

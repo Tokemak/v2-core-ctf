@@ -10,7 +10,9 @@ import { BaseAdapter, ISyncSwapper } from "src/swapper/adapters/BaseAdapter.sol"
 import { LibAdapter } from "src/libs/LibAdapter.sol";
 
 contract CurveV2Swap is BaseAdapter {
-    constructor(address _router) BaseAdapter(_router) { }
+    constructor(
+        address _router
+    ) BaseAdapter(_router) { }
 
     /// @inheritdoc ISyncSwapper
     function validate(address fromAddress, ISwapRouter.SwapData memory swapData) external view override {

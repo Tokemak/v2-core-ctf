@@ -32,5 +32,7 @@ interface IStatsCalculatorFactory is ISystemComponent {
     /// @notice Remove a registered template
     /// @dev Must have a template set with id or will revert
     /// @param aprTemplateId id of the template
-    function removeTemplate(bytes32 aprTemplateId) external;
+    function removeTemplate(
+        bytes32 aprTemplateId
+    ) external;
 }

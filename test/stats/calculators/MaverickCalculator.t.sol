@@ -118,7 +118,9 @@ contract MaverickCalculatorTest is Test {
         calculator = MaverickCalculator(Clones.clone(address(new MaverickCalculator(ISystemRegistry(systemRegistry)))));
     }
 
-    function mockTotalSupply(uint256 value) public {
+    function mockTotalSupply(
+        uint256 value
+    ) public {
         vm.mockCall(boostedRewarder, abi.encodeWithSelector(IERC20.totalSupply.selector), abi.encode(value));
     }
 
@@ -194,7 +196,9 @@ contract MaverickCalculatorTest is Test {
         mockTotalSupply(totalSupply);
     }
 
-    function setRewardInfoAndTotalSupplyToDefaultWithOneRewardTokenDeleted(uint256 rewardTokenToDeleteIndex) internal {
+    function setRewardInfoAndTotalSupplyToDefaultWithOneRewardTokenDeleted(
+        uint256 rewardTokenToDeleteIndex
+    ) internal {
         (
             uint256 totalSupply,
             uint256[] memory finishAts,
@@ -335,7 +339,9 @@ contract ShouldSnapshot is MaverickCalculatorTest {
     }
 
     /// @dev if rewardRate is 0 don't trigger a new snapshot
-    function testFuzz_ReturnsFalseIfRewardRateIsZeroAnyTimeInFuture(uint256 someSeconds) public {
+    function testFuzz_ReturnsFalseIfRewardRateIsZeroAnyTimeInFuture(
+        uint256 someSeconds
+    ) public {
         vm.assume(someSeconds < 100 days);
 
         create2StepsSnapshot();

@@ -22,8 +22,12 @@ interface IPair is IERC20 {
         bytes32 s
     ) external;
     function swap(uint256 amount0Out, uint256 amount1Out, address to, bytes calldata data) external;
-    function burn(address to) external returns (uint256 amount0, uint256 amount1);
-    function mint(address to) external returns (uint256 liquidity);
+    function burn(
+        address to
+    ) external returns (uint256 amount0, uint256 amount1);
+    function mint(
+        address to
+    ) external returns (uint256 liquidity);
     function getReserves() external view returns (uint256 _reserve0, uint256 _reserve1, uint256 _blockTimestampLast);
     function getAmountOut(uint256, address) external view returns (uint256);
 }

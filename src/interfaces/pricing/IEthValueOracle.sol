@@ -35,7 +35,9 @@ interface IEthValueOracle {
      * @dev Resets to address(0);
      * @param token Token to remove value provider from.
      */
-    function removeValueProvider(address token) external;
+    function removeValueProvider(
+        address token
+    ) external;
 
     /**
      * @notice Returns the price for an amount of token.

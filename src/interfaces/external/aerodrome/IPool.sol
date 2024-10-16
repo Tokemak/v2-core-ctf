@@ -88,16 +88,24 @@ interface IPool is IERC20 {
     function index1() external view returns (uint256);
 
     /// @notice Get an LP's relative index0 to index0
-    function supplyIndex0(address) external view returns (uint256);
+    function supplyIndex0(
+        address
+    ) external view returns (uint256);
 
     /// @notice Get an LP's relative index1 to index1
-    function supplyIndex1(address) external view returns (uint256);
+    function supplyIndex1(
+        address
+    ) external view returns (uint256);
 
     /// @notice Amount of unclaimed, but claimable tokens from fees of token0 for an LP
-    function claimable0(address) external view returns (uint256);
+    function claimable0(
+        address
+    ) external view returns (uint256);
 
     /// @notice Amount of unclaimed, but claimable tokens from fees of token1 for an LP
-    function claimable1(address) external view returns (uint256);
+    function claimable1(
+        address
+    ) external view returns (uint256);
 
     /// @notice Returns the value of K in the Pool, based on its reserves.
     function getK() external returns (uint256);
@@ -105,12 +113,16 @@ interface IPool is IERC20 {
     /// @notice Set pool name
     ///         Only callable by Voter.emergencyCouncil()
     /// @param __name String of new name
-    function setName(string calldata __name) external;
+    function setName(
+        string calldata __name
+    ) external;
 
     /// @notice Set pool symbol
     ///         Only callable by Voter.emergencyCouncil()
     /// @param __symbol String of new symbol
-    function setSymbol(string calldata __symbol) external;
+    function setSymbol(
+        string calldata __symbol
+    ) external;
 
     /// @notice Get the number of observations recorded
     function observationLength() external view returns (uint256);
@@ -168,14 +180,18 @@ interface IPool is IERC20 {
     /// @param to Address to receive token0 and token1 from burning the pool token
     /// @return amount0 Amount of token0 returned
     /// @return amount1 Amount of token1 returned
-    function burn(address to) external returns (uint256 amount0, uint256 amount1);
+    function burn(
+        address to
+    ) external returns (uint256 amount0, uint256 amount1);
 
     /// @notice This low-level function should be called by addLiquidity functions in Router.sol, which performs
     /// important safety checks
     ///         standard uniswap v2 implementation
     /// @param to           Address to receive the minted LP token
     /// @return liquidity   Amount of LP token minted
-    function mint(address to) external returns (uint256 liquidity);
+    function mint(
+        address to
+    ) external returns (uint256 liquidity);
 
     /// @notice Update reserves and, on the first call per block, price accumulators
     /// @return _reserve0 .
@@ -191,7 +207,9 @@ interface IPool is IERC20 {
 
     /// @notice Force balances to match reserves
     /// @param to Address to receive any skimmed rewards
-    function skim(address to) external;
+    function skim(
+        address to
+    ) external;
 
     /// @notice Force reserves to match balances
     function sync() external;

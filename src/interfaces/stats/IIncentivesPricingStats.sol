@@ -32,11 +32,15 @@ interface IIncentivesPricingStats {
     /// @notice add a token to snapshot
     /// @dev the token must be configured in the RootPriceOracle before adding here
     /// @param token the address of the token to add
-    function setRegisteredToken(address token) external;
+    function setRegisteredToken(
+        address token
+    ) external;
 
     /// @notice remove a token from being snapshot
     /// @param token the address of the token to remove
-    function removeRegisteredToken(address token) external;
+    function removeRegisteredToken(
+        address token
+    ) external;
 
     /// @notice get the addresses for all currently registered tokens
     /// @return tokens all of the registered token addresses
@@ -52,7 +56,9 @@ interface IIncentivesPricingStats {
 
     /// @notice update the snapshot for the specified tokens
     /// @dev if a token is not ready to be snapshot the entire call will fail
-    function snapshot(address[] calldata tokensToSnapshot) external;
+    function snapshot(
+        address[] calldata tokensToSnapshot
+    ) external;
 
     /// @notice get the latest prices for an incentive token. Reverts if token is not registered
     /// @return fastPrice the price based on the faster filter (weighted toward current prices)

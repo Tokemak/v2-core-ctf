@@ -15,10 +15,9 @@ contract DestinationRegistry is SystemComponent, SecurityBase, IDestinationRegis
     mapping(bytes32 => IDestinationAdapter) public destinations;
     mapping(bytes32 => bool) public allowedTypes;
 
-    constructor(ISystemRegistry _systemRegistry)
-        SystemComponent(_systemRegistry)
-        SecurityBase(address(_systemRegistry.accessController()))
-    { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) SystemComponent(_systemRegistry) SecurityBase(address(_systemRegistry.accessController())) { }
 
     /// @inheritdoc IDestinationRegistry
     function register(
@@ -70,11 +69,9 @@ contract DestinationRegistry is SystemComponent, SecurityBase, IDestinationRegis
     }
 
     /// @inheritdoc IDestinationRegistry
-    function unregister(bytes32[] calldata destinationTypes)
-        public
-        override
-        hasRole(Roles.DESTINATION_VAULT_REGISTRY_MANAGER)
-    {
+    function unregister(
+        bytes32[] calldata destinationTypes
+    ) public override hasRole(Roles.DESTINATION_VAULT_REGISTRY_MANAGER) {
         for (uint256 i = 0; i < destinationTypes.length; ++i) {
             bytes32 destination = destinationTypes[i];
             Errors.verifyNotZero(address(destinations[destination]), "destAddress");
@@ -85,17 +82,17 @@ contract DestinationRegistry is SystemComponent, SecurityBase, IDestinationRegis
     }
 
     /// @inheritdoc IDestinationRegistry
-    function getAdapter(bytes32 destinationType) public view override returns (IDestinationAdapter target) {
+    function getAdapter(
+        bytes32 destinationType
+    ) public view override returns (IDestinationAdapter target) {
         target = destinations[destinationType];
         Errors.verifyNotZero(address(target), "target");
     }
 
     /// @inheritdoc IDestinationRegistry
-    function addToWhitelist(bytes32[] calldata destinationTypes)
-        external
-        override
-        hasRole(Roles.DESTINATION_VAULT_REGISTRY_MANAGER)
-    {
+    function addToWhitelist(
+        bytes32[] calldata destinationTypes
+    ) external override hasRole(Roles.DESTINATION_VAULT_REGISTRY_MANAGER) {
         for (uint256 i = 0; i < destinationTypes.length; ++i) {
             if (allowedTypes[destinationTypes[i]]) {
                 revert DestinationAlreadySet();
@@ -106,11 +103,9 @@ contract DestinationRegistry is SystemComponent, SecurityBase, IDestinationRegis
     }
 
     /// @inheritdoc IDestinationRegistry
-    function removeFromWhitelist(bytes32[] calldata destinationTypes)
-        external
-        override
-        hasRole(Roles.DESTINATION_VAULT_REGISTRY_MANAGER)
-    {
+    function removeFromWhitelist(
+        bytes32[] calldata destinationTypes
+    ) external override hasRole(Roles.DESTINATION_VAULT_REGISTRY_MANAGER) {
         for (uint256 i = 0; i < destinationTypes.length; ++i) {
             bytes32 destination = destinationTypes[i];
             if (!allowedTypes[destination]) {
@@ -127,7 +122,9 @@ contract DestinationRegistry is SystemComponent, SecurityBase, IDestinationRegis
     }
 
     /// @inheritdoc IDestinationRegistry
-    function isWhitelistedDestination(bytes32 destinationType) public view override returns (bool) {
+    function isWhitelistedDestination(
+        bytes32 destinationType
+    ) public view override returns (bool) {
         return allowedTypes[destinationType];
     }
 }

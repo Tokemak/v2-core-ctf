@@ -7,7 +7,9 @@ import { IStakedTokenV1 } from "src/interfaces/external/coinbase/IStakedTokenV1.
 import { ISystemRegistry } from "src/interfaces/ISystemRegistry.sol";
 
 contract CbethLSTCalculator is LSTCalculatorBase {
-    constructor(ISystemRegistry _systemRegistry) LSTCalculatorBase(_systemRegistry) { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) LSTCalculatorBase(_systemRegistry) { }
 
     /// @inheritdoc LSTCalculatorBase
     function calculateEthPerToken() public view override returns (uint256) {

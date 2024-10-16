@@ -43,7 +43,9 @@ contract EethOracle is SystemComponent, IPriceOracle {
     }
 
     /// @inheritdoc IPriceOracle
-    function getPriceInEth(address token) external returns (uint256 price) {
+    function getPriceInEth(
+        address token
+    ) external returns (uint256 price) {
         // This oracle is only setup to handle a single token but could possibly be
         // configured incorrectly at the root level and receive others to price.
 

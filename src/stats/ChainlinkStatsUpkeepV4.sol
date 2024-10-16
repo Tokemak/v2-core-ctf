@@ -11,11 +11,9 @@ import { IStatsCalculatorRegistry } from "src/interfaces/stats/IStatsCalculatorR
 contract ChainlinkStatsUpkeepV4 is Ownable2Step {
     uint256 public maxPerCheck = 10;
 
-    function checkUpkeep(bytes calldata checkData)
-        external
-        view
-        returns (bool upkeepNeeded, bytes memory performData)
-    {
+    function checkUpkeep(
+        bytes calldata checkData
+    ) external view returns (bool upkeepNeeded, bytes memory performData) {
         ISystemRegistry systemRegistry = ISystemRegistry(abi.decode(checkData, (address)));
         IStatsCalculatorRegistry statsCalcRegistry = systemRegistry.statsCalculatorRegistry();
         // slither-disable-next-line unused-return
@@ -49,7 +47,9 @@ contract ChainlinkStatsUpkeepV4 is Ownable2Step {
         performData = abi.encode(trimmed);
     }
 
-    function performUpkeep(bytes calldata performData) external {
+    function performUpkeep(
+        bytes calldata performData
+    ) external {
         (address[] memory addrs) = abi.decode(performData, (address[]));
         for (uint256 i = 0; i < addrs.length;) {
             IStatsCalculator calc = IStatsCalculator(addrs[i]);
@@ -61,7 +61,9 @@ contract ChainlinkStatsUpkeepV4 is Ownable2Step {
         }
     }
 
-    function setMaxPerCheck(uint256 newValue) external onlyOwner {
+    function setMaxPerCheck(
+        uint256 newValue
+    ) external onlyOwner {
         Errors.verifyNotZero(newValue, "newValue");
 
         // slither-disable-next-line events-maths

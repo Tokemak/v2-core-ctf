@@ -52,7 +52,9 @@ contract MaverickDestinationVault is DestinationVault {
     /// @notice Address Mavericks Position NFT
     IPosition public positionNft;
 
-    constructor(ISystemRegistry sysRegistry) DestinationVault(sysRegistry) { }
+    constructor(
+        ISystemRegistry sysRegistry
+    ) DestinationVault(sysRegistry) { }
 
     /// @inheritdoc DestinationVault
     function initialize(
@@ -162,12 +164,16 @@ contract MaverickDestinationVault is DestinationVault {
     /// @notice Callback during a deposit after the sender has been minted shares (if applicable)
     /// @dev Should be used for staking tokens into protocols, etc
     /// @param amount underlying tokens received
-    function _onDeposit(uint256 amount) internal virtual override {
+    function _onDeposit(
+        uint256 amount
+    ) internal virtual override {
         MaverickStakingAdapter.stakeLPs(maverickRewarder, amount);
     }
 
     /// @inheritdoc DestinationVault
-    function _ensureLocalUnderlyingBalance(uint256 amount) internal virtual override {
+    function _ensureLocalUnderlyingBalance(
+        uint256 amount
+    ) internal virtual override {
         MaverickStakingAdapter.unstakeLPs(maverickRewarder, amount);
     }
 
@@ -177,12 +183,9 @@ contract MaverickDestinationVault is DestinationVault {
     }
 
     /// @inheritdoc DestinationVault
-    function _burnUnderlyer(uint256 underlyerAmount)
-        internal
-        virtual
-        override
-        returns (address[] memory tokens, uint256[] memory amounts)
-    {
+    function _burnUnderlyer(
+        uint256 underlyerAmount
+    ) internal virtual override returns (address[] memory tokens, uint256[] memory amounts) {
         //slither-disable-start similar-names
         (uint256 sellAmountA, uint256 sellAmountB) =
             maverickBoostedPosition.burnFromToAddressAsReserves(address(this), address(this), underlyerAmount);
@@ -203,7 +206,9 @@ contract MaverickDestinationVault is DestinationVault {
         return address(maverickPool);
     }
 
-    function _validateCalculator(address incentiveCalculator) internal view override {
+    function _validateCalculator(
+        address incentiveCalculator
+    ) internal view override {
         address calcLp = IncentiveCalculatorBase(incentiveCalculator).lpToken();
         address calcPool = IncentiveCalculatorBase(incentiveCalculator).pool();
 

@@ -9,19 +9,27 @@ contract MockIncentivePricing is Numbers {
     uint256 private slowPrice;
     uint256 private fastPrice;
 
-    function setSlowPrice(uint256 price) public {
+    function setSlowPrice(
+        uint256 price
+    ) public {
         slowPrice = price;
     }
 
-    function setFastPrice(uint256 price) public {
+    function setFastPrice(
+        uint256 price
+    ) public {
         fastPrice = price;
     }
 
-    function tweakSlowPrice(int8 pct) external {
+    function tweakSlowPrice(
+        int8 pct
+    ) external {
         slowPrice = tweak(slowPrice, pct);
     }
 
-    function tweakFastPrice(int8 pct) external {
+    function tweakFastPrice(
+        int8 pct
+    ) external {
         fastPrice = tweak(fastPrice, pct);
     }
 

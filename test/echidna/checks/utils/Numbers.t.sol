@@ -60,7 +60,9 @@ contract NumbersTests is Test, Numbers {
         assertEq(scaleTo(bin, max), 3);
     }
 
-    function testFuzz_NumbersBucket(uint8 bin) public {
+    function testFuzz_NumbersBucket(
+        uint8 bin
+    ) public {
         uint256 max = 3;
 
         // Max val of 3, 4 buckets

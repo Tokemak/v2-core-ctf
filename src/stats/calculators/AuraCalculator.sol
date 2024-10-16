@@ -44,7 +44,9 @@ contract AuraCalculator is IncentiveCalculatorBase {
     }
 
     /// @dev For the Aura implementation every `rewardToken()` is a stash token
-    function resolveRewardToken(address extraRewarder) public view override returns (address rewardToken) {
+    function resolveRewardToken(
+        address extraRewarder
+    ) public view override returns (address rewardToken) {
         IERC20 rewardTokenErc = IBaseRewardPool(extraRewarder).rewardToken();
         IAuraStashToken stashToken = IAuraStashToken(address(rewardTokenErc));
         if (stashToken.isValid()) {

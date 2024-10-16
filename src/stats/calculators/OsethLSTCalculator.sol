@@ -38,7 +38,9 @@ contract OsethLSTCalculator is LSTCalculatorBase {
     /// Functions - Constructor/Init
     /// =====================================================
 
-    constructor(ISystemRegistry _systemRegistry) LSTCalculatorBase(_systemRegistry) { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) LSTCalculatorBase(_systemRegistry) { }
 
     function initialize(bytes32[] calldata dependentCalcIds, bytes memory initData) public virtual override {
         OsEthInitData memory decodedInitData = abi.decode(initData, (OsEthInitData));
@@ -67,7 +69,9 @@ contract OsethLSTCalculator is LSTCalculatorBase {
     /// @notice Set a new price oracle of the osETH getRate() call
     /// @dev Requires STATS_GENERAL_MANAGER role
     /// @param newOracle Address of the new oracle
-    function setOsEthPriceOracle(address newOracle) external hasRole(Roles.STATS_GENERAL_MANAGER) {
+    function setOsEthPriceOracle(
+        address newOracle
+    ) external hasRole(Roles.STATS_GENERAL_MANAGER) {
         _setOsEthPriceOracle(newOracle);
     }
 
@@ -75,7 +79,9 @@ contract OsethLSTCalculator is LSTCalculatorBase {
     /// Private Helpers
     /// =====================================================
 
-    function _setOsEthPriceOracle(address newOracle) private {
+    function _setOsEthPriceOracle(
+        address newOracle
+    ) private {
         Errors.verifyNotZero(newOracle, "priceOracle");
 
         osEthPriceOracle = IRateProvider(newOracle);

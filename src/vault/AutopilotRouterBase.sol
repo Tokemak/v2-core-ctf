@@ -20,10 +20,9 @@ abstract contract AutopilotRouterBase is
     SystemComponent
 {
     //read weth from system registry and give it to periphery payments
-    constructor(ISystemRegistry _systemRegistry)
-        PeripheryPayments(_systemRegistry.weth())
-        SystemComponent(_systemRegistry)
-    { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) PeripheryPayments(_systemRegistry.weth()) SystemComponent(_systemRegistry) { }
 
     //compose a multi call here
     /// @inheritdoc IAutopilotRouterBase
@@ -121,7 +120,9 @@ abstract contract AutopilotRouterBase is
     }
 
     /// @inheritdoc IAutopilotRouterBase
-    function expiration(uint256 timestamp) external payable override {
+    function expiration(
+        uint256 timestamp
+    ) external payable override {
         // slither-disable-next-line timestamp
         if (timestamp < block.timestamp) {
             revert TimestampTooOld();
@@ -129,7 +130,9 @@ abstract contract AutopilotRouterBase is
     }
 
     // Helper function for repeat functionalities.
-    function _checkVault(address vault) internal view {
+    function _checkVault(
+        address vault
+    ) internal view {
         if (!systemRegistry.autoPoolRegistry().isVault(vault)) {
             revert Errors.ItemNotFound();
         }

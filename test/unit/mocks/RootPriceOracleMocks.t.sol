@@ -10,7 +10,9 @@ import { IRootPriceOracle } from "src/interfaces/oracles/IRootPriceOracle.sol";
 contract RootPriceOracleMocks {
     Vm private vm;
 
-    constructor(Vm _vm) {
+    constructor(
+        Vm _vm
+    ) {
         vm = _vm;
     }
 

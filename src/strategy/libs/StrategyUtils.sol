@@ -6,7 +6,9 @@ pragma solidity 0.8.17;
 library StrategyUtils {
     error CannotConvertUintToInt();
 
-    function convertUintToInt(uint256 value) internal pure returns (int256) {
+    function convertUintToInt(
+        uint256 value
+    ) internal pure returns (int256) {
         // slither-disable-next-line timestamp
         if (value > uint256(type(int256).max)) revert CannotConvertUintToInt();
         return int256(value);

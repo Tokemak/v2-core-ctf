@@ -42,7 +42,9 @@ contract AutopoolFeesAndThresholds is Script {
         constants.sys.accessController.revokeRole(Roles.AUTO_POOL_MANAGER, owner);
     }
 
-    function setValues(AutopoolETH autopool) private {
+    function setValues(
+        AutopoolETH autopool
+    ) private {
         autopool.setFeeSink(FEE_SINK);
         autopool.setPeriodicFeeSink(FEE_SINK);
 

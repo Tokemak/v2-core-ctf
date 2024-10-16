@@ -27,7 +27,9 @@ contract ERC4626RateProvider is IRateProvider {
     IERC4626 public immutable erc4626;
     uint256 public immutable fixedPointOne;
 
-    constructor(IERC4626 _erc4626) {
+    constructor(
+        IERC4626 _erc4626
+    ) {
         erc4626 = _erc4626;
         uint256 underlyingDecimals = IERC4626(_erc4626.asset()).decimals();
         // Balancer does not support tokens with more than 18 decimals so this will never underflow

@@ -105,12 +105,16 @@ interface IVault {
      *
      * For each operation, if the caller is not `sender`, it must be an authorized relayer for them.
      */
-    function manageUserBalance(UserBalanceOp[] memory ops) external payable;
+    function manageUserBalance(
+        UserBalanceOp[] memory ops
+    ) external payable;
 
     /**
      * @dev Returns a Pool's contract address and specialization setting.
      */
-    function getPool(bytes32 poolId) external view returns (address, PoolSpecialization);
+    function getPool(
+        bytes32 poolId
+    ) external view returns (address, PoolSpecialization);
 
     /**
      * @dev Returns a Pool's registered tokens, the total balance for each, and the latest block when *any* of
@@ -126,10 +130,9 @@ interface IVault {
      * the amounts used by joins, exits and swaps. For a detailed breakdown of token balances, use `getPoolTokenInfo`
      * instead.
      */
-    function getPoolTokens(bytes32 poolId)
-        external
-        view
-        returns (IERC20[] memory tokens, uint256[] memory balances, uint256 lastChangeBlock);
+    function getPoolTokens(
+        bytes32 poolId
+    ) external view returns (IERC20[] memory tokens, uint256[] memory balances, uint256 lastChangeBlock);
 
     /**
      * @dev Returns detailed information for a Pool's registered token.

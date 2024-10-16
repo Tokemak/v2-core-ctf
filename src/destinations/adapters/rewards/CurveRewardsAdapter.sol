@@ -20,10 +20,9 @@ library CurveRewardsAdapter {
      * @return amountsClaimed Quantity of reward tokens
      * @return rewardTokens Addresses of claimed reward tokens
      */
-    function claimRewards(address gauge)
-        public
-        returns (uint256[] memory amountsClaimed, address[] memory rewardTokens)
-    {
+    function claimRewards(
+        address gauge
+    ) public returns (uint256[] memory amountsClaimed, address[] memory rewardTokens) {
         Errors.verifyNotZero(gauge, "gauge");
 
         ILiquidityGaugeV2 rewardPool = ILiquidityGaugeV2(gauge);

@@ -20,9 +20,13 @@ interface ICurveV1StableSwap {
 
     function calc_withdraw_one_coin(uint256 token_amount, uint256 i) external returns (uint256);
 
-    function coins(uint256 i) external view returns (address);
+    function coins(
+        uint256 i
+    ) external view returns (address);
 
-    function balanceOf(address account) external returns (uint256);
+    function balanceOf(
+        address account
+    ) external returns (uint256);
 
     function exchange(
         int128 sellTokenIndex,
@@ -37,7 +41,9 @@ interface ICurveV1StableSwap {
 
     function owner() external view returns (address);
 
-    function admin_balances(uint256 i) external view returns (uint256);
+    function admin_balances(
+        uint256 i
+    ) external view returns (uint256);
 
     function get_dy(int128 i, int128 j, uint256 dx) external view returns (uint256);
 

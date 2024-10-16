@@ -169,15 +169,21 @@ contract AerodromeDestinationVaultBaseTest is Test {
         );
     }
 
-    function _approveUnderlyer(address spender) internal {
+    function _approveUnderlyer(
+        address spender
+    ) internal {
         _underlyer.approve(spender, type(uint256).max);
     }
 
-    function _dealLP(address dealTo) internal {
+    function _dealLP(
+        address dealTo
+    ) internal {
         deal(WSTETH_WETH_AERO_BASE, dealTo, 1e18);
     }
 
-    function _runDVDeposit(uint256 amount) internal {
+    function _runDVDeposit(
+        uint256 amount
+    ) internal {
         _dealLP(address(this));
         _mockIsVault();
         _approveUnderlyer(address(_dv));
@@ -641,15 +647,21 @@ contract AerodromeDestinationVaultWrapper is AerodromeDestinationVault {
         address aerodromeVoter
     ) AerodromeDestinationVault(_systemRegistry, aerodromeRouter, aerodromeVoter) { }
 
-    function onDeposit(uint256 amount) public {
+    function onDeposit(
+        uint256 amount
+    ) public {
         _onDeposit(amount);
     }
 
-    function ensureLocalUnderlyingBalance(uint256 amount) public {
+    function ensureLocalUnderlyingBalance(
+        uint256 amount
+    ) public {
         _ensureLocalUnderlyingBalance(amount);
     }
 
-    function burnUnderlyer(uint256 amount) public returns (address[] memory tokens, uint256[] memory amounts) {
+    function burnUnderlyer(
+        uint256 amount
+    ) public returns (address[] memory tokens, uint256[] memory amounts) {
         (tokens, amounts) = _burnUnderlyer(amount);
     }
 }

@@ -18,13 +18,17 @@ contract BaseAsyncSwapper is IAsyncSwapper {
     // solhint-disable-next-line var-name-mixedcase
     address public immutable AGGREGATOR;
 
-    constructor(address aggregator) {
+    constructor(
+        address aggregator
+    ) {
         if (aggregator == address(0)) revert TokenAddressZero();
         AGGREGATOR = aggregator;
     }
 
     /// @inheritdoc IAsyncSwapper
-    function swap(SwapParams memory swapParams) public virtual returns (uint256 buyTokenAmountReceived) {
+    function swap(
+        SwapParams memory swapParams
+    ) public virtual returns (uint256 buyTokenAmountReceived) {
         //slither-disable-start reentrancy-events
         if (swapParams.buyTokenAddress == address(0)) revert TokenAddressZero();
         if (swapParams.sellTokenAddress == address(0)) revert TokenAddressZero();

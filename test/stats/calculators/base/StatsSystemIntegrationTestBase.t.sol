@@ -46,7 +46,9 @@ contract StatsSystemIntegrationTestBase is Test {
     BalancerLPMetaStableEthOracle internal _balancerMetaOracle;
     WstETHEthOracle internal _wstEthOracle;
 
-    function setUp(uint256 forkBlockNumber) internal virtual {
+    function setUp(
+        uint256 forkBlockNumber
+    ) internal virtual {
         vm.createSelectFork(vm.envString("MAINNET_RPC_URL"), forkBlockNumber);
 
         _systemRegistry = new SystemRegistry(TOKE_MAINNET, WETH_MAINNET);

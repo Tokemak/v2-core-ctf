@@ -28,7 +28,9 @@ contract AerodromeStakingDexCalculator is IDexLSTStats, BaseStatsCalculator {
     error ShouldNotSnapshot();
     error DependentAprIdsNotLength2();
 
-    constructor(ISystemRegistry _systemRegistry) BaseStatsCalculator(_systemRegistry) { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) BaseStatsCalculator(_systemRegistry) { }
 
     function initialize(bytes32[] calldata dependentAprIds, bytes calldata initData) external override initializer {
         InitData memory decodedInitData = abi.decode(initData, (InitData));

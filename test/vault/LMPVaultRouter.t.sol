@@ -50,7 +50,9 @@ contract AutopilotRouterWrapper is AutopilotRouter {
 
     event SomethingHappened();
 
-    constructor(ISystemRegistry _systemRegistry) AutopilotRouter(_systemRegistry) { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) AutopilotRouter(_systemRegistry) { }
 
     function doSomethingWrong() public pure {
         revert SomethingWentWrong();
@@ -65,9 +67,13 @@ contract AutopilotRouterWrapper is AutopilotRouter {
 contract SwapperMock is BaseAsyncSwapper, BaseTest {
     error ETHSwapFailed();
 
-    constructor(address _aggregator) BaseAsyncSwapper(_aggregator) { }
+    constructor(
+        address _aggregator
+    ) BaseAsyncSwapper(_aggregator) { }
 
-    function swap(SwapParams memory params) public override returns (uint256 buyTokenAmountReceived) {
+    function swap(
+        SwapParams memory params
+    ) public override returns (uint256 buyTokenAmountReceived) {
         // Mock 1:1 swap
 
         deal(address(this), params.buyAmount);
@@ -80,9 +86,13 @@ contract SwapperMock is BaseAsyncSwapper, BaseTest {
 
 /// @dev Custom mocked swapper for testing to represent a 1:1 swap
 contract TestTokenSwapperMock is BaseAsyncSwapper, BaseTest {
-    constructor(address _aggregator) BaseAsyncSwapper(_aggregator) { }
+    constructor(
+        address _aggregator
+    ) BaseAsyncSwapper(_aggregator) { }
 
-    function swap(SwapParams memory params) public override returns (uint256 buyTokenAmountReceived) {
+    function swap(
+        SwapParams memory params
+    ) public override returns (uint256 buyTokenAmountReceived) {
         // Mock 1:1 swap
         TestERC20(params.buyTokenAddress).mint(address(this), params.sellAmount);
         return params.buyAmount;
@@ -148,7 +158,9 @@ contract AutopilotRouterTest is BaseTest {
         rewards = new Rewards(systemRegistry, IERC20(address(autoPool)), rewardsSigner.addr);
     }
 
-    function _setupVault(bytes memory salt) internal returns (AutopoolETH _autoPool) {
+    function _setupVault(
+        bytes memory salt
+    ) internal returns (AutopoolETH _autoPool) {
         AutopoolETHStrategy stratTemplate = new AutopoolETHStrategy(systemRegistry, stratHelpers.getDefaultConfig());
         autoPoolFactory.addStrategyTemplate(address(stratTemplate));
 
@@ -1572,7 +1584,9 @@ contract AutopilotRouterTest is BaseTest {
     }
 
     // @dev Top off rewards to make sure there is enough to claim
-    function _topOffRewards(uint256 _amount) private {
+    function _topOffRewards(
+        uint256 _amount
+    ) private {
         // get some weth if not enough to top off rewards
         if (weth.balanceOf(address(this)) < _amount) {
             deal(address(weth), address(this), _amount);

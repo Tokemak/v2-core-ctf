@@ -23,16 +23,15 @@ contract BalancerLPComposableStableEthOracle is BalancerBaseOracle {
         return "balCompStable";
     }
 
-    function getTotalSupply_(address lpToken) internal virtual override returns (uint256 totalSupply) {
+    function getTotalSupply_(
+        address lpToken
+    ) internal virtual override returns (uint256 totalSupply) {
         totalSupply = IBalancerComposableStablePool(lpToken).getActualSupply();
     }
 
-    function getPoolTokens_(address pool)
-        internal
-        virtual
-        override
-        returns (IERC20[] memory tokens, uint256[] memory balances)
-    {
+    function getPoolTokens_(
+        address pool
+    ) internal virtual override returns (IERC20[] memory tokens, uint256[] memory balances) {
         (tokens, balances) = BalancerUtilities._getComposablePoolTokensSkipBpt(balancerVault, pool);
     }
 }

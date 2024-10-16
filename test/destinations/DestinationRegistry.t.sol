@@ -498,7 +498,9 @@ contract DestinationRegistryTest is Test {
         assert(destinationIsWhitelisted);
     }
 
-    function _mockCallSystemVerification(address _toCall) internal {
+    function _mockCallSystemVerification(
+        address _toCall
+    ) internal {
         vm.mockCall(_toCall, abi.encodeWithSignature("getSystemRegistry()"), abi.encode(address(systemRegistry)));
     }
 }

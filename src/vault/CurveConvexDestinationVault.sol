@@ -233,12 +233,16 @@ contract CurveConvexDestinationVault is DestinationVault {
     /// @notice Callback during a deposit after the sender has been minted shares (if applicable)
     /// @dev Should be used for staking tokens into protocols, etc
     /// @param amount underlying tokens received
-    function _onDeposit(uint256 amount) internal virtual override {
+    function _onDeposit(
+        uint256 amount
+    ) internal virtual override {
         ConvexStaking.depositAndStake(IConvexBooster(convexBooster), _underlying, convexStaking, convexPoolId, amount);
     }
 
     /// @inheritdoc DestinationVault
-    function _ensureLocalUnderlyingBalance(uint256 amount) internal virtual override {
+    function _ensureLocalUnderlyingBalance(
+        uint256 amount
+    ) internal virtual override {
         ConvexStaking.withdrawStake(_underlying, convexStaking, amount);
     }
 
@@ -250,12 +254,9 @@ contract CurveConvexDestinationVault is DestinationVault {
 
     // slither-disable-start dead-code
     /// @inheritdoc DestinationVault
-    function _burnUnderlyer(uint256 underlyerAmount)
-        internal
-        virtual
-        override
-        returns (address[] memory tokens, uint256[] memory amounts)
-    {
+    function _burnUnderlyer(
+        uint256 underlyerAmount
+    ) internal virtual override returns (address[] memory tokens, uint256[] memory amounts) {
         // We withdraw everything in one coin to ease swapping
         // re: minAmount == 0, this call is only made during a user initiated withdraw where slippage is
         // controlled for at the router
@@ -272,7 +273,9 @@ contract CurveConvexDestinationVault is DestinationVault {
         return curvePool;
     }
 
-    function _validateCalculator(address incentiveCalculator) internal view override {
+    function _validateCalculator(
+        address incentiveCalculator
+    ) internal view override {
         address calcLp = IncentiveCalculatorBase(incentiveCalculator).lpToken();
         address calcPool = IncentiveCalculatorBase(incentiveCalculator).pool();
 

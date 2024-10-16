@@ -10,10 +10,9 @@ interface ICurveResolver {
     /// @return tokens tokens that make up the pool
     /// @return numTokens the number of tokens. tokens are not unwrapped.
     /// @return isStableSwap is this a StableSwap pool. false = CryptoSwap
-    function resolve(address poolAddress)
-        external
-        view
-        returns (address[8] memory tokens, uint256 numTokens, bool isStableSwap);
+    function resolve(
+        address poolAddress
+    ) external view returns (address[8] memory tokens, uint256 numTokens, bool isStableSwap);
 
     /// @notice Resolve details of a Curve pool regardless of type or version
     /// @dev This resolves tokens without unwrapping to underlying in the case of meta pools.
@@ -23,18 +22,21 @@ interface ICurveResolver {
     /// @return numTokens the number of tokens. tokens are not unwrapped
     /// @return lpToken lp token of the pool
     /// @return isStableSwap is this a StableSwap pool. false = CryptoSwap
-    function resolveWithLpToken(address poolAddress)
-        external
-        view
-        returns (address[8] memory tokens, uint256 numTokens, address lpToken, bool isStableSwap);
+    function resolveWithLpToken(
+        address poolAddress
+    ) external view returns (address[8] memory tokens, uint256 numTokens, address lpToken, bool isStableSwap);
 
     /// @notice Get the lp token of a Curve pool
     /// @param poolAddress pool address to lookup
-    function getLpToken(address poolAddress) external view returns (address);
+    function getLpToken(
+        address poolAddress
+    ) external view returns (address);
 
     /// @notice Get the reserves of a Curve pools' tokens
     /// @dev Actual balances length might differ from 8 and should be verified by the caller
     /// @param poolAddress pool address to lookup
     /// @return balances reserves of the pool tokens
-    function getReservesInfo(address poolAddress) external view returns (uint256[8] memory balances);
+    function getReservesInfo(
+        address poolAddress
+    ) external view returns (uint256[8] memory balances);
 }

@@ -2384,10 +2384,9 @@ contract AutopoolETHStrategyTest is Test {
     /* Test Helpers                             */
     /* **************************************** */
 
-    function deployStrategy(AutopoolETHStrategyConfig.StrategyConfig memory cfg)
-        internal
-        returns (AutopoolETHStrategyHarness strat)
-    {
+    function deployStrategy(
+        AutopoolETHStrategyConfig.StrategyConfig memory cfg
+    ) internal returns (AutopoolETHStrategyHarness strat) {
         AutopoolETHStrategyHarness stratHarness =
             new AutopoolETHStrategyHarness(ISystemRegistry(address(systemRegistry)), cfg);
         strat = AutopoolETHStrategyHarness(Clones.clone(address(stratHarness)));
@@ -2420,11 +2419,15 @@ contract AutopoolETHStrategyTest is Test {
         setAutopoolDestinationRegistered(mockOutDest, true);
     }
 
-    function setAutopoolVaultIsShutdown(bool shutdown) private {
+    function setAutopoolVaultIsShutdown(
+        bool shutdown
+    ) private {
         vm.mockCall(mockAutopoolETH, abi.encodeWithSelector(IAutopool.isShutdown.selector), abi.encode(shutdown));
     }
 
-    function setAutopoolVaultBaseAsset(address asset) private {
+    function setAutopoolVaultBaseAsset(
+        address asset
+    ) private {
         vm.mockCall(mockAutopoolETH, abi.encodeWithSelector(IERC4626.asset.selector), abi.encode(asset));
     }
 
@@ -2436,7 +2439,9 @@ contract AutopoolETHStrategyTest is Test {
         );
     }
 
-    function setAutopoolIdle(uint256 amount) private {
+    function setAutopoolIdle(
+        uint256 amount
+    ) private {
         vm.mockCall(
             mockAutopoolETH,
             abi.encodeWithSelector(IAutopool.getAssetBreakdown.selector),
@@ -2450,11 +2455,15 @@ contract AutopoolETHStrategyTest is Test {
         vm.mockCall(mockAutopoolETH, abi.encodeWithSelector(selector, dest), abi.encode(info));
     }
 
-    function setAutopoolTotalAssets(uint256 amount) private {
+    function setAutopoolTotalAssets(
+        uint256 amount
+    ) private {
         vm.mockCall(mockAutopoolETH, abi.encodeWithSelector(IERC4626.totalAssets.selector), abi.encode(amount));
     }
 
-    function setAutopoolSystemRegistry(address _systemRegistry) private {
+    function setAutopoolSystemRegistry(
+        address _systemRegistry
+    ) private {
         vm.mockCall(
             mockAutopoolETH,
             abi.encodeWithSelector(ISystemComponent.getSystemRegistry.selector),
@@ -2617,18 +2626,21 @@ contract AutopoolETHStrategyHarness is AutopoolETHStrategy {
         AutopoolETHStrategyConfig.StrategyConfig memory conf
     ) AutopoolETHStrategy(_systemRegistry, conf) { }
 
-    function init(address autoPool) public {
+    function init(
+        address autoPool
+    ) public {
         _initialize(autoPool);
     }
 
-    function _validateRebalanceParams(IStrategy.RebalanceParams memory params) public view {
+    function _validateRebalanceParams(
+        IStrategy.RebalanceParams memory params
+    ) public view {
         validateRebalanceParams(params);
     }
 
-    function _getRebalanceValueStats(IStrategy.RebalanceParams memory params)
-        public
-        returns (SummaryStats.RebalanceValueStats memory)
-    {
+    function _getRebalanceValueStats(
+        IStrategy.RebalanceParams memory params
+    ) public returns (SummaryStats.RebalanceValueStats memory) {
         return SummaryStats.getRebalanceValueStats(params, address(autoPool));
     }
 
@@ -2636,7 +2648,9 @@ contract AutopoolETHStrategyHarness is AutopoolETHStrategy {
         verifyRebalanceToIdle(params, slippage);
     }
 
-    function _getDestinationTrimAmount(IDestinationVault dest) public returns (uint256) {
+    function _getDestinationTrimAmount(
+        IDestinationVault dest
+    ) public returns (uint256) {
         return getDestinationTrimAmount(dest);
     }
 
@@ -2652,7 +2666,9 @@ contract AutopoolETHStrategyHarness is AutopoolETHStrategy {
         return verifyTrimOperation(params, trimAmount);
     }
 
-    function _setPausedTimestamp(uint40 timestamp) public {
+    function _setPausedTimestamp(
+        uint40 timestamp
+    ) public {
         lastPausedTimestamp = timestamp;
     }
 
@@ -2664,7 +2680,9 @@ contract AutopoolETHStrategyHarness is AutopoolETHStrategy {
         return expiredPauseState();
     }
 
-    function _setLastRebalanceTimestamp(uint40 timestamp) public {
+    function _setLastRebalanceTimestamp(
+        uint40 timestamp
+    ) public {
         lastRebalanceTimestamp = timestamp;
     }
 
@@ -2676,7 +2694,9 @@ contract AutopoolETHStrategyHarness is AutopoolETHStrategy {
         return violationTrackingState;
     }
 
-    function _calculatePriceReturns(IDexLSTStats.DexLSTStatsData memory stats) public view returns (int256[] memory) {
+    function _calculatePriceReturns(
+        IDexLSTStats.DexLSTStatsData memory stats
+    ) public view returns (int256[] memory) {
         return PriceReturn.calculatePriceReturns(stats);
     }
 
@@ -2696,10 +2716,9 @@ contract AutopoolETHStrategyHarness is AutopoolETHStrategy {
         return Incentives.getIncentivePrice(staleDataToleranceInSeconds, pricing, token);
     }
 
-    function _getRebalanceInSummaryStats(IStrategy.RebalanceParams memory rebalanceParams)
-        public
-        returns (IStrategy.SummaryStats memory inSummary)
-    {
+    function _getRebalanceInSummaryStats(
+        IStrategy.RebalanceParams memory rebalanceParams
+    ) public returns (IStrategy.SummaryStats memory inSummary) {
         inSummary = getRebalanceInSummaryStats(rebalanceParams);
     }
 

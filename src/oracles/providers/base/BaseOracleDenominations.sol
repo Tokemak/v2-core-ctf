@@ -27,10 +27,9 @@ abstract contract BaseOracleDenominations is SystemComponent, IPriceOracle, Secu
      */
     address public constant ETH_IN_USD = address(bytes20("ETH_IN_USD"));
 
-    constructor(ISystemRegistry _systemRegistry)
-        SystemComponent(_systemRegistry)
-        SecurityBase(address(_systemRegistry.accessController()))
-    {
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) SystemComponent(_systemRegistry) SecurityBase(address(_systemRegistry.accessController())) {
         Errors.verifyNotZero(address(_systemRegistry.rootPriceOracle()), "rootPriceOracle");
     }
 
@@ -53,7 +52,9 @@ abstract contract BaseOracleDenominations is SystemComponent, IPriceOracle, Secu
      *
      * @param normalizedPrice  Normalized price of asset in USD
      */
-    function _getPriceDenominationUSD(uint256 normalizedPrice) private returns (uint256) {
+    function _getPriceDenominationUSD(
+        uint256 normalizedPrice
+    ) private returns (uint256) {
         uint256 ethInUsd = systemRegistry.rootPriceOracle().getPriceInEth(ETH_IN_USD);
 
         return (normalizedPrice * (10 ** 18) / ethInUsd);

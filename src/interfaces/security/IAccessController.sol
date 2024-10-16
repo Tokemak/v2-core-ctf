@@ -18,5 +18,7 @@ interface IAccessController is IAccessControlEnumerable {
      * @notice Verify if an account is an owner. Reverts if not
      * @param account The account to verify
      */
-    function verifyOwner(address account) external view;
+    function verifyOwner(
+        address account
+    ) external view;
 }

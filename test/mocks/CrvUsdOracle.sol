@@ -38,7 +38,9 @@ contract CrvUsdOracle is SystemComponent {
         ethInUsdPriceFeed = _ethInUsdPriceFeed;
     }
 
-    function getPriceInEth(address) external view returns (uint256) {
+    function getPriceInEth(
+        address
+    ) external view returns (uint256) {
         // Use Curve pool price oracles to get pricing for pool.
         uint256 crvUsdInUsdc = crvUsdUsdcPool.price_oracle();
         uint256 crvUsdInUsdt = crvUsdUsdtPool.price_oracle();

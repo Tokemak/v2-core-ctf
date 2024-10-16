@@ -69,7 +69,9 @@ contract Destinations is Script {
         );
     }
 
-    function setupBalancerAuraDestinationVault(BalancerAuraSetup memory args) internal {
+    function setupBalancerAuraDestinationVault(
+        BalancerAuraSetup memory args
+    ) internal {
         BalancerAuraDestinationVault.InitParams memory initParams = BalancerAuraDestinationVault.InitParams({
             balancerPool: args.balancerPool,
             auraStaking: args.auraStaking,

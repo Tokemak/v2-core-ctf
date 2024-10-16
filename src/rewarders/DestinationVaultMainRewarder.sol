@@ -79,7 +79,9 @@ contract DestinationVaultMainRewarder is MainRewarder {
         _getReward(account, recipient, claimExtras);
     }
 
-    function canTokenBeRecovered(address) public pure override returns (bool) {
+    function canTokenBeRecovered(
+        address
+    ) public pure override returns (bool) {
         return true;
     }
 }

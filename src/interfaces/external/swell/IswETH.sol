@@ -138,7 +138,9 @@ interface IswETH is IERC20 {
      * @dev This method withdraws contract's _token balance to a platform admin
      * @param _token The ERC20 token to withdraw from the contract
      */
-    function withdrawERC20(IERC20 _token) external;
+    function withdrawERC20(
+        IERC20 _token
+    ) external;
 
     /**
      * @dev Returns the ETH reserves that were provided in the most recent call to the reprice function
@@ -206,21 +208,27 @@ interface IswETH is IERC20 {
      * @notice Only a platform admin can call this function.
      * @param _newSwellTreasuryRewardPercentage The new swell treasury reward percentage to set.
      */
-    function setSwellTreasuryRewardPercentage(uint256 _newSwellTreasuryRewardPercentage) external;
+    function setSwellTreasuryRewardPercentage(
+        uint256 _newSwellTreasuryRewardPercentage
+    ) external;
 
     /**
      * @dev Sets the new node operator reward percentage.
      * @notice Only a platform admin can call this function.
      * @param _newNodeOperatorRewardPercentage The new node operator reward percentage to set.
      */
-    function setNodeOperatorRewardPercentage(uint256 _newNodeOperatorRewardPercentage) external;
+    function setNodeOperatorRewardPercentage(
+        uint256 _newNodeOperatorRewardPercentage
+    ) external;
 
     /**
      * @dev Sets the minimum permitted time between successful repricing calls using the block timestamp.
      * @notice Only a platform admin can call this function.
      * @param _minimumRepriceTime The new minimum time between successful repricing calls
      */
-    function setMinimumRepriceTime(uint256 _minimumRepriceTime) external;
+    function setMinimumRepriceTime(
+        uint256 _minimumRepriceTime
+    ) external;
 
     /**
      * @dev Sets the maximum percentage allowable difference in swETH supplied to repricing compared to current swETH
@@ -228,14 +236,18 @@ interface IswETH is IERC20 {
      * @notice Only a platform admin can call this function.
      * @param _maximumRepriceswETHDifferencePercentage The new maximum percentage swETH supply difference allowed.
      */
-    function setMaximumRepriceswETHDifferencePercentage(uint256 _maximumRepriceswETHDifferencePercentage) external;
+    function setMaximumRepriceswETHDifferencePercentage(
+        uint256 _maximumRepriceswETHDifferencePercentage
+    ) external;
 
     /**
      * @dev Sets the maximum percentage allowable difference in swETH to ETH price changes for a repricing call.
      * @notice Only a platform admin can call this function.
      * @param _maximumRepriceDifferencePercentage The new maximum percentage difference in repricing rate.
      */
-    function setMaximumRepriceDifferencePercentage(uint256 _maximumRepriceDifferencePercentage) external;
+    function setMaximumRepriceDifferencePercentage(
+        uint256 _maximumRepriceDifferencePercentage
+    ) external;
 
     /**
      * @dev Deposits ETH into the contract

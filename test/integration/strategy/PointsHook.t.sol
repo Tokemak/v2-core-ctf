@@ -313,7 +313,9 @@ contract PointsHookInt is Test {
     }
 
     /// @notice Used to mock updated ILSTStats.LSTStatsData struct.  Fixes evm reverts in tests
-    function _mockCalculatorHasUpdatedLSTStatsDataStruct(DestinationVault _destVault) internal {
+    function _mockCalculatorHasUpdatedLSTStatsDataStruct(
+        DestinationVault _destVault
+    ) internal {
         address incentiveStats = address(_destVault.getStats());
         address dexStats = address(IncentiveCalculatorBase(incentiveStats).underlyerStats());
         address lstStats = 0x1177b0C6eC38b6A79C06A35321c59C99392FBf57; // stEth calc on mainnet
@@ -427,7 +429,9 @@ contract PointsHookInt is Test {
         );
     }
 
-    function getDefaultConfig(address hook) internal pure returns (AutopoolETHStrategyConfig.StrategyConfig memory) {
+    function getDefaultConfig(
+        address hook
+    ) internal pure returns (AutopoolETHStrategyConfig.StrategyConfig memory) {
         return AutopoolETHStrategyConfig.StrategyConfig({
             swapCostOffset: AutopoolETHStrategyConfig.SwapCostOffsetConfig({
                 initInDays: 28,
@@ -468,7 +472,9 @@ contract PointsHookInt is Test {
         });
     }
 
-    function _setupOracles(SystemRegistry systemRegistry) internal {
+    function _setupOracles(
+        SystemRegistry systemRegistry
+    ) internal {
         RootPriceOracle rootPriceOracle = new RootPriceOracle(systemRegistry);
         systemRegistry.setRootPriceOracle(address(rootPriceOracle));
 
@@ -494,7 +500,9 @@ contract PointsHookInt is Test {
         rootPriceOracle.setSafeSpotPriceThreshold(STETH_MAINNET, 200);
     }
 
-    function _registerBaseTokens(RootPriceOracle rootPriceOracle) internal {
+    function _registerBaseTokens(
+        RootPriceOracle rootPriceOracle
+    ) internal {
         address wstEthOracle = 0xA93F316ef40848AeaFCd23485b6044E7027b5890;
         address ethPegOracle = 0x58374B8fF79f4C40Fb66e7ca8B13A08992125821;
         address chainlinkOracle = 0x70975337525D8D4Cae2deb3Ec896e7f4b9fAaB72;
@@ -508,7 +516,9 @@ contract PointsHookInt is Test {
         rootPriceOracle.registerMapping(CURVE_ETH, IPriceOracle(ethPegOracle));
     }
 
-    function _registerIncentiveTokens(RootPriceOracle rootPriceOracle) internal {
+    function _registerIncentiveTokens(
+        RootPriceOracle rootPriceOracle
+    ) internal {
         address crv = 0xD533a949740bb3306d119CC777fa900bA034cd52;
         address cvx = 0x4e3FBD56CD56c3e72c1403e103b45Db9da5B9D2B;
         address ldo = 0x5A98FcBEA516Cf06857215779Fd812CA3beF1B32;
@@ -589,20 +599,21 @@ contract ValueCheckingStrategy is AutopoolETHStrategy, Test {
         AutopoolETHStrategyConfig.StrategyConfig memory conf
     ) AutopoolETHStrategy(_systemRegistry, conf) { }
 
-    function setCheckInLpPrice(uint256 price) external {
+    function setCheckInLpPrice(
+        uint256 price
+    ) external {
         _checkInLpPrice = price;
     }
 
-    function setCheckOutLpPrice(uint256 price) external {
+    function setCheckOutLpPrice(
+        uint256 price
+    ) external {
         _checkOutLpPrice = price;
     }
 
-    function getRebalanceInSummaryStats(IStrategy.RebalanceParams memory rebalanceParams)
-        internal
-        virtual
-        override
-        returns (IStrategy.SummaryStats memory inSummary)
-    {
+    function getRebalanceInSummaryStats(
+        IStrategy.RebalanceParams memory rebalanceParams
+    ) internal virtual override returns (IStrategy.SummaryStats memory inSummary) {
         inSummary = super.getRebalanceInSummaryStats(rebalanceParams);
 
         if (_checkInLpPrice > 0) {
@@ -612,12 +623,9 @@ contract ValueCheckingStrategy is AutopoolETHStrategy, Test {
         }
     }
 
-    function _getRebalanceOutSummaryStats(IStrategy.RebalanceParams memory rebalanceParams)
-        internal
-        virtual
-        override
-        returns (IStrategy.SummaryStats memory outSummary)
-    {
+    function _getRebalanceOutSummaryStats(
+        IStrategy.RebalanceParams memory rebalanceParams
+    ) internal virtual override returns (IStrategy.SummaryStats memory outSummary) {
         outSummary = super._getRebalanceOutSummaryStats(rebalanceParams);
 
         if (_checkOutLpPrice > 0) {

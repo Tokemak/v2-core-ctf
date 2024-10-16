@@ -87,7 +87,9 @@ contract OEthSetup is Script, Calculators {
         );
     }
 
-    function _deployCurveV1RebaseLockedConvexCalculators(CurveRebasingConvexSetup memory args) private {
+    function _deployCurveV1RebaseLockedConvexCalculators(
+        CurveRebasingConvexSetup memory args
+    ) private {
         _deployCurveRebasingConvexCalculators(constants, args, curveRLockedTemplateId, convexTemplateId);
     }
 

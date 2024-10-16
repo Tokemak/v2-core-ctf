@@ -144,7 +144,9 @@ contract CurveV2CryptoEthOracle is SystemComponent, SecurityBase, ISpotPriceOrac
      * @notice Allows owner of system to unregister curve pool.
      * @param curveLpToken Address of CurveV2 lp token to unregister.
      */
-    function unregister(address curveLpToken) external hasRole(Roles.ORACLE_MANAGER) {
+    function unregister(
+        address curveLpToken
+    ) external hasRole(Roles.ORACLE_MANAGER) {
         Errors.verifyNotZero(curveLpToken, "curveLpToken");
 
         address curvePool = lpTokenToPool[curveLpToken].pool;

@@ -12,7 +12,11 @@ interface IBalancerComposableStablePool {
 
     function getRate() external view returns (uint256);
 
-    function getTokenRate(IERC20 token) external view returns (uint256);
+    function getTokenRate(
+        IERC20 token
+    ) external view returns (uint256);
 
-    function isTokenExemptFromYieldProtocolFee(address token) external view returns (bool);
+    function isTokenExemptFromYieldProtocolFee(
+        address token
+    ) external view returns (bool);
 }

@@ -148,7 +148,9 @@ contract CurveOracleBase is Script {
         }
     }
 
-    function _registerBalancerMeta(BalancerLPComposableStableEthOracle balCompOracle) internal {
+    function _registerBalancerMeta(
+        BalancerLPComposableStableEthOracle balCompOracle
+    ) internal {
         // Register balancer pools
         address balancerWethRethCompStable = 0xC771c1a5905420DAEc317b154EB13e4198BA97D0;
         address balancerCbEthWethCompStable = 0xFb4C2E6E6e27B5b4a07a36360C89EDE29bB3c9B6;
@@ -157,7 +159,9 @@ contract CurveOracleBase is Script {
         _registerPoolMapping(balCompOracle, balancerCbEthWethCompStable, true);
     }
 
-    function _registerChainlinkOracles(ChainlinkOracle chainlinkOracle) internal {
+    function _registerChainlinkOracles(
+        ChainlinkOracle chainlinkOracle
+    ) internal {
         // Chainlink setup
         chainlinkOracle.registerOracle(
             values.tokens.aero,

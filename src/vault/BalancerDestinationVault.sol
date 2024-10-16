@@ -145,12 +145,16 @@ contract BalancerDestinationVault is DestinationVault {
     }
 
     /// @inheritdoc DestinationVault
-    function _onDeposit(uint256 amount) internal virtual override {
+    function _onDeposit(
+        uint256 amount
+    ) internal virtual override {
         // Accept LP tokens and do nothing
     }
 
     /// @inheritdoc DestinationVault
-    function _ensureLocalUnderlyingBalance(uint256 amount) internal virtual override {
+    function _ensureLocalUnderlyingBalance(
+        uint256 amount
+    ) internal virtual override {
         // Do nothing, LP balance exists
     }
 
@@ -160,12 +164,9 @@ contract BalancerDestinationVault is DestinationVault {
     }
 
     /// @inheritdoc DestinationVault
-    function _burnUnderlyer(uint256 underlyerAmount)
-        internal
-        virtual
-        override
-        returns (address[] memory tokens, uint256[] memory amounts)
-    {
+    function _burnUnderlyer(
+        uint256 underlyerAmount
+    ) internal virtual override returns (address[] memory tokens, uint256[] memory amounts) {
         // Min amounts are intentionally 0. This fn is only called during a
         // user initiated withdrawal where they've accounted for slippage
         // at the router or otherwise
@@ -180,7 +181,9 @@ contract BalancerDestinationVault is DestinationVault {
         return balancerPool;
     }
 
-    function _validateCalculator(address incentiveCalculator) internal view override {
+    function _validateCalculator(
+        address incentiveCalculator
+    ) internal view override {
         address calcPool = BalancerStablePoolCalculatorBase(incentiveCalculator).poolAddress();
         // Should be the same because its Balancer, but checking anyways
         if (calcPool != _underlying) {

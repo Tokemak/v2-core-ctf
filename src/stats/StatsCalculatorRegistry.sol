@@ -41,13 +41,14 @@ contract StatsCalculatorRegistry is SystemComponent, IStatsCalculatorRegistry, S
     error OnlyFactory();
     error AlreadyRegistered(bytes32 aprId, address calculator);
 
-    constructor(ISystemRegistry _systemRegistry)
-        SystemComponent(_systemRegistry)
-        SecurityBase(address(_systemRegistry.accessController()))
-    { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) SystemComponent(_systemRegistry) SecurityBase(address(_systemRegistry.accessController())) { }
 
     /// @inheritdoc IStatsCalculatorRegistry
-    function getCalculator(bytes32 aprId) external view returns (IStatsCalculator calculator) {
+    function getCalculator(
+        bytes32 aprId
+    ) external view returns (IStatsCalculator calculator) {
         address calcAddress = calculators[aprId];
         Errors.verifyNotZero(calcAddress, "calcAddress");
 
@@ -64,7 +65,9 @@ contract StatsCalculatorRegistry is SystemComponent, IStatsCalculatorRegistry, S
     }
 
     /// @inheritdoc IStatsCalculatorRegistry
-    function register(address calculator) external onlyFactory {
+    function register(
+        address calculator
+    ) external onlyFactory {
         Errors.verifyNotZero(calculator, "calculator");
 
         bytes32 aprId = IStatsCalculator(calculator).getAprId();
@@ -84,7 +87,9 @@ contract StatsCalculatorRegistry is SystemComponent, IStatsCalculatorRegistry, S
     }
 
     /// @inheritdoc IStatsCalculatorRegistry
-    function removeCalculator(bytes32 aprId) external hasRole(Roles.STATS_CALC_REGISTRY_MANAGER) {
+    function removeCalculator(
+        bytes32 aprId
+    ) external hasRole(Roles.STATS_CALC_REGISTRY_MANAGER) {
         address calcAddress = calculators[aprId];
         if (calcAddress == address(0)) {
             revert Errors.NotRegistered();
@@ -97,7 +102,9 @@ contract StatsCalculatorRegistry is SystemComponent, IStatsCalculatorRegistry, S
     }
 
     /// @inheritdoc IStatsCalculatorRegistry
-    function setCalculatorFactory(address calculatorFactory) external hasRole(Roles.STATS_CALC_REGISTRY_MANAGER) {
+    function setCalculatorFactory(
+        address calculatorFactory
+    ) external hasRole(Roles.STATS_CALC_REGISTRY_MANAGER) {
         Errors.verifyNotZero(address(calculatorFactory), "factory");
         Errors.verifySystemsMatch(address(this), calculatorFactory);
 

@@ -13,9 +13,13 @@ interface IMaverickFeeAprOracle {
 
     /// @notice get the latest feeApr of a boosted position. Will revert if the fee apr was not set or is expired
     /// @param boostedPosition the boosted position address to get the feeApr for
-    function getFeeApr(address boostedPosition) external view returns (uint256 feeApr);
+    function getFeeApr(
+        address boostedPosition
+    ) external view returns (uint256 feeApr);
 
     /// @notice Change the latency that is the oldest a feeApr queriedTimestamp can be before reverted
     /// @param _maxFeeAprLatency max time in seconds since a feeApr has been calculated before getFeeApr() reverts
-    function setMaxFeeAprLatency(uint256 _maxFeeAprLatency) external;
+    function setMaxFeeAprLatency(
+        uint256 _maxFeeAprLatency
+    ) external;
 }

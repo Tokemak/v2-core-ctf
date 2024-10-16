@@ -205,11 +205,9 @@ contract MessageProxy is IMessageProxy, SecurityBase, SystemComponent {
     /// @dev Caller must send in ETH to cover router fees. Cannot use contract balance
     /// @dev Excess ETH is not refunded, use getFee() to calculate needed amount
     /// @param args Array of ResendArgsSendingChain structs
-    function resendLastMessage(ResendArgsSendingChain[] memory args)
-        external
-        payable
-        hasRole(Roles.MESSAGE_PROXY_EXECUTOR)
-    {
+    function resendLastMessage(
+        ResendArgsSendingChain[] memory args
+    ) external payable hasRole(Roles.MESSAGE_PROXY_EXECUTOR) {
         // Tracking for fee
         uint256 feeLeft = msg.value;
 

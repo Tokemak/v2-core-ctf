@@ -92,7 +92,9 @@ contract SystemRegistryL2Test is Test {
     /* Helpers
     /* ******************************** */
 
-    function mockSystemComponent(address addr) internal {
+    function mockSystemComponent(
+        address addr
+    ) internal {
         vm.mockCall(
             addr, abi.encodeWithSelector(ISystemComponent.getSystemRegistry.selector), abi.encode(_systemRegistryL2)
         );

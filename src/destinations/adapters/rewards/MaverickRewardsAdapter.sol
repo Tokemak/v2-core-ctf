@@ -15,7 +15,9 @@ library MaverickRewardsAdapter {
     /// @param rewarder the Maverick rewarder contract
     /// @return amounts the amount of each token that was claimed
     /// @return tokens the tokens that were claimed
-    function claimRewards(address rewarder) public returns (uint256[] memory, address[] memory) {
+    function claimRewards(
+        address rewarder
+    ) public returns (uint256[] memory, address[] memory) {
         return _claimRewards(rewarder, address(this));
     }
 

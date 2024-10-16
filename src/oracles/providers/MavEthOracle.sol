@@ -43,7 +43,9 @@ contract MavEthOracle is SystemComponent, SecurityBase, ISpotPriceOracle {
     }
 
     /// @notice Gives ability to set PoolInformation
-    function setPoolInformation(address _poolInformation) external hasRole(Roles.ORACLE_MANAGER) {
+    function setPoolInformation(
+        address _poolInformation
+    ) external hasRole(Roles.ORACLE_MANAGER) {
         Errors.verifyNotZero(_poolInformation, "_poolInformation");
         poolInformation = IPoolInformation(_poolInformation);
 

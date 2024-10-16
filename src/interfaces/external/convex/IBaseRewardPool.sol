@@ -17,7 +17,9 @@ interface IBaseRewardPool {
     function pid() external view returns (uint256);
 
     /// @notice The address of the extra rewards token at a given index
-    function extraRewards(uint256 i) external view returns (address);
+    function extraRewards(
+        uint256 i
+    ) external view returns (address);
 
     /// @notice Called by a staker to get their allocated rewards
     function getReward() external returns (bool);
@@ -29,7 +31,9 @@ interface IBaseRewardPool {
     function totalSupply() external view returns (uint256);
 
     /// @notice Get balance of an address
-    function balanceOf(address _account) external view returns (uint256);
+    function balanceOf(
+        address _account
+    ) external view returns (uint256);
 
     /// @notice Withdraw directly to curve LP token
     function withdrawAndUnwrap(uint256 _amount, bool _claim) external returns (bool);

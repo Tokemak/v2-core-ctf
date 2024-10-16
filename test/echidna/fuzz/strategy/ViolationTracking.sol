@@ -14,13 +14,17 @@ contract ViolationTrackingUsage {
     bool internal hasReset = false;
     uint256 internal violationsAdded;
 
-    function insert(bool isViolation) external {
+    function insert(
+        bool isViolation
+    ) external {
         state.insert(isViolation);
         hasReset = false;
         violationsAdded += isViolation ? 1 : 0;
     }
 
-    function addViolations(uint8 x) external {
+    function addViolations(
+        uint8 x
+    ) external {
         for (uint8 i = 0; i < x; i++) {
             state.insert(true);
         }

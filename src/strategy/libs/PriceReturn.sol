@@ -32,7 +32,9 @@ library PriceReturn {
         }
     }
 
-    function calculatePriceReturns(IDexLSTStats.DexLSTStatsData memory stats) external view returns (int256[] memory) {
+    function calculatePriceReturns(
+        IDexLSTStats.DexLSTStatsData memory stats
+    ) external view returns (int256[] memory) {
         IAutopoolStrategy strategy = IAutopoolStrategy(address(this));
 
         ILSTStats.LSTStatsData[] memory lstStatsData = stats.lstStatsData;

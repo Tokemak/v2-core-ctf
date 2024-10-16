@@ -25,10 +25,9 @@ contract AutopoolRegistry is SystemComponent, IAutopoolRegistry, SecurityBase {
     // registry of vaults for a given type
     mapping(bytes32 => EnumerableSet.AddressSet) private _vaultsByType;
 
-    constructor(ISystemRegistry _systemRegistry)
-        SystemComponent(_systemRegistry)
-        SecurityBase(address(_systemRegistry.accessController()))
-    { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) SystemComponent(_systemRegistry) SecurityBase(address(_systemRegistry.accessController())) { }
 
     modifier onlyUpdater() {
         if (!_hasRole(Roles.AUTO_POOL_REGISTRY_UPDATER, msg.sender)) revert Errors.AccessDenied();
@@ -42,7 +41,9 @@ contract AutopoolRegistry is SystemComponent, IAutopoolRegistry, SecurityBase {
     ///////////////////////////////////////////////////////////////////
 
     /// @inheritdoc IAutopoolRegistry
-    function addVault(address vaultAddress) external onlyUpdater {
+    function addVault(
+        address vaultAddress
+    ) external onlyUpdater {
         Errors.verifyNotZero(vaultAddress, "vaultAddress");
 
         IAutopool vault = IAutopool(vaultAddress);
@@ -61,7 +62,9 @@ contract AutopoolRegistry is SystemComponent, IAutopoolRegistry, SecurityBase {
     }
 
     /// @inheritdoc IAutopoolRegistry
-    function removeVault(address vaultAddress) external onlyUpdater {
+    function removeVault(
+        address vaultAddress
+    ) external onlyUpdater {
         Errors.verifyNotZero(vaultAddress, "vaultAddress");
 
         // remove from vaults list
@@ -93,7 +96,9 @@ contract AutopoolRegistry is SystemComponent, IAutopoolRegistry, SecurityBase {
     ///////////////////////////////////////////////////////////////////
 
     /// @inheritdoc IAutopoolRegistry
-    function isVault(address vaultAddress) external view override returns (bool) {
+    function isVault(
+        address vaultAddress
+    ) external view override returns (bool) {
         return _vaults.contains(vaultAddress);
     }
 
@@ -103,12 +108,16 @@ contract AutopoolRegistry is SystemComponent, IAutopoolRegistry, SecurityBase {
     }
 
     /// @inheritdoc IAutopoolRegistry
-    function listVaultsForAsset(address asset) external view returns (address[] memory) {
+    function listVaultsForAsset(
+        address asset
+    ) external view returns (address[] memory) {
         return _vaultsByAsset[asset].values();
     }
 
     /// @inheritdoc IAutopoolRegistry
-    function listVaultsForType(bytes32 _vaultType) external view returns (address[] memory) {
+    function listVaultsForType(
+        bytes32 _vaultType
+    ) external view returns (address[] memory) {
         return _vaultsByType[_vaultType].values();
     }
 }

@@ -37,11 +37,17 @@ interface IAutoPxEth {
 
     function assetsPerShare() external view returns (uint256);
 
-    function balanceOf(address) external view returns (uint256);
+    function balanceOf(
+        address
+    ) external view returns (uint256);
 
-    function convertToAssets(uint256 shares) external view returns (uint256);
+    function convertToAssets(
+        uint256 shares
+    ) external view returns (uint256);
 
-    function convertToShares(uint256 assets) external view returns (uint256);
+    function convertToShares(
+        uint256 assets
+    ) external view returns (uint256);
 
     function decimals() external view returns (uint8);
 
@@ -55,19 +61,29 @@ interface IAutoPxEth {
 
     function lastUpdateTime() external view returns (uint256);
 
-    function maxDeposit(address) external view returns (uint256);
+    function maxDeposit(
+        address
+    ) external view returns (uint256);
 
-    function maxMint(address) external view returns (uint256);
+    function maxMint(
+        address
+    ) external view returns (uint256);
 
-    function maxRedeem(address owner) external view returns (uint256);
+    function maxRedeem(
+        address owner
+    ) external view returns (uint256);
 
-    function maxWithdraw(address owner) external view returns (uint256);
+    function maxWithdraw(
+        address owner
+    ) external view returns (uint256);
 
     function mint(uint256 shares, address receiver) external returns (uint256 assets);
 
     function name() external view returns (string memory);
 
-    function nonces(address) external view returns (uint256);
+    function nonces(
+        address
+    ) external view returns (uint256);
 
     function notifyRewardAmount() external;
 
@@ -93,13 +109,21 @@ interface IAutoPxEth {
 
     function platformFee() external view returns (uint256);
 
-    function previewDeposit(uint256 assets) external view returns (uint256);
+    function previewDeposit(
+        uint256 assets
+    ) external view returns (uint256);
 
-    function previewMint(uint256 shares) external view returns (uint256);
+    function previewMint(
+        uint256 shares
+    ) external view returns (uint256);
 
-    function previewRedeem(uint256 shares) external view returns (uint256);
+    function previewRedeem(
+        uint256 shares
+    ) external view returns (uint256);
 
-    function previewWithdraw(uint256 assets) external view returns (uint256);
+    function previewWithdraw(
+        uint256 assets
+    ) external view returns (uint256);
 
     function redeem(uint256 shares, address receiver, address owner) external returns (uint256 assets);
 
@@ -115,13 +139,21 @@ interface IAutoPxEth {
 
     function rewards() external view returns (uint256);
 
-    function setPirexEth(address _pirexEth) external;
+    function setPirexEth(
+        address _pirexEth
+    ) external;
 
-    function setPlatform(address _platform) external;
+    function setPlatform(
+        address _platform
+    ) external;
 
-    function setPlatformFee(uint256 fee) external;
+    function setPlatformFee(
+        uint256 fee
+    ) external;
 
-    function setWithdrawalPenalty(uint256 penalty) external;
+    function setWithdrawalPenalty(
+        uint256 penalty
+    ) external;
 
     function symbol() external view returns (string memory);
 
@@ -135,7 +167,9 @@ interface IAutoPxEth {
 
     function transferFrom(address from, address to, uint256 amount) external returns (bool);
 
-    function transferOwnership(address newOwner) external;
+    function transferOwnership(
+        address newOwner
+    ) external;
 
     function withdraw(uint256 assets, address receiver, address owner) external returns (uint256 shares);
 

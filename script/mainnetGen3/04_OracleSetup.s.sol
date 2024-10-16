@@ -38,7 +38,9 @@ contract OracleSetup is Script, Oracle {
         vm.stopBroadcast();
     }
 
-    function _configureUniqueLookups(Constants.Values memory constants) internal {
+    function _configureUniqueLookups(
+        Constants.Values memory constants
+    ) internal {
         _registerMapping(constants.sys.rootPriceOracle, constants.sys.subOracles.wstEth, constants.tokens.wstEth, true);
         _registerMapping(constants.sys.rootPriceOracle, constants.sys.subOracles.eEth, constants.tokens.eEth, true);
         _registerMapping(constants.sys.rootPriceOracle, constants.sys.subOracles.ethPegged, constants.tokens.weth, true);
@@ -51,7 +53,9 @@ contract OracleSetup is Script, Oracle {
         constants.sys.rootPriceOracle.setSafeSpotPriceThreshold(constants.tokens.eEth, 200);
     }
 
-    function _configureChainlinkLookups(Constants.Values memory constants) internal {
+    function _configureChainlinkLookups(
+        Constants.Values memory constants
+    ) internal {
         _setupChainlinkOracle(
             constants,
             ChainlinkOracleSetup({
@@ -174,7 +178,9 @@ contract OracleSetup is Script, Oracle {
         );
     }
 
-    function _configureCustomSetLookups(Constants.Values memory constants) internal {
+    function _configureCustomSetLookups(
+        Constants.Values memory constants
+    ) internal {
         address[] memory tokens = new address[](6);
         uint256[] memory maxAges = new uint256[](6);
 
@@ -205,7 +211,9 @@ contract OracleSetup is Script, Oracle {
         constants.sys.rootPriceOracle.setSafeSpotPriceThreshold(constants.tokens.pxEth, 200);
     }
 
-    function _configureRedstoneLookups(Constants.Values memory constants) internal {
+    function _configureRedstoneLookups(
+        Constants.Values memory constants
+    ) internal {
         _setupRedstoneOracle(
             constants,
             RedstoneOracleSetup({

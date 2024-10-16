@@ -46,7 +46,9 @@ library AerodromeAdapter {
      * @param params AerodromeRemoveLiquidityParams struct with all the required params
      * @return actualAmounts Amounts of tokens received
      */
-    function removeLiquidity(AerodromeRemoveLiquidityParams memory params) external returns (uint256[] memory) {
+    function removeLiquidity(
+        AerodromeRemoveLiquidityParams memory params
+    ) external returns (uint256[] memory) {
         //slither-disable-start reentrancy-events
         Errors.verifyNotZero(params.router, "router");
         Errors.verifyNotZero(params.maxLpBurnAmount, "maxLpBurnAmount");
@@ -80,10 +82,9 @@ library AerodromeAdapter {
     }
 
     ///@dev This is a helper function to avoid stack-too-deep-errors
-    function _runWithdrawal(AerodromeRemoveLiquidityParams memory _params)
-        internal
-        returns (uint256[] memory actualAmounts, uint256 lpBurnAmount)
-    {
+    function _runWithdrawal(
+        AerodromeRemoveLiquidityParams memory _params
+    ) internal returns (uint256[] memory actualAmounts, uint256 lpBurnAmount) {
         uint256 lpTokensBefore = IERC20(_params.pool).balanceOf(address(this));
         (uint256 amountA, uint256 amountB) = IRouter(_params.router).removeLiquidity(
             _params.tokens[0],

@@ -463,7 +463,9 @@ contract BridgedLSTCalculatorTests is Test {
     // ############################## discount history tests ##################################
 
     // solhint-disable-next-line func-name-mixedcase
-    function testFuzz_DiscountHistoryExistingDiscountAtContractDeployment(bool rebase) public {
+    function testFuzz_DiscountHistoryExistingDiscountAtContractDeployment(
+        bool rebase
+    ) public {
         setBlockAndTimestamp(1);
         mockCalculateEthPerToken(100e16);
         initCalculator(99e16, rebase, 100e16);
@@ -473,7 +475,9 @@ contract BridgedLSTCalculatorTests is Test {
     }
 
     // solhint-disable-next-line func-name-mixedcase
-    function testFuzz_DiscountHistoryPremiumRecordedAsZeroDiscount(bool rebase) public {
+    function testFuzz_DiscountHistoryPremiumRecordedAsZeroDiscount(
+        bool rebase
+    ) public {
         mockCalculateEthPerToken(100e16);
         initCalculator(110e16, rebase, 100e16);
         setBlockAndTimestamp(1);
@@ -484,7 +488,9 @@ contract BridgedLSTCalculatorTests is Test {
     }
 
     // solhint-disable-next-line func-name-mixedcase
-    function testFuzz_DiscountHistoryHighDiscount(bool rebase) public {
+    function testFuzz_DiscountHistoryHighDiscount(
+        bool rebase
+    ) public {
         mockCalculateEthPerToken(100e16);
         initCalculator(100e16, rebase, 100e16);
 
@@ -498,7 +504,9 @@ contract BridgedLSTCalculatorTests is Test {
     }
 
     // solhint-disable-next-line func-name-mixedcase
-    function testFuzz_DiscountHistoryWrapAround(bool rebase) public {
+    function testFuzz_DiscountHistoryWrapAround(
+        bool rebase
+    ) public {
         mockCalculateEthPerToken(100e16);
         initCalculator(100e16, rebase, 100e16);
         for (uint256 i = 1; i < 14; i += 1) {
@@ -842,14 +850,18 @@ contract BridgedLSTCalculatorTests is Test {
 
     // ############################## helper functions ########################################
 
-    function setDiscount(int256 desiredDiscount) private {
+    function setDiscount(
+        int256 desiredDiscount
+    ) private {
         require(desiredDiscount >= 0, "desiredDiscount < 0");
         //  1e16 == 1% discount
         mockCalculateEthPerToken(100e16);
         mockTokenPrice(uint256(int256(100e16) - desiredDiscount));
     }
 
-    function setBlockAndTimestamp(uint256 index) private {
+    function setBlockAndTimestamp(
+        uint256 index
+    ) private {
         vm.roll(uint256(blocksToCheck[index]));
         vm.warp(uint256(timestamps[index]));
     }
@@ -864,7 +876,9 @@ contract BridgedLSTCalculatorTests is Test {
         assertEq(actual, expected, "expected != actual");
     }
 
-    function verifyDiscount(int256 expectedDiscount) private {
+    function verifyDiscount(
+        int256 expectedDiscount
+    ) private {
         require(expectedDiscount >= 0, "expectedDiscount < 0");
         int256 foundDiscount = testCalculator.current().discount;
         assertEq(foundDiscount, expectedDiscount);
@@ -895,7 +909,9 @@ contract BridgedLSTCalculatorTests is Test {
         testCalculator.onMessageReceive(keccak256("LST_SNAPSHOT"), 1, message);
     }
 
-    function mockCalculateEthPerToken(uint256 amount) private {
+    function mockCalculateEthPerToken(
+        uint256 amount
+    ) private {
         // Tests assume this value is always used so we set the timestamp to be max so its always picked
         vm.mockCall(
             ethPerTokenStore,
@@ -904,7 +920,9 @@ contract BridgedLSTCalculatorTests is Test {
         );
     }
 
-    function mockTokenPrice(uint256 price) internal {
+    function mockTokenPrice(
+        uint256 price
+    ) internal {
         vm.mockCall(
             address(rootPriceOracle),
             abi.encodeWithSelector(IRootPriceOracle.getPriceInEth.selector, mockToken),
@@ -919,9 +937,13 @@ interface MockToken {
 }
 
 contract TestCalculator is BridgedLSTCalculator {
-    constructor(ISystemRegistry _systemRegistry) BridgedLSTCalculator(_systemRegistry) { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) BridgedLSTCalculator(_systemRegistry) { }
 
-    function setUsePriceAsDiscount(bool usePriceAsDiscount) external {
+    function setUsePriceAsDiscount(
+        bool usePriceAsDiscount
+    ) external {
         _usePriceAsDiscount = usePriceAsDiscount;
     }
 }
@@ -929,7 +951,9 @@ contract TestCalculator is BridgedLSTCalculator {
 contract Blank {
     address public getSystemRegistry;
 
-    constructor(address sysReg) {
+    constructor(
+        address sysReg
+    ) {
         getSystemRegistry = sysReg;
     }
 }

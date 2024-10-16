@@ -15,7 +15,9 @@ library BalancerUtilities {
      * @notice Checks if a given address is Balancer Composable pool
      * @dev Using the presence of a getBptIndex() fn as an indicator of pool type
      */
-    function isComposablePool(address pool) public view returns (bool) {
+    function isComposablePool(
+        address pool
+    ) public view returns (bool) {
         // slither-disable-start low-level-calls
         // solhint-disable-next-line no-unused-vars
         (bool success, bytes memory data) =
@@ -30,7 +32,9 @@ library BalancerUtilities {
     /**
      * @dev This helper function is a fast and cheap way to convert between IERC20[] and IAsset[] types
      */
-    function _convertERC20sToAddresses(IERC20[] memory tokens) internal pure returns (address[] memory assets) {
+    function _convertERC20sToAddresses(
+        IERC20[] memory tokens
+    ) internal pure returns (address[] memory assets) {
         //slither-disable-start assembly
         //solhint-disable-next-line no-inline-assembly
         assembly {

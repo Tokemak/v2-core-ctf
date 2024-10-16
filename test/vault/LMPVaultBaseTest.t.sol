@@ -156,7 +156,9 @@ contract AutopoolETHBaseTest is BaseTest {
         autoPool.removeDestinations(destinations);
     }
 
-    function _addDestinationVault(IDestinationVault _destination) internal {
+    function _addDestinationVault(
+        IDestinationVault _destination
+    ) internal {
         uint256 numDestinationsBefore = autoPool.getDestinations().length;
         address[] memory destinations = new address[](1);
         destinations[0] = address(_destination);
@@ -166,7 +168,9 @@ contract AutopoolETHBaseTest is BaseTest {
         assert(autoPool.getDestinations().length == numDestinationsBefore + 1);
     }
 
-    function _removeDestinationVault(IDestinationVault _destination) internal {
+    function _removeDestinationVault(
+        IDestinationVault _destination
+    ) internal {
         uint256 numDestinationsBefore = autoPool.getDestinations().length;
         address[] memory destinations = new address[](1);
         destinations[0] = address(_destination);

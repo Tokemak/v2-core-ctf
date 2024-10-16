@@ -56,7 +56,9 @@ contract EethOracleTests is Test {
         assertTrue(eETHPrice < weETHprice, "lt");
     }
 
-    function _setUp(uint256 blockNumber) internal {
+    function _setUp(
+        uint256 blockNumber
+    ) internal {
         uint256 mainnetFork = vm.createFork(vm.envString("MAINNET_RPC_URL"), blockNumber);
         vm.selectFork(mainnetFork);
 

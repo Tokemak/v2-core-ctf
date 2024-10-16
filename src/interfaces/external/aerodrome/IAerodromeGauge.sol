@@ -4,14 +4,18 @@ pragma solidity 0.8.17;
 interface IAerodromeGauge {
     /// @notice Deposit LP tokens into gauge for any user
     /// @param _amount .
-    function deposit(uint256 _amount) external;
+    function deposit(
+        uint256 _amount
+    ) external;
 
     /// @notice Deposit LPs into gauge
     function deposit(uint256 _amount, address _recipient) external;
 
     /// @notice Withdraw LP tokens for user
     /// @param _amount .
-    function withdraw(uint256 _amount) external;
+    function withdraw(
+        uint256 _amount
+    ) external;
 
     /// @notice Address of the pool LP token which is deposited (staked) for rewards
     function stakingToken() external view returns (address);
@@ -22,13 +26,19 @@ interface IAerodromeGauge {
     /// @notice Retrieve rewards for an address.
     /// @dev Throws if not called by same address or voter.
     /// @param _account .
-    function getReward(address _account) external;
+    function getReward(
+        address _account
+    ) external;
 
     /// @notice Get the amount of stakingToken deposited by an account
-    function balanceOf(address) external view returns (uint256);
+    function balanceOf(
+        address
+    ) external view returns (uint256);
 
     /// @notice Returns accrued balance to date from last claim / first deposit.
-    function earned(address _account) external view returns (uint256 _earned);
+    function earned(
+        address _account
+    ) external view returns (uint256 _earned);
 
     /// @notice Returns if gauge is linked to a legitimate Protocol pool
     function isPool() external view returns (bool);

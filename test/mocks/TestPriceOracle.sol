@@ -14,7 +14,9 @@ import { SystemComponent } from "src/SystemComponent.sol";
 contract TestPriceOracle is SystemComponent, IPriceOracle {
     mapping(address => uint256) public priceInEth;
 
-    constructor(ISystemRegistry _systemRegistry) SystemComponent(_systemRegistry) { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) SystemComponent(_systemRegistry) { }
 
     /// @inheritdoc IPriceOracle
     function getDescription() external pure override returns (string memory) {
@@ -22,7 +24,9 @@ contract TestPriceOracle is SystemComponent, IPriceOracle {
     }
 
     /// @inheritdoc IPriceOracle
-    function getPriceInEth(address token) external view returns (uint256) {
+    function getPriceInEth(
+        address token
+    ) external view returns (uint256) {
         return priceInEth[token];
     }
 

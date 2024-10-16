@@ -527,7 +527,9 @@ contract AerodromeStakingIncentiveCalculatorTest is Test {
         assertGt(calculator.lastSnapshotTotalAPR(), calculator.NON_TRIVIAL_ANNUAL_RATE());
     }
 
-    function testDecreaseIncentiveCreditsBecauseRewardTokenValueTooLow(uint256 nbSnapshots) public {
+    function testDecreaseIncentiveCreditsBecauseRewardTokenValueTooLow(
+        uint256 nbSnapshots
+    ) public {
         uint256 rewardPerTokenValue = runIncreaseIncentiveCreditsScenario();
         rewardPerTokenValue += 5e18;
 
@@ -567,9 +569,9 @@ contract AerodromeStakingIncentiveCalculatorTest is Test {
         assertEq(res.stakingIncentiveStats.incentiveCredits, expectedCredits);
     }
 
-    function testFuzzDecreaseIncentiveCreditsBecauseRewardPerTokenStoredIncreasesTooSlowly(uint256 nbSnapshots)
-        public
-    {
+    function testFuzzDecreaseIncentiveCreditsBecauseRewardPerTokenStoredIncreasesTooSlowly(
+        uint256 nbSnapshots
+    ) public {
         uint256 rewardPerTokenValue = runIncreaseIncentiveCreditsScenario();
         rewardPerTokenValue += 1e18;
         setIncentivePrice(AERO, 1e9, 1e9); // mock token to a more reasonable value for 18e18 total supply
@@ -609,7 +611,9 @@ contract AerodromeStakingIncentiveCalculatorTest is Test {
         assertEq(res.stakingIncentiveStats.incentiveCredits, expectedCredits);
     }
 
-    function testFuzzDecreaseIncentiveCreditsBecauseBecauseRewardRateTooLow(uint256 nbSnapshots) public {
+    function testFuzzDecreaseIncentiveCreditsBecauseBecauseRewardRateTooLow(
+        uint256 nbSnapshots
+    ) public {
         uint256 rewardPerTokenValue = runIncreaseIncentiveCreditsScenario();
         rewardPerTokenValue += 5_000_000_000_000_000_000;
         setIncentivePrice(AERO, 1e9, 1e9); // mock token to a more reasonable value for 18e18 totalSupply

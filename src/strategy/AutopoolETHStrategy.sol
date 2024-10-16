@@ -297,11 +297,15 @@ contract AutopoolETHStrategy is SystemComponent, Initializable, IAutopoolStrateg
         _disableInitializers();
     }
 
-    function initialize(address _autoPool) external virtual initializer {
+    function initialize(
+        address _autoPool
+    ) external virtual initializer {
         _initialize(_autoPool);
     }
 
-    function _initialize(address _autoPool) internal virtual {
+    function _initialize(
+        address _autoPool
+    ) internal virtual {
         Errors.verifyNotZero(_autoPool, "_autoPool");
 
         if (ISystemComponent(_autoPool).getSystemRegistry() != address(systemRegistry)) {
@@ -319,14 +323,18 @@ contract AutopoolETHStrategy is SystemComponent, Initializable, IAutopoolStrateg
     }
 
     /// @notice Sets the LST price gap tolerance to the provided value
-    function setLstPriceGapTolerance(uint256 priceGapTolerance) external hasRole(Roles.AUTO_POOL_MANAGER) {
+    function setLstPriceGapTolerance(
+        uint256 priceGapTolerance
+    ) external hasRole(Roles.AUTO_POOL_MANAGER) {
         lstPriceGapTolerance = priceGapTolerance;
 
         emit LstPriceGapSet(priceGapTolerance);
     }
 
     /// @notice Sets the dust position portions to the provided value
-    function setDustPositionPortions(uint256 newValue) external hasRole(Roles.AUTO_POOL_MANAGER) {
+    function setDustPositionPortions(
+        uint256 newValue
+    ) external hasRole(Roles.AUTO_POOL_MANAGER) {
         dustPositionPortions = newValue;
 
         emit DustPositionPortionSet(newValue);
@@ -450,7 +458,9 @@ contract AutopoolETHStrategy is SystemComponent, Initializable, IAutopoolStrateg
         );
     }
 
-    function validateRebalanceParams(IStrategy.RebalanceParams memory params) internal view {
+    function validateRebalanceParams(
+        IStrategy.RebalanceParams memory params
+    ) internal view {
         Errors.verifyNotZero(params.destinationIn, "destinationIn");
         Errors.verifyNotZero(params.destinationOut, "destinationOut");
         Errors.verifyNotZero(params.tokenIn, "tokenIn");
@@ -501,7 +511,9 @@ contract AutopoolETHStrategy is SystemComponent, Initializable, IAutopoolStrateg
         }
     }
 
-    function ensureDestinationRegistered(address dest) private view {
+    function ensureDestinationRegistered(
+        address dest
+    ) private view {
         if (dest == address(autoPool)) return;
         if (!(autoPool.isDestinationRegistered(dest) || autoPool.isDestinationQueuedForRemoval(dest))) {
             revert UnregisteredDestination(dest);
@@ -564,7 +576,9 @@ contract AutopoolETHStrategy is SystemComponent, Initializable, IAutopoolStrateg
         if (slippage > maxSlippage) revert MaxSlippageExceeded();
     }
 
-    function verifyCleanUpOperation(IStrategy.RebalanceParams memory params) internal view returns (bool) {
+    function verifyCleanUpOperation(
+        IStrategy.RebalanceParams memory params
+    ) internal view returns (bool) {
         IDestinationVault outDest = IDestinationVault(params.destinationOut);
 
         AutopoolDebt.DestinationInfo memory destInfo = autoPool.getDestinationInfo(params.destinationOut);
@@ -586,7 +600,9 @@ contract AutopoolETHStrategy is SystemComponent, Initializable, IAutopoolStrateg
         return false;
     }
 
-    function verifyIdleUpOperation(IStrategy.RebalanceParams memory params) internal view returns (bool) {
+    function verifyIdleUpOperation(
+        IStrategy.RebalanceParams memory params
+    ) internal view returns (bool) {
         AutopoolDebt.DestinationInfo memory destInfo = autoPool.getDestinationInfo(params.destinationOut);
         // revert if information is too old
         ensureNotStaleData("DestInfo", destInfo.lastReport);
@@ -649,7 +665,9 @@ contract AutopoolETHStrategy is SystemComponent, Initializable, IAutopoolStrateg
         }
     }
 
-    function getDestinationTrimAmount(IDestinationVault dest) internal returns (uint256) {
+    function getDestinationTrimAmount(
+        IDestinationVault dest
+    ) internal returns (uint256) {
         uint256 discountThresholdOne = 3e5; // 3% 1e7 precision, discount required to consider trimming
         uint256 discountDaysThreshold = 7; // number of last 10 days that it was >= discountThreshold
         uint256 discountThresholdTwo = 5e5; // 5% 1e7 precision, discount required to completely exit
@@ -705,10 +723,9 @@ contract AutopoolETHStrategy is SystemComponent, Initializable, IAutopoolStrateg
     }
 
     /// @inheritdoc IAutopoolStrategy
-    function getRebalanceOutSummaryStats(IStrategy.RebalanceParams memory rebalanceParams)
-        external
-        returns (IStrategy.SummaryStats memory outSummary)
-    {
+    function getRebalanceOutSummaryStats(
+        IStrategy.RebalanceParams memory rebalanceParams
+    ) external returns (IStrategy.SummaryStats memory outSummary) {
         validateRebalanceParams(rebalanceParams);
         // Verify spot & safe price for the individual tokens in the pool are not far apart.
         // Call to verify before remove/add liquidity to the dest in the rebalance txn
@@ -721,11 +738,9 @@ contract AutopoolETHStrategy is SystemComponent, Initializable, IAutopoolStrateg
         outSummary = _getRebalanceOutSummaryStats(rebalanceParams);
     }
 
-    function _getRebalanceOutSummaryStats(IStrategy.RebalanceParams memory rebalanceParams)
-        internal
-        virtual
-        returns (IStrategy.SummaryStats memory outSummary)
-    {
+    function _getRebalanceOutSummaryStats(
+        IStrategy.RebalanceParams memory rebalanceParams
+    ) internal virtual returns (IStrategy.SummaryStats memory outSummary) {
         // Use safe price
         uint256 outPrice = _getInOutTokenPriceInEth(rebalanceParams.tokenOut, rebalanceParams.destinationOut);
         outSummary = (
@@ -754,11 +769,9 @@ contract AutopoolETHStrategy is SystemComponent, Initializable, IAutopoolStrateg
     }
 
     // Summary stats for destination In
-    function getRebalanceInSummaryStats(IStrategy.RebalanceParams memory rebalanceParams)
-        internal
-        virtual
-        returns (IStrategy.SummaryStats memory inSummary)
-    {
+    function getRebalanceInSummaryStats(
+        IStrategy.RebalanceParams memory rebalanceParams
+    ) internal virtual returns (IStrategy.SummaryStats memory inSummary) {
         // Use safe price
         uint256 inPrice = _getInOutTokenPriceInEth(rebalanceParams.tokenIn, rebalanceParams.destinationIn);
         inSummary = (
@@ -774,7 +787,9 @@ contract AutopoolETHStrategy is SystemComponent, Initializable, IAutopoolStrateg
     }
 
     /// @inheritdoc IAutopoolStrategy
-    function navUpdate(uint256 navPerShare) external onlyAutopool {
+    function navUpdate(
+        uint256 navPerShare
+    ) external onlyAutopool {
         uint40 blockTime = uint40(block.timestamp);
         navTrackingState.insert(navPerShare, blockTime);
 
@@ -797,7 +812,9 @@ contract AutopoolETHStrategy is SystemComponent, Initializable, IAutopoolStrateg
     }
 
     /// @inheritdoc IAutopoolStrategy
-    function rebalanceSuccessfullyExecuted(IStrategy.RebalanceParams memory params) external onlyAutopool {
+    function rebalanceSuccessfullyExecuted(
+        IStrategy.RebalanceParams memory params
+    ) external onlyAutopool {
         // clearExpirePause sets _swapCostOffsetPeriod, so skip when possible to avoid double write
         if (!clearExpiredPause()) _swapCostOffsetPeriod = swapCostOffsetPeriodInDays();
 

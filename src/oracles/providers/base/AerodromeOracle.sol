@@ -19,7 +19,9 @@ contract AerodromeOracle is SystemComponent, ISpotPriceOracle {
 
     uint256 private constant FEE_PRECISION = 10_000;
 
-    constructor(ISystemRegistry _systemRegistry) SystemComponent(_systemRegistry) { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) SystemComponent(_systemRegistry) { }
 
     /// @inheritdoc ISpotPriceOracle
     function getSpotPrice(

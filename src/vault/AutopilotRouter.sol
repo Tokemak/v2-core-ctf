@@ -18,7 +18,9 @@ import { ContractTypes } from "src/libs/ContractTypes.sol";
 contract AutopilotRouter is IAutopilotRouter, AutopilotRouterBase, ReentrancyGuard {
     using Address for address;
 
-    constructor(ISystemRegistry _systemRegistry) AutopilotRouterBase(_systemRegistry) { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) AutopilotRouterBase(_systemRegistry) { }
 
     // For the below, no approval needed, assumes vault is already max approved
 
@@ -163,7 +165,9 @@ contract AutopilotRouter is IAutopilotRouter, AutopilotRouterBase, ReentrancyGua
         return IAccToke(accToke).collectRewards(msg.sender, recipient);
     }
 
-    modifier validateAccToke(address accToke) {
+    modifier validateAccToke(
+        address accToke
+    ) {
         if (!systemRegistry.isValidContract(ContractTypes.ACC_TOKE_INSTANCE, accToke)) {
             revert Errors.InvalidAddress(accToke);
         }

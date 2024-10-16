@@ -34,7 +34,9 @@ library ViolationTracking {
         }
     }
 
-    function reset(State storage self) internal {
+    function reset(
+        State storage self
+    ) internal {
         self.violationCount = 0;
         self.violations = 0;
         self.len = 0;

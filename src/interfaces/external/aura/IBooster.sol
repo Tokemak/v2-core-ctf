@@ -13,9 +13,13 @@ interface IBooster {
     }
 
     // @notice index(pid) -> pool
-    function poolInfo(uint256 index) external view returns (PoolInfo memory);
+    function poolInfo(
+        uint256 index
+    ) external view returns (PoolInfo memory);
     // @notice Reward multiplier for increasing or decreasing AURA rewards per PID
     function REWARD_MULTIPLIER_DENOMINATOR() external view returns (uint256);
     // @notice rewardContract => rewardMultiplier (10000 = 100%)
-    function getRewardMultipliers(address rewarder) external view returns (uint256);
+    function getRewardMultipliers(
+        address rewarder
+    ) external view returns (uint256);
 }

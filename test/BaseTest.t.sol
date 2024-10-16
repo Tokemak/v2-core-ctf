@@ -71,7 +71,9 @@ contract BaseTest is Test {
         _setUp(true);
     }
 
-    function _setUp(bool toFork) public {
+    function _setUp(
+        bool toFork
+    ) public {
         if (toFork) {
             fork();
         }
@@ -229,7 +231,9 @@ contract BaseTest is Test {
         vm.label(address(autoPoolFactory), "Autopool Vault Factory");
     }
 
-    function createAndPrankUser(string memory label) public returns (address) {
+    function createAndPrankUser(
+        string memory label
+    ) public returns (address) {
         return createAndPrankUser(label, 0);
     }
 

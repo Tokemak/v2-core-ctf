@@ -24,11 +24,15 @@ interface IStrategy {
 
     /// @notice add supported destination vaults for the Autopool/Strategy
     /// @param _destinations The list of destination vaults to add
-    function addDestinations(address[] calldata _destinations) external;
+    function addDestinations(
+        address[] calldata _destinations
+    ) external;
 
     /// @notice remove supported destination vaults for the Autopool/Strategy
     /// @param _destinations The list of destination vaults to remove
-    function removeDestinations(address[] calldata _destinations) external;
+    function removeDestinations(
+        address[] calldata _destinations
+    ) external;
 
     /// @param destinationIn The address / lp token of the destination vault that will increase
     /// @param tokenIn The address of the underlyer token that will be provided by the swapper

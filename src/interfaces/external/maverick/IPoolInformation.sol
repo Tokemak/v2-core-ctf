@@ -67,16 +67,17 @@ interface IPoolInformation {
     function getBinDepth(IPool pool, uint128 binId) external view returns (uint256 depth);
 
     /// @notice get sqrtPrice of the pool in D18 scale
-    function getSqrtPrice(IPool pool) external view returns (uint256 sqrtPrice);
+    function getSqrtPrice(
+        IPool pool
+    ) external view returns (uint256 sqrtPrice);
 
     /// @notice get list of bins that are at the active tick
     function getBinsAtTick(IPool pool, int32 tick) external view returns (IPool.BinState[] memory bins);
 
     /// @notice get liquidity information about the active tick
-    function activeTickLiquidity(IPool pool)
-        external
-        view
-        returns (uint256 sqrtPrice, uint256 liquidity, uint256 reserveA, uint256 reserveB);
+    function activeTickLiquidity(
+        IPool pool
+    ) external view returns (uint256 sqrtPrice, uint256 liquidity, uint256 reserveA, uint256 reserveB);
 
     /// @notice get liquidity information about a given tick
     function tickLiquidity(

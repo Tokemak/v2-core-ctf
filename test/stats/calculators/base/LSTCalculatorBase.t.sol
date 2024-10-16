@@ -403,7 +403,9 @@ contract LSTCalculatorBaseTest is Test {
     // ############################## discount history tests ##################################
 
     // solhint-disable-next-line func-name-mixedcase
-    function testFuzz_DiscountHistoryExistingDiscountAtContractDeployment(bool rebase) public {
+    function testFuzz_DiscountHistoryExistingDiscountAtContractDeployment(
+        bool rebase
+    ) public {
         mockUsePriceAsDiscount(rebase);
         setBlockAndTimestamp(1);
         mockCalculateEthPerToken(100e16);
@@ -414,7 +416,9 @@ contract LSTCalculatorBaseTest is Test {
     }
 
     // solhint-disable-next-line func-name-mixedcase
-    function testFuzz_DiscountHistoryPremiumRecordedAsZeroDiscount(bool rebase) public {
+    function testFuzz_DiscountHistoryPremiumRecordedAsZeroDiscount(
+        bool rebase
+    ) public {
         mockCalculateEthPerToken(100e16);
         mockUsePriceAsDiscount(rebase);
         initCalculator(110e16);
@@ -426,7 +430,9 @@ contract LSTCalculatorBaseTest is Test {
     }
 
     // solhint-disable-next-line func-name-mixedcase
-    function testFuzz_DiscountHistoryHighDiscount(bool rebase) public {
+    function testFuzz_DiscountHistoryHighDiscount(
+        bool rebase
+    ) public {
         mockCalculateEthPerToken(100e16);
         mockUsePriceAsDiscount(rebase);
         initCalculator(100e16);
@@ -441,7 +447,9 @@ contract LSTCalculatorBaseTest is Test {
     }
 
     // solhint-disable-next-line func-name-mixedcase
-    function testFuzz_DiscountHistoryWrapAround(bool rebase) public {
+    function testFuzz_DiscountHistoryWrapAround(
+        bool rebase
+    ) public {
         mockCalculateEthPerToken(100e16);
         mockUsePriceAsDiscount(rebase);
         initCalculator(100e16);
@@ -562,14 +570,18 @@ contract LSTCalculatorBaseTest is Test {
 
     // ############################## helper functions ########################################
 
-    function setDiscount(int256 desiredDiscount) private {
+    function setDiscount(
+        int256 desiredDiscount
+    ) private {
         require(desiredDiscount >= 0, "desiredDiscount < 0");
         //  1e16 == 1% discount
         mockCalculateEthPerToken(100e16);
         mockTokenPrice(uint256(int256(100e16) - desiredDiscount));
     }
 
-    function setBlockAndTimestamp(uint256 index) private {
+    function setBlockAndTimestamp(
+        uint256 index
+    ) private {
         vm.roll(uint256(blocksToCheck[index]));
         vm.warp(uint256(timestamps[index]));
     }
@@ -584,28 +596,38 @@ contract LSTCalculatorBaseTest is Test {
         assertEq(actual, expected, "expected != actual");
     }
 
-    function verifyDiscount(int256 expectedDiscount) private {
+    function verifyDiscount(
+        int256 expectedDiscount
+    ) private {
         require(expectedDiscount >= 0, "expectedDiscount < 0");
         int256 foundDiscount = testCalculator.current().discount;
         assertEq(foundDiscount, expectedDiscount);
     }
 
-    function initCalculator(uint256 initPrice) private {
+    function initCalculator(
+        uint256 initPrice
+    ) private {
         bytes32[] memory dependantAprs = new bytes32[](0);
         LSTCalculatorBase.InitData memory initData = LSTCalculatorBase.InitData({ lstTokenAddress: mockToken });
         mockTokenPrice(initPrice);
         testCalculator.initialize(dependantAprs, abi.encode(initData));
     }
 
-    function mockCalculateEthPerToken(uint256 amount) private {
+    function mockCalculateEthPerToken(
+        uint256 amount
+    ) private {
         vm.mockCall(mockToken, abi.encodeWithSelector(MockToken.getValue.selector), abi.encode(amount));
     }
 
-    function mockUsePriceAsDiscount(bool value) private {
+    function mockUsePriceAsDiscount(
+        bool value
+    ) private {
         vm.mockCall(mockToken, abi.encodeWithSelector(MockToken.usePriceAsDiscount.selector), abi.encode(value));
     }
 
-    function mockTokenPrice(uint256 price) internal {
+    function mockTokenPrice(
+        uint256 price
+    ) internal {
         vm.mockCall(
             address(rootPriceOracle),
             abi.encodeWithSelector(IRootPriceOracle.getPriceInEth.selector, mockToken),
@@ -620,7 +642,9 @@ interface MockToken {
 }
 
 contract TestLSTCalculator is LSTCalculatorBase {
-    constructor(ISystemRegistry _systemRegistry) LSTCalculatorBase(_systemRegistry) { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) LSTCalculatorBase(_systemRegistry) { }
 
     function calculateEthPerToken() public view override returns (uint256) {
         // always mock the value

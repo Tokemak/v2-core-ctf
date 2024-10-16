@@ -9,7 +9,9 @@ import { Errors } from "src/utils/Errors.sol";
 contract SystemComponent is ISystemComponent {
     ISystemRegistry internal immutable systemRegistry;
 
-    constructor(ISystemRegistry _systemRegistry) {
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) {
         Errors.verifyNotZero(address(_systemRegistry), "_systemRegistry");
         systemRegistry = _systemRegistry;
     }

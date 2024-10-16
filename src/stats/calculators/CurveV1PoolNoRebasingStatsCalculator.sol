@@ -10,7 +10,9 @@ import { ICurveV1StableSwap } from "src/interfaces/external/curve/ICurveV1Stable
 /// @notice Calculate stats for a Curve V1 StableSwap pool
 /// @dev If used with an ETH pool, ensure it isn't an older one with reentrancy issue
 contract CurveV1PoolNoRebasingStatsCalculator is CurvePoolNoRebasingCalculatorBase {
-    constructor(ISystemRegistry _systemRegistry) CurvePoolNoRebasingCalculatorBase(_systemRegistry) { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) CurvePoolNoRebasingCalculatorBase(_systemRegistry) { }
 
     function getVirtualPrice() internal view override returns (uint256 virtualPrice) {
         return ICurveV1StableSwap(poolAddress).get_virtual_price();

@@ -110,7 +110,9 @@ contract AccToke is IAccToke, ERC20Votes, Pausable, SystemComponent, SecurityBas
     }
 
     /// @inheritdoc IAccToke
-    function isStakeableAmount(uint256 amount) public pure returns (bool) {
+    function isStakeableAmount(
+        uint256 amount
+    ) public pure returns (bool) {
         return amount >= MIN_STAKE_AMOUNT && amount <= MAX_STAKE_AMOUNT;
     }
 
@@ -145,7 +147,9 @@ contract AccToke is IAccToke, ERC20Votes, Pausable, SystemComponent, SecurityBas
     }
 
     /// @inheritdoc IAccToke
-    function unstake(uint256[] memory lockupIds) external override {
+    function unstake(
+        uint256[] memory lockupIds
+    ) external override {
         unstake(lockupIds, msg.sender, msg.sender);
     }
 
@@ -267,12 +271,16 @@ contract AccToke is IAccToke, ERC20Votes, Pausable, SystemComponent, SecurityBas
     }
 
     /// @inheritdoc IAccToke
-    function getLockups(address user) external view returns (Lockup[] memory) {
+    function getLockups(
+        address user
+    ) external view returns (Lockup[] memory) {
         return lockups[user];
     }
 
     /// @notice Update max stake duration allowed
-    function setMaxStakeDuration(uint256 _maxStakeDuration) external hasRole(Roles.ACC_TOKE_MANAGER) {
+    function setMaxStakeDuration(
+        uint256 _maxStakeDuration
+    ) external hasRole(Roles.ACC_TOKE_MANAGER) {
         uint256 old = maxStakeDuration;
 
         maxStakeDuration = _maxStakeDuration;
@@ -308,7 +316,9 @@ contract AccToke is IAccToke, ERC20Votes, Pausable, SystemComponent, SecurityBas
 
     /// @notice Allows an actor to deposit ETH as staking reward to be distributed to all staked participants
     /// @param amount Amount of `WETH` to take from caller and deposit as reward for the stakers
-    function addWETHRewards(uint256 amount) external {
+    function addWETHRewards(
+        uint256 amount
+    ) external {
         // update accounting to factor in new rewards
         _addWETHRewards(amount);
         // actually transfer WETH
@@ -317,7 +327,9 @@ contract AccToke is IAccToke, ERC20Votes, Pausable, SystemComponent, SecurityBas
 
     /// @dev Internal function used by both `addWETHRewards` external and the `receive()` function
     /// @param amount See {IAccToke-addWETHRewards}.
-    function _addWETHRewards(uint256 amount) internal whenNotPaused {
+    function _addWETHRewards(
+        uint256 amount
+    ) internal whenNotPaused {
         Errors.verifyNotZero(amount, "amount");
 
         uint256 supply = totalSupply();
@@ -340,7 +352,9 @@ contract AccToke is IAccToke, ERC20Votes, Pausable, SystemComponent, SecurityBas
     }
 
     /// @inheritdoc IAccToke
-    function previewRewards(address user) public view returns (uint256 amount) {
+    function previewRewards(
+        address user
+    ) public view returns (uint256 amount) {
         uint256 supply = totalSupply();
         // slither-disable-next-line incorrect-equality,timestamp
         if (supply == 0) {

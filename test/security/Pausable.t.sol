@@ -156,7 +156,9 @@ contract PausableMock is Pausable {
     bool public drasticMeasureTaken;
     uint256 public count;
 
-    constructor(ISystemRegistry systemRegistry) Pausable(systemRegistry) {
+    constructor(
+        ISystemRegistry systemRegistry
+    ) Pausable(systemRegistry) {
         drasticMeasureTaken = false;
         count = 0;
     }

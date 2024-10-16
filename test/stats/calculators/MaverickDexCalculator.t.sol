@@ -326,7 +326,9 @@ contract MaverickDexCalculatorTest is Test {
         assertEq(cur.lastSnapshotTimestamp, prevTimestamp);
     }
 
-    function testFuzz_scaleDecimalsToOriginal(uint256 decimals) public {
+    function testFuzz_scaleDecimalsToOriginal(
+        uint256 decimals
+    ) public {
         vm.assume(decimals < 100);
         vm.assume(decimals > 1);
         vm.mockCall(pool, abi.encodeWithSelector(IPool.tokenA.selector), abi.encode(RETH_MAINNET));

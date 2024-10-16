@@ -93,7 +93,9 @@ contract ClaimSetup is RewardsTest {
 }
 
 contract Claim is ClaimSetup {
-    function test_claimCorrectSignature(uint256 claimAmount) public {
+    function test_claimCorrectSignature(
+        uint256 claimAmount
+    ) public {
         // address newWallet = address(0x3);
         vm.assume(claimAmount > 0);
         recipient.amount = claimAmount;
@@ -175,7 +177,9 @@ contract Claim is ClaimSetup {
         rewards.claim(recipient, v, r, s);
     }
 
-    function test_claimForCorrectSignature(uint256 claimAmount) public {
+    function test_claimForCorrectSignature(
+        uint256 claimAmount
+    ) public {
         // address newWallet = address(0x3);
         vm.assume(claimAmount > 0);
         recipient.amount = claimAmount;

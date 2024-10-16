@@ -121,7 +121,9 @@ interface IAutopool is IERC4626, IERC20Permit {
     function getFeeSettings() external view returns (AutopoolFeeSettings memory);
 
     /// @notice Initiate the shutdown procedures for this vault
-    function shutdown(VaultShutdownStatus reason) external;
+    function shutdown(
+        VaultShutdownStatus reason
+    ) external;
 
     /// @notice True if the vault has been shutdown
     function isShutdown() external view returns (bool);
@@ -147,20 +149,28 @@ interface IAutopool is IERC4626, IERC20Permit {
         Math.Rounding rounding
     ) external view returns (uint256 assets);
 
-    function totalAssets(TotalAssetPurpose purpose) external view returns (uint256);
+    function totalAssets(
+        TotalAssetPurpose purpose
+    ) external view returns (uint256);
 
     function getAssetBreakdown() external view returns (AssetBreakdown memory);
 
     /// @notice get a destinations last reported debt value
     /// @param destVault the address of the target destination
     /// @return destinations last reported debt value
-    function getDestinationInfo(address destVault) external view returns (AutopoolDebt.DestinationInfo memory);
+    function getDestinationInfo(
+        address destVault
+    ) external view returns (AutopoolDebt.DestinationInfo memory);
 
     /// @notice check if a destination is registered with the vault
-    function isDestinationRegistered(address destination) external view returns (bool);
+    function isDestinationRegistered(
+        address destination
+    ) external view returns (bool);
 
     /// @notice get if a destinationVault is queued for removal by the AutopoolETH
-    function isDestinationQueuedForRemoval(address destination) external view returns (bool);
+    function isDestinationQueuedForRemoval(
+        address destination
+    ) external view returns (bool);
 
     /// @notice Returns instance of vault rewarder.
     function rewarder() external view returns (IMainRewarder);
@@ -169,5 +179,7 @@ interface IAutopool is IERC4626, IERC20Permit {
     function getPastRewarders() external view returns (address[] memory _pastRewarders);
 
     /// @notice Returns boolean telling whether address passed in is past rewarder.
-    function isPastRewarder(address _pastRewarder) external view returns (bool);
+    function isPastRewarder(
+        address _pastRewarder
+    ) external view returns (bool);
 }

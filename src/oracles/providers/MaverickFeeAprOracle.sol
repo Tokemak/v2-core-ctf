@@ -32,10 +32,9 @@ contract MaverickFeeAprOracle is SystemComponent, SecurityBase, IMaverickFeeAprO
     event FeeAprSet(address boostedPosition, uint256 feeApr, uint256 queriedTimestamp);
     event MaxFeeAprLatencySet(uint256 _maxFeeAprLatency);
 
-    constructor(ISystemRegistry _systemRegistry)
-        SystemComponent(_systemRegistry)
-        SecurityBase(address(_systemRegistry.accessController()))
-    {
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) SystemComponent(_systemRegistry) SecurityBase(address(_systemRegistry.accessController())) {
         maxFeeAprLatency = 7 days;
     }
 
@@ -63,7 +62,9 @@ contract MaverickFeeAprOracle is SystemComponent, SecurityBase, IMaverickFeeAprO
     }
 
     /// @inheritdoc IMaverickFeeAprOracle
-    function getFeeApr(address boostedPosition) external view returns (uint256 feeApr) {
+    function getFeeApr(
+        address boostedPosition
+    ) external view returns (uint256 feeApr) {
         FeeAprData memory data = feeAprDataMapping[boostedPosition];
         // slither-disable-next-line incorrect-equality,timestamp
         if (data.timestamp == 0) revert BoostedPositionFeeAprNotSet();
@@ -73,7 +74,9 @@ contract MaverickFeeAprOracle is SystemComponent, SecurityBase, IMaverickFeeAprO
         feeApr = uint256(data.feeApr);
     }
 
-    function _setMaxFeeAprLatency(uint256 _maxFeeAprLatency) private {
+    function _setMaxFeeAprLatency(
+        uint256 _maxFeeAprLatency
+    ) private {
         Errors.verifyNotZero(_maxFeeAprLatency, "_maxFeeAprLatency");
         if (_maxFeeAprLatency > type(uint32).max) {
             revert InvalidMaxFeeAprLatency();
@@ -83,7 +86,9 @@ contract MaverickFeeAprOracle is SystemComponent, SecurityBase, IMaverickFeeAprO
     }
 
     /// @inheritdoc IMaverickFeeAprOracle
-    function setMaxFeeAprLatency(uint256 _maxFeeAprLatency) external hasRole(Roles.ORACLE_MANAGER) {
+    function setMaxFeeAprLatency(
+        uint256 _maxFeeAprLatency
+    ) external hasRole(Roles.ORACLE_MANAGER) {
         _setMaxFeeAprLatency(_maxFeeAprLatency);
     }
 }

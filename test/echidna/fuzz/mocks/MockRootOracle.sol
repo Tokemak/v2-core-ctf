@@ -17,7 +17,9 @@ contract MockRootOracle is Numbers, IRootPriceOracle {
 
     error NotImplemented();
 
-    constructor(address _systemRegistry) {
+    constructor(
+        address _systemRegistry
+    ) {
         getSystemRegistry = _systemRegistry;
     }
 
@@ -64,7 +66,9 @@ contract MockRootOracle is Numbers, IRootPriceOracle {
         floorTweak[token] = int8(int8(pct) * int8(-1));
     }
 
-    function getPriceInEth(address token) public view returns (uint256) {
+    function getPriceInEth(
+        address token
+    ) public view returns (uint256) {
         return prices[token];
     }
 

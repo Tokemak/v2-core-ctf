@@ -123,7 +123,9 @@ contract Lens is SystemComponent {
     /// Functions - Constructor
     /// =====================================================
 
-    constructor(ISystemRegistry _systemRegistry) SystemComponent(_systemRegistry) { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) SystemComponent(_systemRegistry) { }
 
     /// =====================================================
     /// Functions - External
@@ -148,7 +150,9 @@ contract Lens is SystemComponent {
     /// @notice Get the reward info for a user
     /// @param wallet Address of the wallet to query
     /// @return ret Array of AutopoolUserInfo structs containing reward tokens and amounts for each Autopool
-    function getUserRewardInfo(address wallet) external view returns (UserAutopoolRewardInfo memory) {
+    function getUserRewardInfo(
+        address wallet
+    ) external view returns (UserAutopoolRewardInfo memory) {
         Autopool[] memory autoPools = _getPools();
         uint256 nAutoPools = autoPools.length;
         address[] memory autopoolAddresses = new address[](nAutoPools);
@@ -188,16 +192,17 @@ contract Lens is SystemComponent {
     /// @dev Structure of this return struct has been updated a few times and will fail on the decode. This is paired
     /// with the _fillInFeeSettings call to ensure the failure doesn't bubble up
     /// @param poolAddress Address of the Autopool to query
-    function proxyGetFeeSettings(address poolAddress) public view returns (IAutopool.AutopoolFeeSettings memory) {
+    function proxyGetFeeSettings(
+        address poolAddress
+    ) public view returns (IAutopool.AutopoolFeeSettings memory) {
         return IAutopool(poolAddress).getFeeSettings();
     }
 
     /// @notice Gets the stats for a Destination
     /// @dev Structure this return struct has been updated a few times and will fail on the decode
-    function proxyGetStats(address destinationAddress)
-        public
-        returns (IDexLSTStats.DexLSTStatsData memory queriedStats)
-    {
+    function proxyGetStats(
+        address destinationAddress
+    ) public returns (IDexLSTStats.DexLSTStatsData memory queriedStats) {
         return IDestinationVault(destinationAddress).getStats().current();
     }
 
@@ -254,7 +259,9 @@ contract Lens is SystemComponent {
 
     /// @dev Returns destination information for those currently related to the Autopool
     /// @param autoPool Autopool to query destinations for
-    function _getDestinations(address autoPool) private returns (DestinationVault[] memory destinations) {
+    function _getDestinations(
+        address autoPool
+    ) private returns (DestinationVault[] memory destinations) {
         address[] memory poolDestinations = IAutopool(autoPool).getDestinations();
         address[] memory poolQueuedDestRemovals = IAutopool(autoPool).getRemovalQueue();
         destinations = new DestinationVault[](poolDestinations.length + poolQueuedDestRemovals.length);
@@ -339,7 +346,9 @@ contract Lens is SystemComponent {
 
     /// @dev Sets the fee settings with a call that loops back to this contract to ensure the struct can be decoded
     /// @param pool Autopool to fill in fees far
-    function _fillInFeeSettings(Autopool memory pool) private view {
+    function _fillInFeeSettings(
+        Autopool memory pool
+    ) private view {
         try Lens(address(this)).proxyGetFeeSettings(pool.poolAddress) returns (
             IAutopool.AutopoolFeeSettings memory settings
         ) {
@@ -352,7 +361,9 @@ contract Lens is SystemComponent {
 
     /// @dev Temporary use while we are transitioning between Gen2 and Gen3 systems where this call didn't exist
     /// @dev Won't be accurate in all cases but that's OK
-    function _safeGetDestinationUnderlying(address destinationAddress) private view returns (uint256) {
+    function _safeGetDestinationUnderlying(
+        address destinationAddress
+    ) private view returns (uint256) {
         try IDestinationVault(destinationAddress).underlyingTotalSupply() returns (uint256 val) {
             return val;
         } catch {
@@ -362,10 +373,9 @@ contract Lens is SystemComponent {
 
     /// @dev Returns a destinations current stats. Can fail when prices are stale we capture that here
     /// @param destinationAddress Address of the destination to query stats for
-    function _safeDestinationGetStats(address destinationAddress)
-        private
-        returns (IDexLSTStats.DexLSTStatsData memory currentStats, bool incomplete)
-    {
+    function _safeDestinationGetStats(
+        address destinationAddress
+    ) private returns (IDexLSTStats.DexLSTStatsData memory currentStats, bool incomplete) {
         try Lens(address(this)).proxyGetStats(destinationAddress) returns (
             IDexLSTStats.DexLSTStatsData memory queriedStats
         ) {

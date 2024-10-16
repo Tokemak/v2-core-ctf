@@ -130,7 +130,9 @@ interface IPool {
     /// @notice address of Factory
     function factory() external view returns (address);
     /// @notice bitmap of active bins
-    function binMap(int32 tick) external view returns (uint256);
+    function binMap(
+        int32 tick
+    ) external view returns (uint256);
     /// @notice mapping of tick/kind to binId
     function binPositions(int32 tick, uint256 kind) external view returns (uint128);
     /// @notice internal accounting of the sum tokenA balance across bins
@@ -213,7 +215,9 @@ interface IPool {
     ) external returns (uint256 amountIn, uint256 amountOut);
 
     /// @notice bin information for a given binId
-    function getBin(uint128 binId) external view returns (BinState memory bin);
+    function getBin(
+        uint128 binId
+    ) external view returns (BinState memory bin);
 
     /// @notice LP token balance for a given tokenId at a given binId
     function balanceOf(uint256 tokenId, uint128 binId) external view returns (uint256 lpToken);

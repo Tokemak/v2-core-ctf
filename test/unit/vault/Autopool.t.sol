@@ -198,7 +198,9 @@ contract AutopoolETHTests is
         );
     }
 
-    function _setupDestinationVault(DVSetup memory setup) internal returns (DestinationVaultFake) {
+    function _setupDestinationVault(
+        DVSetup memory setup
+    ) internal returns (DestinationVaultFake) {
         return _setupDestinationVault(setup, 9);
     }
 
@@ -243,16 +245,22 @@ contract AutopoolETHTests is
         _mockSuccessfulRebalance(autoPoolStrategy);
     }
 
-    function _mockFailingRebalance(string memory message) internal {
+    function _mockFailingRebalance(
+        string memory message
+    ) internal {
         _mockFailingRebalance(autoPoolStrategy, message);
     }
 
-    function _mockLatestDebtReporting(uint256 timestampOfDebtReport) internal {
+    function _mockLatestDebtReporting(
+        uint256 timestampOfDebtReport
+    ) internal {
         // solhint-disable-next-line max-line-length
         vm.mockCall(address(vault), abi.encodeWithSignature("oldestDebtReporting()"), abi.encode(timestampOfDebtReport));
     }
 
-    function _ensureNoStateChanges(VmSafe.AccountAccess[] memory records) internal {
+    function _ensureNoStateChanges(
+        VmSafe.AccountAccess[] memory records
+    ) internal {
         for (uint256 i = 0; i < records.length; i++) {
             if (!records[i].reverted) {
                 assertEq(records[i].oldBalance, records[i].newBalance);
@@ -6667,7 +6675,9 @@ contract FeeAndProfitTests is AutopoolETHTests {
         assertEq(vault.totalSupply(), 92e18, "finalShares");
     }
 
-    function _setupProfitState(ProfitSetupState memory state) internal {
+    function _setupProfitState(
+        ProfitSetupState memory state
+    ) internal {
         vault.setLastProfitUnlockTime(state.lastUnlockTime);
         vault.setUnlockPeriodInSeconds(state.unlockPeriodInSeconds);
         if (state.currentShares > 0) {
@@ -7693,7 +7703,9 @@ contract FlashRebalance is FlashRebalanceSetup {
         );
     }
 
-    function _setupNDestinations(uint256 n) internal returns (DestinationVaultFake[] memory ret) {
+    function _setupNDestinations(
+        uint256 n
+    ) internal returns (DestinationVaultFake[] memory ret) {
         ret = new DestinationVaultFake[](n);
         for (uint256 i = 0; i < n; i++) {
             ret[i] = _createAddDestinationVault(
@@ -9206,11 +9218,15 @@ contract DestinationVaultFake {
         return baseAsset.decimals();
     }
 
-    function setDebtValuePerShare(uint256 _valuePerShare) external {
+    function setDebtValuePerShare(
+        uint256 _valuePerShare
+    ) external {
         valuePerShare = _valuePerShare;
     }
 
-    function debtValue(uint256 shares) external view returns (uint256) {
+    function debtValue(
+        uint256 shares
+    ) external view returns (uint256) {
         return shares * valuePerShare / ONE();
     }
 
@@ -9219,7 +9235,9 @@ contract DestinationVaultFake {
         totalSupply += vaultShares;
     }
 
-    function setWithdrawBaseAssetSlippage(int256 slippage) external {
+    function setWithdrawBaseAssetSlippage(
+        int256 slippage
+    ) external {
         baseAssetSlippages.push(slippage);
     }
 
@@ -9269,11 +9287,15 @@ contract DestinationVaultFake {
         amounts[0] = uint256(int256(assets) - baseAssetSlippage);
     }
 
-    function balanceOf(address wallet) external view returns (uint256) {
+    function balanceOf(
+        address wallet
+    ) external view returns (uint256) {
         return balances[wallet];
     }
 
-    function depositUnderlying(uint256 amount) external returns (uint256 shares) {
+    function depositUnderlying(
+        uint256 amount
+    ) external returns (uint256 shares) {
         underlyer.transferFrom(msg.sender, address(this), amount);
         balances[msg.sender] += amount;
         shares = amount;
@@ -9288,7 +9310,9 @@ contract DestinationVaultFake {
         underlyer.transfer(to, amount);
     }
 
-    function setRecoupMaxCredit(uint256 credit) external {
+    function setRecoupMaxCredit(
+        uint256 credit
+    ) external {
         recoupMaxCredit = credit;
     }
 }
@@ -9340,19 +9364,27 @@ contract TestAutopoolETH is AutopoolETH {
         _nextDepositGetsDoubleShares = false;
     }
 
-    function addToWithdrawalQueueHead(address destination) external virtual {
+    function addToWithdrawalQueueHead(
+        address destination
+    ) external virtual {
         _withdrawalQueue.addToHead(destination);
     }
 
-    function addToWithdrawalQueueTail(address destination) external virtual {
+    function addToWithdrawalQueueTail(
+        address destination
+    ) external virtual {
         _withdrawalQueue.addToTail(destination);
     }
 
-    function addToDebtReportingHead(address destination) external virtual {
+    function addToDebtReportingHead(
+        address destination
+    ) external virtual {
         _debtReportQueue.addToHead(destination);
     }
 
-    function addToDebtReportingTail(address destination) external virtual {
+    function addToDebtReportingTail(
+        address destination
+    ) external virtual {
         _debtReportQueue.addToTail(destination);
     }
 
@@ -9368,15 +9400,21 @@ contract TestAutopoolETH is AutopoolETH {
         _assetBreakdown.totalDebtMax = _totalMaxDebt;
     }
 
-    function setTotalIdle(uint256 _totalIdle) external {
+    function setTotalIdle(
+        uint256 _totalIdle
+    ) external {
         _assetBreakdown.totalIdle = _totalIdle;
     }
 
-    function setTotalDebt(uint256 _totalDebt) external {
+    function setTotalDebt(
+        uint256 _totalDebt
+    ) external {
         _assetBreakdown.totalDebt = _totalDebt;
     }
 
-    function setTotalSupply(uint256 _totalSupply) external {
+    function setTotalSupply(
+        uint256 _totalSupply
+    ) external {
         _tokenData.totalSupply = _totalSupply;
     }
 
@@ -9445,7 +9483,9 @@ contract FeeAndProfitTestVault is TestAutopoolETH {
         super._updateStrategyNav(assets, supply);
     }
 
-    function totalAssetsTimeChecked(TotalAssetPurpose purpose) public returns (uint256) {
+    function totalAssetsTimeChecked(
+        TotalAssetPurpose purpose
+    ) public returns (uint256) {
         return AutopoolDebt.totalAssetsTimeChecked(_debtReportQueue, _destinationInfo, purpose);
     }
 
@@ -9457,31 +9497,45 @@ contract FeeAndProfitTestVault is TestAutopoolETH {
         _feeAndProfitHandling(newIdle + newDebt, startingTotalAssets, true);
     }
 
-    function setUnlockPeriodInSeconds(uint48 unlockPeriod) public {
+    function setUnlockPeriodInSeconds(
+        uint48 unlockPeriod
+    ) public {
         _profitUnlockSettings.unlockPeriodInSeconds = unlockPeriod;
     }
 
-    function setLastProfitUnlockTime(uint256 lastUnlockTime) public {
+    function setLastProfitUnlockTime(
+        uint256 lastUnlockTime
+    ) public {
         _profitUnlockSettings.lastProfitUnlockTime = uint48(lastUnlockTime);
     }
 
-    function isInDebtReportingQueue(address check) public view returns (bool) {
+    function isInDebtReportingQueue(
+        address check
+    ) public view returns (bool) {
         return _debtReportQueue.addressExists(check);
     }
 
-    function isInWithdrawalQueue(address check) public view returns (bool) {
+    function isInWithdrawalQueue(
+        address check
+    ) public view returns (bool) {
         return _withdrawalQueue.addressExists(check);
     }
 
-    function setProfitUnlockRate(uint256 unlockRate) public {
+    function setProfitUnlockRate(
+        uint256 unlockRate
+    ) public {
         _profitUnlockSettings.profitUnlockRate = unlockRate;
     }
 
-    function setFeeSharesToBeCollected(uint256 shares) public {
+    function setFeeSharesToBeCollected(
+        uint256 shares
+    ) public {
         _feeSharesToBeCollected = shares;
     }
 
-    function setFullProfitUnlockTime(uint256 time) public {
+    function setFullProfitUnlockTime(
+        uint256 time
+    ) public {
         _profitUnlockSettings.fullProfitUnlockTime = uint48(time);
     }
 
@@ -9566,11 +9620,15 @@ contract FakeDestinationRewarder {
     TestERC20 internal _baseAsset;
     uint256 internal _claimAmountOnNextCall;
 
-    constructor(TestERC20 baseAsset_) {
+    constructor(
+        TestERC20 baseAsset_
+    ) {
         _baseAsset = baseAsset_;
     }
 
-    function claimAmountOnNextCall(uint256 amount) public {
+    function claimAmountOnNextCall(
+        uint256 amount
+    ) public {
         _claimAmountOnNextCall = amount;
     }
 

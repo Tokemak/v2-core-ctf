@@ -401,7 +401,9 @@ contract CurveV1PoolRebasingStatsCalculatorTest is Test {
         assertEq(current.lastSnapshotTimestamp, TARGET_BLOCK_TIMESTAMP);
     }
 
-    function initializeSuccessfully(uint256 startingEthPerToken) internal {
+    function initializeSuccessfully(
+        uint256 startingEthPerToken
+    ) internal {
         bytes32[] memory depAprIds = new bytes32[](2);
         depAprIds[0] = Stats.NOOP_APR_ID;
         depAprIds[1] = keccak256(abi.encode(STETH_MAINNET));
@@ -483,7 +485,9 @@ contract CurveV1PoolRebasingStatsCalculatorTest is Test {
         vm.mockCall(token, abi.encodeWithSelector(IERC20Metadata.decimals.selector), abi.encode(decimals));
     }
 
-    function mockVirtualPrice(uint256 virtualPrice) internal {
+    function mockVirtualPrice(
+        uint256 virtualPrice
+    ) internal {
         vm.mockCall(
             STETH_ETH_CURVE_POOL,
             abi.encodeWithSelector(ICurveV1StableSwap.get_virtual_price.selector),

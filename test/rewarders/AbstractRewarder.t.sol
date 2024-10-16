@@ -44,7 +44,9 @@ contract Rewarder is AbstractRewarder {
         _getReward(account, recipient);
     }
 
-    function exposed_updateReward(address account) external {
+    function exposed_updateReward(
+        address account
+    ) external {
         _updateReward(account);
     }
 
@@ -57,7 +59,9 @@ contract Rewarder is AbstractRewarder {
         return true;
     }
 
-    function exposed_notifyRewardAmount(uint256 reward) external {
+    function exposed_notifyRewardAmount(
+        uint256 reward
+    ) external {
         notifyRewardAmount(reward);
     }
 
@@ -69,20 +73,28 @@ contract Rewarder is AbstractRewarder {
         return _mockTotalSupply;
     }
 
-    function balanceOf(address) public view override returns (uint256) {
+    function balanceOf(
+        address
+    ) public view override returns (uint256) {
         return _mockBalanceOf;
     }
 
     /// we can't mock internal calls, so we expose them using following functions
-    function setBalanceOf(uint256 balance) external {
+    function setBalanceOf(
+        uint256 balance
+    ) external {
         _mockBalanceOf = balance;
     }
 
-    function setTotalSupply(uint256 mockTotalSupply) external {
+    function setTotalSupply(
+        uint256 mockTotalSupply
+    ) external {
         _mockTotalSupply = mockTotalSupply;
     }
 
-    function canTokenBeRecovered(address) public pure override returns (bool) {
+    function canTokenBeRecovered(
+        address
+    ) public pure override returns (bool) {
         return true;
     }
 }
@@ -109,7 +121,9 @@ contract Rewarder2 is AbstractRewarder {
         _getReward(account, recipient);
     }
 
-    function exposed_updateReward(address account) external {
+    function exposed_updateReward(
+        address account
+    ) external {
         _updateReward(account);
     }
 
@@ -117,7 +131,9 @@ contract Rewarder2 is AbstractRewarder {
         _stakeAbstractRewarder(account, amount);
     }
 
-    function exposed_notifyRewardAmount(uint256 reward) external {
+    function exposed_notifyRewardAmount(
+        uint256 reward
+    ) external {
         notifyRewardAmount(reward);
     }
 
@@ -129,15 +145,21 @@ contract Rewarder2 is AbstractRewarder {
         return _mockTotalSupply;
     }
 
-    function balanceOf(address) public view override returns (uint256) {
+    function balanceOf(
+        address
+    ) public view override returns (uint256) {
         return _mockBalanceOf;
     }
 
-    function setTotalSupply(uint256 mockTotalSupply) external {
+    function setTotalSupply(
+        uint256 mockTotalSupply
+    ) external {
         _mockTotalSupply = mockTotalSupply;
     }
 
-    function canTokenBeRecovered(address) public pure override returns (bool) {
+    function canTokenBeRecovered(
+        address
+    ) public pure override returns (bool) {
         return false;
     }
 }

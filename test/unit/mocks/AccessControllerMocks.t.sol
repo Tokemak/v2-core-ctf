@@ -11,7 +11,9 @@ import { IAccessController } from "src/interfaces/security/IAccessController.sol
 contract AccessControllerMocks {
     Vm private vm;
 
-    constructor(Vm _vm) {
+    constructor(
+        Vm _vm
+    ) {
         vm = _vm;
     }
 

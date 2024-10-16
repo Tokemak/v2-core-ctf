@@ -45,7 +45,9 @@ contract MessageReceiverTests is Test, SystemRegistryMocks {
 contract MockMessageReceiverBase is MessageReceiverBase, SystemComponent {
     uint256 public check = 0;
 
-    constructor(ISystemRegistry _systemRegistry) SystemComponent(_systemRegistry) { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) SystemComponent(_systemRegistry) { }
 
     function _onMessageReceive(bytes32, uint256, bytes memory) internal override {
         check++;

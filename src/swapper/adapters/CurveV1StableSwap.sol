@@ -67,7 +67,9 @@ contract CurveV1StableSwap is BaseAdapter {
         }
     }
 
-    function _int128ToUint256(int128 value) internal pure returns (uint256 result) {
+    function _int128ToUint256(
+        int128 value
+    ) internal pure returns (uint256 result) {
         if (value < 0) {
             revert InvalidIndex();
         }

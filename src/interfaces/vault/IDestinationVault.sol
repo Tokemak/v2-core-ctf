@@ -120,7 +120,9 @@ interface IDestinationVault is ISystemComponent, IBaseAssetVault, IERC20 {
     /// @dev Queries the current value of all tokens we have deployed, whether its a single place, multiple, staked, etc
     /// @param shares The number of shares to value
     /// @return value The current value of our debt in terms of the baseAsset
-    function debtValue(uint256 shares) external returns (uint256 value);
+    function debtValue(
+        uint256 shares
+    ) external returns (uint256 value);
 
     /// @notice Collects any earned rewards from staking, incentives, etc. Transfers to sender
     /// @dev Should be limited to LIQUIDATOR_MANAGER. Rewards must be collected before claimed
@@ -135,11 +137,15 @@ interface IDestinationVault is ISystemComponent, IBaseAssetVault, IERC20 {
     /// @notice Recovers any extra underlying both in DV and staked externally not tracked as debt.
     /// @dev Should be limited to TOKEN_SAVER_ROLE.
     /// @param destination The address to send excess underlyer to.
-    function recoverUnderlying(address destination) external;
+    function recoverUnderlying(
+        address destination
+    ) external;
 
     /// @notice Deposit underlying to receive destination vault shares
     /// @param amount amount of base lp asset to deposit
-    function depositUnderlying(uint256 amount) external returns (uint256 shares);
+    function depositUnderlying(
+        uint256 amount
+    ) external returns (uint256 shares);
 
     /// @notice Withdraw underlying by burning destination vault shares
     /// @param shares amount of destination vault shares to burn
@@ -159,7 +165,9 @@ interface IDestinationVault is ISystemComponent, IBaseAssetVault, IERC20 {
     ) external returns (uint256 amount, address[] memory tokens, uint256[] memory tokenAmounts);
 
     /// @notice Mark this vault as shutdown so that autoPools can react
-    function shutdown(VaultShutdownStatus reason) external;
+    function shutdown(
+        VaultShutdownStatus reason
+    ) external;
 
     /// @notice True if the vault has been shutdown
     function isShutdown() external view returns (bool);
@@ -209,18 +217,24 @@ interface IDestinationVault is ISystemComponent, IBaseAssetVault, IERC20 {
     /// @notice Allows to change the incentive calculator of destination vault
     /// @dev Only works when vault is shutdown, also validates the calculator before updating
     /// @param incentiveCalculator address of the new incentive calculator
-    function setIncentiveCalculator(address incentiveCalculator) external;
+    function setIncentiveCalculator(
+        address incentiveCalculator
+    ) external;
 
     /// @notice Allows to change the extension contract
     /// @dev Should be limited to DESTINATION_VAULT_MANAGER
     /// @param extension contract address
-    function setExtension(address extension) external;
+    function setExtension(
+        address extension
+    ) external;
 
     /// @notice Calls the execute function of the extension contract
     /// @dev Should be limited to DESTINATION_VAULT_MANAGER
     /// @dev Special care should be taken to ensure that balances hasn't been manipulated
     /// @param data any data that the extension contract needs
-    function executeExtension(bytes calldata data) external;
+    function executeExtension(
+        bytes calldata data
+    ) external;
 
     /// @notice Returns the max recoup credit given during the withdraw of an undervalued destination
     function recoupMaxCredit() external view returns (uint256);

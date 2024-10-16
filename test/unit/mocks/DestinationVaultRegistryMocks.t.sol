@@ -11,7 +11,9 @@ import { Errors } from "src/utils/Errors.sol";
 contract DestinationVaultRegistryMocks {
     Vm private vm;
 
-    constructor(Vm _vm) {
+    constructor(
+        Vm _vm
+    ) {
         vm = _vm;
     }
 

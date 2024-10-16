@@ -20,7 +20,9 @@ contract ProxyLSTCalculator is ILSTStats, BaseStatsCalculator {
         bool usePriceAsDiscount;
     }
 
-    constructor(ISystemRegistry _systemRegistry) BaseStatsCalculator(_systemRegistry) { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) BaseStatsCalculator(_systemRegistry) { }
 
     /// @inheritdoc IStatsCalculator
     function initialize(bytes32[] calldata, bytes calldata initData) external override initializer {

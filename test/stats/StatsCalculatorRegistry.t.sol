@@ -223,14 +223,18 @@ contract StatsCalculatorRegistryTests is Test {
         statsRegistry.setCalculatorFactory(newFactory);
     }
 
-    function generateCalculator(bytes32 aprId) internal returns (address) {
+    function generateCalculator(
+        bytes32 aprId
+    ) internal returns (address) {
         addressCounter++;
         address calculator = vm.addr(453 + addressCounter);
         vm.mockCall(calculator, abi.encodeWithSelector(IStatsCalculator.getAprId.selector), abi.encode(aprId));
         return calculator;
     }
 
-    function generateFactory(ISystemRegistry sysRegistry) internal returns (address) {
+    function generateFactory(
+        ISystemRegistry sysRegistry
+    ) internal returns (address) {
         address f = vm.addr(7);
         vm.mockCall(f, abi.encodeWithSelector(ISystemComponent.getSystemRegistry.selector), abi.encode(sysRegistry));
         return f;

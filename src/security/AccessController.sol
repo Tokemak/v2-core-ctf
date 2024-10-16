@@ -13,7 +13,9 @@ contract AccessController is SystemComponent, AccessControlEnumerable, IAccessCo
     // ------------------------------------------------------------
     //          Pre-initialize roles list for deployer
     // ------------------------------------------------------------
-    constructor(address _systemRegistry) SystemComponent(ISystemRegistry(_systemRegistry)) {
+    constructor(
+        address _systemRegistry
+    ) SystemComponent(ISystemRegistry(_systemRegistry)) {
         Errors.verifyNotZero(_systemRegistry, "systemRegistry");
 
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -37,7 +39,9 @@ contract AccessController is SystemComponent, AccessControlEnumerable, IAccessCo
     }
 
     /// @inheritdoc IAccessController
-    function verifyOwner(address account) public view {
+    function verifyOwner(
+        address account
+    ) public view {
         if (!hasRole(DEFAULT_ADMIN_ROLE, account)) {
             revert AccessDenied();
         }

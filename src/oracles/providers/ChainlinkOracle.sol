@@ -17,7 +17,9 @@ import { Errors } from "src/utils/Errors.sol";
  * @dev Returns 18 decimals of precision.
  */
 contract ChainlinkOracle is BaseAggregatorV3OracleInformation {
-    constructor(ISystemRegistry _systemRegistry) BaseAggregatorV3OracleInformation(_systemRegistry) { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) BaseAggregatorV3OracleInformation(_systemRegistry) { }
 
     /// @inheritdoc IPriceOracle
     function getDescription() external pure override returns (string memory) {
@@ -44,7 +46,9 @@ contract ChainlinkOracle is BaseAggregatorV3OracleInformation {
      * @param token Address of token.
      * @return priceInEth Price of token in ETH.
      */
-    function getPriceInEth(address token) external returns (uint256 priceInEth) {
+    function getPriceInEth(
+        address token
+    ) external returns (uint256 priceInEth) {
         OracleInfo memory oracleInfo = _getOracleInfo(token);
         // slither-disable-next-line unused-return
         (uint80 roundId, int256 price,, uint256 updatedAt,) = oracleInfo.oracle.latestRoundData();

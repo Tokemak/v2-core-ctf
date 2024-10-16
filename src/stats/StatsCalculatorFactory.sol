@@ -40,10 +40,9 @@ contract StatsCalculatorFactory is SystemComponent, IStatsCalculatorFactory, Sec
     error TemplateReplaceMismatch(bytes32 aprTemplateId, address actualOld, address specifiedOld);
     error TemplateReplaceMatches(bytes32 aprTemplateId, address actualOld, address specifiedOld);
 
-    constructor(ISystemRegistry _systemRegistry)
-        SystemComponent(_systemRegistry)
-        SecurityBase(address(_systemRegistry.accessController()))
-    { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) SystemComponent(_systemRegistry) SecurityBase(address(_systemRegistry.accessController())) { }
 
     /// @inheritdoc IStatsCalculatorFactory
     function create(
@@ -109,7 +108,9 @@ contract StatsCalculatorFactory is SystemComponent, IStatsCalculatorFactory, Sec
     }
 
     /// @inheritdoc IStatsCalculatorFactory
-    function removeTemplate(bytes32 aprTemplateId) external onlyTemplateManager {
+    function removeTemplate(
+        bytes32 aprTemplateId
+    ) external onlyTemplateManager {
         Errors.verifyNotZero(aprTemplateId, "aprTemplateId");
 
         // Template must exist otherwise why would you have called

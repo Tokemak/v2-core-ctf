@@ -24,7 +24,9 @@ contract TestWETH9 is TestERC20 {
         emit Deposit(msg.sender, msg.value);
     }
 
-    function withdraw(uint256 amount) external {
+    function withdraw(
+        uint256 amount
+    ) external {
         if (balanceOf(msg.sender) < amount) revert InvalidWithdrawalAmount();
         _burn(msg.sender, amount);
         payable(msg.sender).transfer(amount);

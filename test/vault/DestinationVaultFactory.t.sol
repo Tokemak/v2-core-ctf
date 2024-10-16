@@ -231,13 +231,17 @@ contract DestinationVaultFactoryBaseTests is Test {
         );
     }
 
-    function _generateTemplateRegistry(ISystemRegistry sysRegistry) internal returns (address) {
+    function _generateTemplateRegistry(
+        ISystemRegistry sysRegistry
+    ) internal returns (address) {
         address reg = vm.addr(1001);
         vm.mockCall(reg, abi.encodeWithSelector(ISystemComponent.getSystemRegistry.selector), abi.encode(sysRegistry));
         return reg;
     }
 
-    function _generateVaultRegistry(ISystemRegistry sysRegistry) internal returns (address) {
+    function _generateVaultRegistry(
+        ISystemRegistry sysRegistry
+    ) internal returns (address) {
         address reg = vm.addr(1002);
         vm.mockCall(reg, abi.encodeWithSelector(ISystemComponent.getSystemRegistry.selector), abi.encode(sysRegistry));
         return reg;
@@ -251,7 +255,9 @@ contract TestVault {
 
     address public rewarder;
 
-    constructor(ISystemRegistry _systemRegistry_) {
+    constructor(
+        ISystemRegistry _systemRegistry_
+    ) {
         _systemRegistry = _systemRegistry_;
     }
 

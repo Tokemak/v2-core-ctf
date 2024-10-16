@@ -76,7 +76,9 @@ contract ProxyLSTCalculatorTest is Test {
 }
 
 contract LSTCalculatorHarness is LSTCalculatorBase {
-    constructor(ISystemRegistry _systemRegistry) LSTCalculatorBase(_systemRegistry) { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) LSTCalculatorBase(_systemRegistry) { }
 
     function calculateEthPerToken() public pure override returns (uint256) {
         return 0;

@@ -28,9 +28,13 @@ interface IDestinationVaultFactory is ISystemComponent {
 
     /// @notice Sets the default reward ratio
     /// @param rewardRatio new default reward ratio
-    function setDefaultRewardRatio(uint256 rewardRatio) external;
+    function setDefaultRewardRatio(
+        uint256 rewardRatio
+    ) external;
 
     /// @notice Sets the default reward block duration
     /// @param blockDuration new default reward block duration
-    function setDefaultRewardBlockDuration(uint256 blockDuration) external;
+    function setDefaultRewardBlockDuration(
+        uint256 blockDuration
+    ) external;
 }

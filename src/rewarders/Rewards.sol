@@ -41,14 +41,18 @@ contract Rewards is IRewards, SecurityBase, SystemComponent, EIP712 {
         rewardsSigner = _rewardsSigner;
     }
 
-    function _hashRecipient(Recipient memory recipient) private pure returns (bytes32) {
+    function _hashRecipient(
+        Recipient memory recipient
+    ) private pure returns (bytes32) {
         return keccak256(
             abi.encode(_RECIPIENT_TYPEHASH, recipient.chainId, recipient.cycle, recipient.wallet, recipient.amount)
         );
     }
 
     /// @inheritdoc IRewards
-    function genHash(Recipient memory recipient) public view returns (bytes32) {
+    function genHash(
+        Recipient memory recipient
+    ) public view returns (bytes32) {
         return _hashTypedDataV4(_hashRecipient(recipient));
     }
 
@@ -57,7 +61,9 @@ contract Rewards is IRewards, SecurityBase, SystemComponent, EIP712 {
     }
 
     /// @inheritdoc IRewards
-    function setSigner(address newSigner) external override onlyOwner {
+    function setSigner(
+        address newSigner
+    ) external override onlyOwner {
         Errors.verifyNotZero(newSigner, "newSigner");
 
         // slither-disable-next-line missing-zero-check
@@ -67,7 +73,9 @@ contract Rewards is IRewards, SecurityBase, SystemComponent, EIP712 {
     }
 
     /// @inheritdoc IRewards
-    function getClaimableAmount(Recipient calldata recipient) external view override returns (uint256) {
+    function getClaimableAmount(
+        Recipient calldata recipient
+    ) external view override returns (uint256) {
         return recipient.amount - claimedAmounts[recipient.wallet];
     }
 

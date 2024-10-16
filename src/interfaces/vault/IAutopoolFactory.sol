@@ -23,9 +23,13 @@ interface IAutopoolFactory {
         bytes calldata extraParams
     ) external payable returns (address newVaultAddress);
 
-    function addStrategyTemplate(address strategyTemplate) external;
+    function addStrategyTemplate(
+        address strategyTemplate
+    ) external;
 
-    function removeStrategyTemplate(address strategyTemplate) external;
+    function removeStrategyTemplate(
+        address strategyTemplate
+    ) external;
 
     /// @notice Returns the template used to create Autopools
     function template() external returns (address);

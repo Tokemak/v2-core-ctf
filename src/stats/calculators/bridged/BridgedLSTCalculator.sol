@@ -66,7 +66,9 @@ contract BridgedLSTCalculator is LSTCalculatorBase, MessageReceiverBase {
     /// Functions - Constructor/Initializer
     /// =====================================================
 
-    constructor(ISystemRegistry _systemRegistry) LSTCalculatorBase(_systemRegistry) { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) LSTCalculatorBase(_systemRegistry) { }
 
     /// @inheritdoc IStatsCalculator
     function initialize(bytes32[] calldata, bytes memory initData) public virtual override initializer {
@@ -89,7 +91,9 @@ contract BridgedLSTCalculator is LSTCalculatorBase, MessageReceiverBase {
 
     /// @notice Update the contract used to lookup bridged eth/token values
     /// @param newStore New lookup contract
-    function setEthPerTokenStore(EthPerTokenStore newStore) external hasRole(Roles.STATS_GENERAL_MANAGER) {
+    function setEthPerTokenStore(
+        EthPerTokenStore newStore
+    ) external hasRole(Roles.STATS_GENERAL_MANAGER) {
         _setEthPerTokenStore(newStore);
     }
 
@@ -198,7 +202,9 @@ contract BridgedLSTCalculator is LSTCalculatorBase, MessageReceiverBase {
         }
     }
 
-    function _setEthPerTokenStore(EthPerTokenStore newStore) internal {
+    function _setEthPerTokenStore(
+        EthPerTokenStore newStore
+    ) internal {
         Errors.verifyNotZero(address(newStore), "newStore");
 
         ethPerTokenStore = newStore;

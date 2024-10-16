@@ -81,7 +81,9 @@ contract EethOracleTests is Test {
         assertEq(eethPrice, 0.5e18, "price");
     }
 
-    function _mockEETHByWeETH(uint256 per) internal {
+    function _mockEETHByWeETH(
+        uint256 per
+    ) internal {
         vm.mockCall(address(weETH), abi.encodeWithSelector(IweETH.getEETHByWeETH.selector, 1 ether), abi.encode(per));
     }
 
@@ -93,7 +95,9 @@ contract EethOracleTests is Test {
         );
     }
 
-    function _generateSystemRegistry(address rootOracle) internal returns (ISystemRegistry) {
+    function _generateSystemRegistry(
+        address rootOracle
+    ) internal returns (ISystemRegistry) {
         address registry = makeAddr("registry");
         vm.mockCall(registry, abi.encodeWithSelector(ISystemRegistry.rootPriceOracle.selector), abi.encode(rootOracle));
         return ISystemRegistry(registry);

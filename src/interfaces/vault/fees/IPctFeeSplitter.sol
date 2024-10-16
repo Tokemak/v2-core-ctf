@@ -22,12 +22,16 @@ interface IPctFeeSplitter is ISystemComponent {
      * @param _feeRecipients The array of FeeRecipient struct.
      * @dev can only be called by the AutoPoolManager and the total percentage should be 100%.
      */
-    function setFeeRecipients(FeeRecipient[] memory _feeRecipients) external;
+    function setFeeRecipients(
+        FeeRecipient[] memory _feeRecipients
+    ) external;
 
     /**
      * @notice Distribute fees among the fee recipients in the denominated token.
      * @param token The fee denominated token to be distributed among recipeints.
      * @dev can only be called by one of the fee recipients.
      */
-    function claimFees(address token) external;
+    function claimFees(
+        address token
+    ) external;
 }

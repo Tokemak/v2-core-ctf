@@ -22,7 +22,9 @@ contract NavTrackingUsage {
         }
     }
 
-    function getDaysAgo(uint8 daysAgo) public view returns (uint256) {
+    function getDaysAgo(
+        uint8 daysAgo
+    ) public view returns (uint256) {
         return state.getDaysAgo(daysAgo);
     }
 }

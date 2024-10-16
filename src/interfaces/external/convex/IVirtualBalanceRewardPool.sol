@@ -14,7 +14,9 @@ interface IVirtualBalanceRewardPool {
     function rewardToken() external view returns (IERC20);
 
     /// @notice Get balance of an address
-    function balanceOf(address _account) external view returns (uint256);
+    function balanceOf(
+        address _account
+    ) external view returns (uint256);
 
     /// @notice timestamp when reward period ends
     function periodFinish() external view returns (uint256);

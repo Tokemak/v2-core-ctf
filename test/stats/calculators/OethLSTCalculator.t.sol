@@ -37,7 +37,9 @@ contract OethLSTCalculatorTests is Test {
         assertEq(_calculator.usePriceAsDiscount(), true, "usePriceAsDiscount");
     }
 
-    function _setUp(uint256 targetBlock) private returns (OethLSTCalculator) {
+    function _setUp(
+        uint256 targetBlock
+    ) private returns (OethLSTCalculator) {
         uint256 mainnetFork = vm.createFork(vm.envString("MAINNET_RPC_URL"), targetBlock);
         vm.selectFork(mainnetFork);
 

@@ -84,7 +84,9 @@ contract TellorOracle is BaseOracleDenominations, UsingTellor {
      * @notice Allows ORACLE_MANAGER to set the freshness of Tellor price data
      * @param _newFreshness The new freshness time in seconds
      */
-    function setTellorPricingFreshness(uint256 _newFreshness) external hasRole(Roles.ORACLE_MANAGER) {
+    function setTellorPricingFreshness(
+        uint256 _newFreshness
+    ) external hasRole(Roles.ORACLE_MANAGER) {
         Errors.verifyNotZero(_newFreshness, "newFreshness");
         tellorPricingFreshness = _newFreshness;
         emit TellorPricingFreshnessUpdated(_newFreshness);
@@ -125,7 +127,9 @@ contract TellorOracle is BaseOracleDenominations, UsingTellor {
      * @dev Also removes any cached pricing.
      * @param token Token to remove TellorInfo struct for.
      */
-    function removeTellorRegistration(address token) external hasRole(Roles.ORACLE_MANAGER) {
+    function removeTellorRegistration(
+        address token
+    ) external hasRole(Roles.ORACLE_MANAGER) {
         Errors.verifyNotZero(token, "tokenToRemoveRegistration");
         bytes32 queryIdBeforeDeletion = tellorQueryInfo[token].queryId;
         Errors.verifyNotZero(queryIdBeforeDeletion, "queryIdBeforeDeletion");
@@ -139,7 +143,9 @@ contract TellorOracle is BaseOracleDenominations, UsingTellor {
      * @dev Will return empty struct for unregistered token address.
      * @param token Address of token to view TellorInfo struct for.
      */
-    function getQueryInfo(address token) external view returns (TellorInfo memory) {
+    function getQueryInfo(
+        address token
+    ) external view returns (TellorInfo memory) {
         return tellorQueryInfo[token];
     }
 
@@ -150,7 +156,9 @@ contract TellorOracle is BaseOracleDenominations, UsingTellor {
      *      https://github.com/tellor-io/dataSpecs/blob/main/types/SpotPrice.md
      */
     // slither-disable-start timestamp
-    function getPriceInEth(address tokenToPrice) external returns (uint256) {
+    function getPriceInEth(
+        address tokenToPrice
+    ) external returns (uint256) {
         TellorInfo memory tellorInfo = _getQueryInfo(tokenToPrice);
         uint256 timestamp = block.timestamp;
         uint256 tellorMaxAllowableTimestamp = timestamp - tellorPricingFreshness;
@@ -193,7 +201,9 @@ contract TellorOracle is BaseOracleDenominations, UsingTellor {
     // slither-disable-end timestamp
 
     /// @dev Used to enforce non-existent queryId checks
-    function _getQueryInfo(address token) private view returns (TellorInfo memory tellorInfo) {
+    function _getQueryInfo(
+        address token
+    ) private view returns (TellorInfo memory tellorInfo) {
         tellorInfo = tellorQueryInfo[token];
         Errors.verifyNotZero(tellorInfo.queryId, "queryId");
     }

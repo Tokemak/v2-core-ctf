@@ -8,10 +8,14 @@ interface ILiquidityGaugeV2 {
     function reward_contract() external view returns (address);
 
     /// @notice get the reward token address
-    function reward_tokens(uint256 i) external view returns (address);
+    function reward_tokens(
+        uint256 i
+    ) external view returns (address);
 
     /// @notice claim available reward tokens for `_account`
-    function claim_rewards(address _account) external;
+    function claim_rewards(
+        address _account
+    ) external;
 
     /// @notice deposit `_value` LP tokens to the gauge
     function deposit(uint256 _value, address _addr) external;

@@ -66,10 +66,9 @@ contract EthPerTokenSender is SystemComponent, SecurityBase {
     /// Functions - Constructor
     /// =====================================================
 
-    constructor(ISystemRegistry _systemRegistry)
-        SystemComponent(_systemRegistry)
-        SecurityBase(address(_systemRegistry.accessController()))
-    {
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) SystemComponent(_systemRegistry) SecurityBase(address(_systemRegistry.accessController())) {
         _setHeartbeat(2 days);
     }
 
@@ -79,7 +78,9 @@ contract EthPerTokenSender is SystemComponent, SecurityBase {
 
     /// @notice Get the latest ethPerToken for the specified calculators and send to other chains
     /// @param calculators Calculators to query
-    function execute(address[] memory calculators) external hasRole(Roles.STATS_LST_ETH_TOKEN_EXECUTOR) {
+    function execute(
+        address[] memory calculators
+    ) external hasRole(Roles.STATS_LST_ETH_TOKEN_EXECUTOR) {
         uint256 len = calculators.length;
         Errors.verifyNotZero(len, "len");
 
@@ -150,13 +151,17 @@ contract EthPerTokenSender is SystemComponent, SecurityBase {
 
     /// @notice Set the max elapsed seconds before we'll send a value even if unchanged
     /// @param newHeartbeat New value to set
-    function setHeartbeat(uint256 newHeartbeat) external hasRole(Roles.STATS_GENERAL_MANAGER) {
+    function setHeartbeat(
+        uint256 newHeartbeat
+    ) external hasRole(Roles.STATS_GENERAL_MANAGER) {
         _setHeartbeat(newHeartbeat);
     }
 
     /// @notice Add calculators that should send their data to other chains
     /// @param calculators The apr id's of the calculators to add
-    function registerCalculators(bytes32[] memory calculators) external hasRole(Roles.STATS_GENERAL_MANAGER) {
+    function registerCalculators(
+        bytes32[] memory calculators
+    ) external hasRole(Roles.STATS_GENERAL_MANAGER) {
         uint256 len = calculators.length;
         Errors.verifyNotZero(len, "len");
 
@@ -179,7 +184,9 @@ contract EthPerTokenSender is SystemComponent, SecurityBase {
 
     /// @notice Removes calculators that have already been added
     /// @param calculators Addresses of the calculators to remove
-    function unregisterCalculators(address[] memory calculators) external hasRole(Roles.STATS_GENERAL_MANAGER) {
+    function unregisterCalculators(
+        address[] memory calculators
+    ) external hasRole(Roles.STATS_GENERAL_MANAGER) {
         uint256 len = calculators.length;
         Errors.verifyNotZero(len, "len");
 
@@ -252,7 +259,9 @@ contract EthPerTokenSender is SystemComponent, SecurityBase {
         }
     }
 
-    function _setHeartbeat(uint256 newHeartbeat) internal {
+    function _setHeartbeat(
+        uint256 newHeartbeat
+    ) internal {
         Errors.verifyNotZero(newHeartbeat, "newHeartbeat");
 
         // Sanity Check

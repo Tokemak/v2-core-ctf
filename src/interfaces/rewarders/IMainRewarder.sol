@@ -16,7 +16,9 @@ interface IMainRewarder is IBaseRewarder {
      * @notice Adds an ExtraRewarder contract address to the extraRewards array.
      * @param reward The address of the ExtraRewarder contract.
      */
-    function addExtraReward(address reward) external;
+    function addExtraReward(
+        address reward
+    ) external;
 
     /**
      * @notice Withdraws the specified amount of tokens from the vault for the specified account, and transfers all
@@ -51,5 +53,7 @@ interface IMainRewarder is IBaseRewarder {
     /**
      * @notice Get the rewarder at the specified index
      */
-    function getExtraRewarder(uint256 index) external view returns (IExtraRewarder);
+    function getExtraRewarder(
+        uint256 index
+    ) external view returns (IExtraRewarder);
 }

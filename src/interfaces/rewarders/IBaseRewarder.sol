@@ -43,7 +43,9 @@ interface IBaseRewarder {
      * @param account Address of the account.
      * @return The earned rewards for the given account.
      */
-    function earned(address account) external view returns (uint256);
+    function earned(
+        address account
+    ) external view returns (uint256);
 
     /**
      * @notice Calculates the rewards per token for the current block.
@@ -83,13 +85,17 @@ interface IBaseRewarder {
      * @notice The amount of tokens staked for the specified account
      * @param account The address of the account to get the balance of
      */
-    function balanceOf(address account) external view returns (uint256);
+    function balanceOf(
+        address account
+    ) external view returns (uint256);
 
     /**
      * @notice Queue new rewards to be distributed.
      * @param newRewards The amount of new rewards to be queued.
      */
-    function queueNewRewards(uint256 newRewards) external;
+    function queueNewRewards(
+        uint256 newRewards
+    ) external;
 
     /**
      * @notice Token distributed as rewards
@@ -101,13 +107,17 @@ interface IBaseRewarder {
      * @notice Add an address to the whitelist.
      * @param wallet The address to be added to the whitelist.
      */
-    function addToWhitelist(address wallet) external;
+    function addToWhitelist(
+        address wallet
+    ) external;
 
     /**
      * @notice Remove an address from the whitelist.
      * @param wallet The address to be removed from the whitelist.
      */
-    function removeFromWhitelist(address wallet) external;
+    function removeFromWhitelist(
+        address wallet
+    ) external;
 
     /**
      * @notice Recovers tokens from the rewarder. However, a recovery duration of 1 year is applicable for reward token
@@ -121,5 +131,7 @@ interface IBaseRewarder {
      * @param wallet The address to be checked.
      * @return bool indicating if the address is whitelisted.
      */
-    function isWhitelisted(address wallet) external view returns (bool);
+    function isWhitelisted(
+        address wallet
+    ) external view returns (bool);
 }

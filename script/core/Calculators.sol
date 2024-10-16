@@ -83,7 +83,9 @@ contract Calculators is Oracle {
         address gaugeAddress;
     }
 
-    constructor(VmSafe _vm) {
+    constructor(
+        VmSafe _vm
+    ) {
         vm = _vm;
     }
 

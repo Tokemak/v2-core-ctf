@@ -33,7 +33,9 @@ abstract contract ERC4626Test is ERC4626Prop {
     //
     // init.user[i]'s assets == init.asset[i]
     // init.user[i]'s shares == init.share[i]
-    function setUpVault(Init memory init) public virtual {
+    function setUpVault(
+        Init memory init
+    ) public virtual {
         // setup initial shares and assets for individual users
         for (uint256 i = 0; i < N; i++) {
             address user = init.user[i];
@@ -63,7 +65,9 @@ abstract contract ERC4626Test is ERC4626Prop {
     }
 
     // setup initial yield
-    function setUpYield(Init memory init) public virtual {
+    function setUpYield(
+        Init memory init
+    ) public virtual {
         if (init.yield >= 0) {
             // gain
             uint256 gain = uint256(init.yield);
@@ -85,13 +89,17 @@ abstract contract ERC4626Test is ERC4626Prop {
     //
     // asset
     //
-    function test_asset(Init memory init) public virtual {
+    function test_asset(
+        Init memory init
+    ) public virtual {
         setUpVault(init);
         address caller = init.user[0];
         prop_asset(caller);
     }
 
-    function test_totalAssets(Init memory init) public virtual {
+    function test_totalAssets(
+        Init memory init
+    ) public virtual {
         setUpVault(init);
         address caller = init.user[0];
         prop_totalAssets(caller);
@@ -117,7 +125,9 @@ abstract contract ERC4626Test is ERC4626Prop {
     //
     // deposit
     //
-    function test_maxDeposit(Init memory init) public virtual {
+    function test_maxDeposit(
+        Init memory init
+    ) public virtual {
         setUpVault(init);
         address caller = init.user[0];
         address receiver = init.user[1];
@@ -146,7 +156,9 @@ abstract contract ERC4626Test is ERC4626Prop {
     //
     // mint
     //
-    function test_maxMint(Init memory init) public virtual {
+    function test_maxMint(
+        Init memory init
+    ) public virtual {
         setUpVault(init);
         address caller = init.user[0];
         address receiver = init.user[1];
@@ -175,7 +187,9 @@ abstract contract ERC4626Test is ERC4626Prop {
     //
     // withdraw
     //
-    function test_maxWithdraw(Init memory init) public virtual {
+    function test_maxWithdraw(
+        Init memory init
+    ) public virtual {
         setUpVault(init);
         address caller = init.user[0];
         address owner = init.user[1];
@@ -220,7 +234,9 @@ abstract contract ERC4626Test is ERC4626Prop {
     //
     // redeem
     //
-    function test_maxRedeem(Init memory init) public virtual {
+    function test_maxRedeem(
+        Init memory init
+    ) public virtual {
         setUpVault(init);
         address caller = init.user[0];
         address owner = init.user[1];
@@ -331,11 +347,15 @@ abstract contract ERC4626Test is ERC4626Prop {
     //
     // utils
     //
-    function _isContract(address account) internal view returns (bool) {
+    function _isContract(
+        address account
+    ) internal view returns (bool) {
         return account.code.length > 0;
     }
 
-    function _isEOA(address account) internal view returns (bool) {
+    function _isEOA(
+        address account
+    ) internal view returns (bool) {
         return account.code.length == 0;
     }
 
@@ -353,22 +373,30 @@ abstract contract ERC4626Test is ERC4626Prop {
         if (returnData.length > 0) vm.assume(abi.decode(returnData, (bool)));
     }
 
-    function _max_deposit(address from) internal virtual returns (uint256) {
+    function _max_deposit(
+        address from
+    ) internal virtual returns (uint256) {
         if (_unlimitedAmount) return type(uint256).max;
         return IERC20(_underlying_).balanceOf(from);
     }
 
-    function _max_mint(address from) internal virtual returns (uint256) {
+    function _max_mint(
+        address from
+    ) internal virtual returns (uint256) {
         if (_unlimitedAmount) return type(uint256).max;
         return vault_convertToShares(IERC20(_underlying_).balanceOf(from));
     }
 
-    function _max_withdraw(address from) internal virtual returns (uint256) {
+    function _max_withdraw(
+        address from
+    ) internal virtual returns (uint256) {
         if (_unlimitedAmount) return type(uint256).max;
         return vault_convertToAssets(IERC20(_vault_).balanceOf(from)); // may be different from maxWithdraw(from)
     }
 
-    function _max_redeem(address from) internal virtual returns (uint256) {
+    function _max_redeem(
+        address from
+    ) internal virtual returns (uint256) {
         if (_unlimitedAmount) return type(uint256).max;
         return IERC20(_vault_).balanceOf(from); // may be different from maxRedeem(from)
     }

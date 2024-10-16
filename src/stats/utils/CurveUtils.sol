@@ -6,7 +6,9 @@ import { IERC20Metadata } from "openzeppelin-contracts/token/ERC20/extensions/IE
 import { Stats } from "src/stats/Stats.sol";
 
 library CurveUtils {
-    function getDecimals(address token) internal view returns (uint256) {
+    function getDecimals(
+        address token
+    ) internal view returns (uint256) {
         if (token == Stats.CURVE_ETH) {
             return 18;
         } else {

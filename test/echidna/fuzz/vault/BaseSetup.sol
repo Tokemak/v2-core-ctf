@@ -83,7 +83,9 @@ contract BasePoolSetup {
         _users[2] = _user3;
     }
 
-    function initializeBaseSetup(address vaultAsset) public {
+    function initializeBaseSetup(
+        address vaultAsset
+    ) public {
         // Setup Assets
         _weth = new WETH9();
 
@@ -217,13 +219,19 @@ contract BasePoolSetup {
 contract TestDestinationVault is DestinationVault, Numbers {
     int16 internal _nextBurnSlippage;
 
-    constructor(ISystemRegistry sysRegistry) DestinationVault(sysRegistry) { }
+    constructor(
+        ISystemRegistry sysRegistry
+    ) DestinationVault(sysRegistry) { }
 
-    function setNextBurnSlippage(int16 slippage) public {
+    function setNextBurnSlippage(
+        int16 slippage
+    ) public {
         _nextBurnSlippage = slippage;
     }
 
-    function _validateCalculator(address calculator) internal virtual override { }
+    function _validateCalculator(
+        address calculator
+    ) internal virtual override { }
 
     function exchangeName() external pure override returns (string memory) {
         return "test";
@@ -237,18 +245,17 @@ contract TestDestinationVault is DestinationVault, Numbers {
         return false;
     }
 
-    function _ensureLocalUnderlyingBalance(uint256 amount) internal virtual override { }
+    function _ensureLocalUnderlyingBalance(
+        uint256 amount
+    ) internal virtual override { }
 
     function burn(address account, uint256 amount) public {
         _burn(account, amount);
     }
 
-    function _burnUnderlyer(uint256 underlyerAmount)
-        internal
-        virtual
-        override
-        returns (address[] memory tokens, uint256[] memory amounts)
-    {
+    function _burnUnderlyer(
+        uint256 underlyerAmount
+    ) internal virtual override returns (address[] memory tokens, uint256[] memory amounts) {
         TestERC20(_underlying).burn(address(this), underlyerAmount);
 
         // Just convert the tokens back based on price
@@ -269,7 +276,9 @@ contract TestDestinationVault is DestinationVault, Numbers {
         amounts[0] = amount;
     }
 
-    function _onDeposit(uint256 amount) internal virtual override { }
+    function _onDeposit(
+        uint256 amount
+    ) internal virtual override { }
 
     function balanceOfUnderlyingDebt() public view override returns (uint256) {
         return TestERC20(_underlying).balanceOf(address(this));
@@ -311,11 +320,15 @@ contract TestDestinationVault is DestinationVault, Numbers {
 contract TestDestVaultRegistry {
     address public getSystemRegistry;
 
-    constructor(address systemRegistry) {
+    constructor(
+        address systemRegistry
+    ) {
         getSystemRegistry = systemRegistry;
     }
 
-    function isRegistered(address) external pure returns (bool) {
+    function isRegistered(
+        address
+    ) external pure returns (bool) {
         return true;
     }
 }
@@ -323,7 +336,9 @@ contract TestDestVaultRegistry {
 contract TestingAccessController {
     address public getSystemRegistry;
 
-    constructor(ISystemRegistry systemRegistry) {
+    constructor(
+        ISystemRegistry systemRegistry
+    ) {
         getSystemRegistry = address(systemRegistry);
     }
 
@@ -331,7 +346,9 @@ contract TestingAccessController {
         return true;
     }
 
-    function verifyOwner(address) external view { }
+    function verifyOwner(
+        address
+    ) external view { }
 }
 
 contract TestingPool is AutopoolETH, CryticIERC4626Internal {
@@ -348,30 +365,42 @@ contract TestingPool is AutopoolETH, CryticIERC4626Internal {
 
     constructor(ISystemRegistry sr, address va) AutopoolETH(sr, va) { }
 
-    function setCryticFnsEnabled(bool val) public {
+    function setCryticFnsEnabled(
+        bool val
+    ) public {
         _enableCryticFns = val;
     }
 
-    function setDisableNavDecreaseCheck(bool val) public {
+    function setDisableNavDecreaseCheck(
+        bool val
+    ) public {
         _disableNavDecreaseCheck = val;
     }
 
-    function setNextDepositGetsDoubleShares(bool val) public {
+    function setNextDepositGetsDoubleShares(
+        bool val
+    ) public {
         _nextDepositGetsDoubleShares = val;
     }
 
-    function setNextRebalanceResult(AutopoolDebt.IdleDebtUpdates memory nextRebalanceResults) public {
+    function setNextRebalanceResult(
+        AutopoolDebt.IdleDebtUpdates memory nextRebalanceResults
+    ) public {
         _nextRebalanceResults = nextRebalanceResults;
     }
 
-    function increaseIdle(uint256 amount) public {
+    function increaseIdle(
+        uint256 amount
+    ) public {
         _assetBreakdown.totalIdle += amount;
 
         TestERC20(address(_baseAsset)).mint(address(this), amount);
     }
 
     /// @notice Called by the Crytic property tests.
-    function recognizeProfit(uint256 profit) public cryticFns {
+    function recognizeProfit(
+        uint256 profit
+    ) public cryticFns {
         if (profit > type(uint112).max) {
             revert("Can't happen");
         }
@@ -384,7 +413,9 @@ contract TestingPool is AutopoolETH, CryticIERC4626Internal {
     }
 
     /// @notice Called by the Crytic property tests.
-    function recognizeLoss(uint256 loss) public cryticFns {
+    function recognizeLoss(
+        uint256 loss
+    ) public cryticFns {
         uint256 startingTotalAssets = totalAssets();
         uint256 lossLeft = loss;
 
@@ -508,11 +539,15 @@ contract TestSolver is Numbers, IERC3156FlashBorrower {
 contract TestAutopoolRegistry {
     address public getSystemRegistry;
 
-    constructor(ISystemRegistry systemRegistry) {
+    constructor(
+        ISystemRegistry systemRegistry
+    ) {
         getSystemRegistry = address(systemRegistry);
     }
 
-    function isVault(address) external pure returns (bool) {
+    function isVault(
+        address
+    ) external pure returns (bool) {
         return true;
     }
 }
@@ -610,7 +645,9 @@ contract TestingStrategy is IAutopoolStrategy {
 
     uint256 public immutable defaultLstPriceGapTolerance = 0;
 
-    function setNextRebalanceSuccess(bool succeeds) public {
+    function setNextRebalanceSuccess(
+        bool succeeds
+    ) public {
         _nextRebalanceSuccess = succeeds;
     }
 
@@ -626,14 +663,17 @@ contract TestingStrategy is IAutopoolStrategy {
         }
     }
 
-    function navUpdate(uint256) external { }
+    function navUpdate(
+        uint256
+    ) external { }
 
-    function rebalanceSuccessfullyExecuted(IStrategy.RebalanceParams memory) external { }
+    function rebalanceSuccessfullyExecuted(
+        IStrategy.RebalanceParams memory
+    ) external { }
 
-    function getRebalanceOutSummaryStats(IStrategy.RebalanceParams memory)
-        external
-        returns (IStrategy.SummaryStats memory outSummary)
-    { }
+    function getRebalanceOutSummaryStats(
+        IStrategy.RebalanceParams memory
+    ) external returns (IStrategy.SummaryStats memory outSummary) { }
 
     function getDestinationSummaryStats(
         address destAddress,

@@ -15,7 +15,9 @@ contract TestERC20 is ERC20 {
         return _decimals;
     }
 
-    function setDecimals(uint8 newDecimals) external {
+    function setDecimals(
+        uint8 newDecimals
+    ) external {
         _decimals = newDecimals;
     }
 

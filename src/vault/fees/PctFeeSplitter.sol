@@ -20,13 +20,14 @@ contract PctFeeSplitter is IPctFeeSplitter, SecurityBase, SystemComponent {
 
     FeeRecipient[] public feeRecipients;
 
-    constructor(ISystemRegistry _systemRegistry)
-        SystemComponent(_systemRegistry)
-        SecurityBase(address(_systemRegistry.accessController()))
-    { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) SystemComponent(_systemRegistry) SecurityBase(address(_systemRegistry.accessController())) { }
 
     /// @inheritdoc IPctFeeSplitter
-    function setFeeRecipients(FeeRecipient[] memory _feeRecipients) external hasRole(Roles.AUTO_POOL_MANAGER) {
+    function setFeeRecipients(
+        FeeRecipient[] memory _feeRecipients
+    ) external hasRole(Roles.AUTO_POOL_MANAGER) {
         uint16 totalPct = 0;
         delete feeRecipients;
         for (uint256 i = 0; i < _feeRecipients.length;) {
@@ -46,7 +47,9 @@ contract PctFeeSplitter is IPctFeeSplitter, SecurityBase, SystemComponent {
     }
 
     /// @inheritdoc IPctFeeSplitter
-    function claimFees(address token) external {
+    function claimFees(
+        address token
+    ) external {
         bool calledByRecipient = false;
         uint256 length = feeRecipients.length;
         uint256 feeBalance = IERC20(token).balanceOf(address(this));

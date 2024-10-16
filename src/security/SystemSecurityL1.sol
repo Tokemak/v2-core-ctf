@@ -6,7 +6,9 @@ import { SystemSecurity, ISystemSecurity } from "src/security/SystemSecurity.sol
 import { ISystemRegistry } from "src/interfaces/ISystemRegistry.sol";
 
 contract SystemSecurityL1 is ISystemSecurity, SystemSecurity {
-    constructor(ISystemRegistry _systemRegistry) SystemSecurity(_systemRegistry) { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) SystemSecurity(_systemRegistry) { }
 
     /// @inheritdoc ISystemSecurity
     function isSystemPaused() external view override returns (bool) {

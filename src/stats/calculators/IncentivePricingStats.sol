@@ -48,13 +48,14 @@ contract IncentivePricingStats is IIncentivesPricingStats, SystemComponent, Secu
         _;
     }
 
-    constructor(ISystemRegistry _systemRegistry)
-        SystemComponent(_systemRegistry)
-        SecurityBase(address(_systemRegistry.accessController()))
-    { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) SystemComponent(_systemRegistry) SecurityBase(address(_systemRegistry.accessController())) { }
 
     /// @inheritdoc IIncentivesPricingStats
-    function setRegisteredToken(address token) external onlyUpdater {
+    function setRegisteredToken(
+        address token
+    ) external onlyUpdater {
         if (!registeredTokens.add(token)) revert TokenAlreadyRegistered(token);
 
         IRootPriceOracle pricer = systemRegistry.rootPriceOracle();
@@ -68,7 +69,9 @@ contract IncentivePricingStats is IIncentivesPricingStats, SystemComponent, Secu
     }
 
     /// @inheritdoc IIncentivesPricingStats
-    function removeRegisteredToken(address token) external onlyUpdater {
+    function removeRegisteredToken(
+        address token
+    ) external onlyUpdater {
         if (!registeredTokens.remove(token)) revert TokenNotFound(token);
         delete tokenSnapshotInfo[token];
         emit TokenRemoved(token);
@@ -95,7 +98,9 @@ contract IncentivePricingStats is IIncentivesPricingStats, SystemComponent, Secu
     }
 
     /// @inheritdoc IIncentivesPricingStats
-    function snapshot(address[] calldata tokensToSnapshot) external onlyStatsSnapshot {
+    function snapshot(
+        address[] calldata tokensToSnapshot
+    ) external onlyStatsSnapshot {
         if (tokensToSnapshot.length == 0) revert Errors.InvalidParam("tokensToSnapshot");
         IRootPriceOracle pricer = systemRegistry.rootPriceOracle();
 

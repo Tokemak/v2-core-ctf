@@ -63,7 +63,9 @@ contract AerodromeRewardsAdapterTest is Test {
         _verifyPool(0xA6385c73961dd9C58db2EF0c4EB98cE4B60651e8);
     }
 
-    function _verifyPool(address pool) private {
+    function _verifyPool(
+        address pool
+    ) private {
         address gauge = _getGaugeForPool(pool);
         _stakeForRewards(pool, gauge);
 
@@ -92,7 +94,9 @@ contract AerodromeRewardsAdapterTest is Test {
         vm.warp(block.timestamp + 7 days);
     }
 
-    function _getGaugeForPool(address pool) private view returns (address) {
+    function _getGaugeForPool(
+        address pool
+    ) private view returns (address) {
         return voter.gauges(pool);
     }
 }

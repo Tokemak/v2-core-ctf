@@ -15,7 +15,9 @@ contract EthPeggedOracleTests is Test {
         _oracle = new EthPeggedOracle(_systemRegistry);
     }
 
-    function testBasicPrice(address token) public {
+    function testBasicPrice(
+        address token
+    ) public {
         uint256 price = _oracle.getPriceInEth(token);
 
         assertEq(price, 1e18);

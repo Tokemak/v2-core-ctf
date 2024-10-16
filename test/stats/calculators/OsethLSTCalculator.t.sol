@@ -65,7 +65,9 @@ contract OsethLSTCalculatorTests is Test {
         _calculator.setOsEthPriceOracle(address(1));
     }
 
-    function _setUp(uint256 targetBlock) private returns (OsethLSTCalculator) {
+    function _setUp(
+        uint256 targetBlock
+    ) private returns (OsethLSTCalculator) {
         uint256 mainnetFork = vm.createFork(vm.envString("MAINNET_RPC_URL"), targetBlock);
         vm.selectFork(mainnetFork);
 

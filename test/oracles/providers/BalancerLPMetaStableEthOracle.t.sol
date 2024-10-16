@@ -47,7 +47,9 @@ contract BalancerLPMetaStableEthOracleTests is Test {
         assertEq(address(VAULT), address(oracle.balancerVault()));
     }
 
-    function generateSystemRegistry(address rootOracle) internal returns (ISystemRegistry) {
+    function generateSystemRegistry(
+        address rootOracle
+    ) internal returns (ISystemRegistry) {
         address registry = vm.addr(327_849);
         vm.mockCall(registry, abi.encodeWithSelector(ISystemRegistry.rootPriceOracle.selector), abi.encode(rootOracle));
         return ISystemRegistry(registry);

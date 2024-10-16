@@ -28,7 +28,9 @@ abstract contract PeripheryPayments {
     error InsufficientToken();
     error InsufficientETH();
 
-    constructor(IWETH9 _weth9) {
+    constructor(
+        IWETH9 _weth9
+    ) {
         weth9 = _weth9;
     }
 
@@ -54,7 +56,9 @@ abstract contract PeripheryPayments {
     }
 
     // takes an amount now and do a deposit
-    function wrapWETH9(uint256 amount) public payable {
+    function wrapWETH9(
+        uint256 amount
+    ) public payable {
         if (address(this).balance >= amount) {
             weth9.deposit{ value: amount }();
         } else {

@@ -12,7 +12,9 @@ import { Vm } from "forge-std/Vm.sol";
 contract TokenReturnSolver is IERC3156FlashBorrower {
     Vm private vm;
 
-    constructor(Vm _vm) {
+    constructor(
+        Vm _vm
+    ) {
         vm = _vm;
     }
 

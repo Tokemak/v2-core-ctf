@@ -62,7 +62,9 @@ contract SystemRegistryL2 is SystemRegistryBase, ISystemRegistryL2 {
 
     /// @notice Set the Toke for this instance of the system
     /// @param newToke Address of the Toke contract
-    function setToke(address newToke) external onlyOwner {
+    function setToke(
+        address newToke
+    ) external onlyOwner {
         Errors.verifyNotZero(newToke, "newToke");
 
         if (address(toke) == newToke) {
@@ -80,7 +82,9 @@ contract SystemRegistryL2 is SystemRegistryBase, ISystemRegistryL2 {
     /// @dev Value can be replaced
     /// @dev This is expected to be a zero address on an L2 that does not use a sequencer
     /// @param checker Address of the sequencer checker
-    function setSequencerChecker(address checker) external onlyOwner {
+    function setSequencerChecker(
+        address checker
+    ) external onlyOwner {
         Errors.verifyNotZero(checker, "checker");
 
         if (checker == address(_sequencerChecker)) {

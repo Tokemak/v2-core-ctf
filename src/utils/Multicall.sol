@@ -11,7 +11,9 @@ abstract contract Multicall is IMulticall {
     error MulticallFailed();
 
     /// @inheritdoc IMulticall
-    function multicall(bytes[] calldata data) public payable override returns (bytes[] memory results) {
+    function multicall(
+        bytes[] calldata data
+    ) public payable override returns (bytes[] memory results) {
         results = new bytes[](data.length);
 
         /* solhint-disable avoid-low-level-calls, reason-string, no-inline-assembly */

@@ -16,16 +16,22 @@ interface IConvexRewardPool {
     function rewardLength() external view returns (uint256);
 
     /// @notice get the reward token address
-    function rewards(uint256 i) external view returns (RewardType memory);
+    function rewards(
+        uint256 i
+    ) external view returns (RewardType memory);
 
     /// @notice claim reward for given account (unguarded)
-    function getReward(address _account) external;
+    function getReward(
+        address _account
+    ) external;
 
     /// @notice convex pool id
     function convexPoolId() external view returns (uint256);
 
     /// @notice queue new rewards to the pool
-    function queueNewRewards(uint256) external;
+    function queueNewRewards(
+        uint256
+    ) external;
 
     /// @notice the operator of the pool
     function operator() external view returns (address);

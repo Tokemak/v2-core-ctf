@@ -105,7 +105,9 @@ contract SystemSecurityL2IntegrationTest is Test {
     }
 
     // Have to mock what feed is returning if we want false returned
-    function _mockFeedReturn(int256 answer) private {
+    function _mockFeedReturn(
+        int256 answer
+    ) private {
         vm.mockCall(
             BASE_SEQUENCER_FEED,
             abi.encodeWithSelector(IAggregatorV3Interface.latestRoundData.selector),

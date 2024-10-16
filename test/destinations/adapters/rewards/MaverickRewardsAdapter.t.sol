@@ -16,7 +16,9 @@ contract MaverickRewardsAdapterTest is Test {
     address private constant REWARDER = MAV_WSTETH_WETH_BOOSTED_POS_REWARDER;
     IERC20 private constant STAKING_TOKEN = IERC20(MAV_WSTETH_WETH_BOOSTED_POS);
 
-    function _stakeForAdapter(uint256 amount) internal {
+    function _stakeForAdapter(
+        uint256 amount
+    ) internal {
         deal(address(STAKING_TOKEN), address(this), amount);
 
         STAKING_TOKEN.approve(address(REWARDER), amount);

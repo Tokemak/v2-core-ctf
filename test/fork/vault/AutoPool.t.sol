@@ -55,7 +55,9 @@ abstract contract AutopoolTests is Test {
     address internal constant V2_DEPLOYER = 0xA6364F394616DD9238B284CfF97Cd7146C57808D;
     address internal constant SYSTEM_REGISTRY = 0x0406d2D96871f798fcf54d5969F69F55F803eEA4;
 
-    function _setUp(uint256 blockNumber) internal {
+    function _setUp(
+        uint256 blockNumber
+    ) internal {
         vm.createSelectFork(vm.envString("MAINNET_RPC_URL"), blockNumber);
     }
 }
@@ -196,7 +198,9 @@ abstract contract AutopoolFullDeployTests is Test {
     AutopoolETH internal _pool;
     FundedSolver internal _solver;
 
-    function _setUp(uint256 blockNumber) internal {
+    function _setUp(
+        uint256 blockNumber
+    ) internal {
         vm.createSelectFork(vm.envString("MAINNET_RPC_URL"), blockNumber);
 
         _weth = IWETH9(WETH_MAINNET);
@@ -291,7 +295,9 @@ abstract contract AutopoolFullDeployTests is Test {
         _swapRouter.setSwapRoute(STETH_MAINNET, stethSwapRoute);
     }
 
-    function _setupOracles(SystemRegistry systemRegistry) internal {
+    function _setupOracles(
+        SystemRegistry systemRegistry
+    ) internal {
         _accessController.grantRole(Roles.ORACLE_MANAGER, address(this));
 
         ChainlinkOracle chainlinkOracle = new ChainlinkOracle(_systemRegistry);

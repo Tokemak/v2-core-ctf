@@ -222,7 +222,9 @@ contract ConvexCalculatorTest is Test {
         mockSimpleMainRewarder(645);
     }
 
-    function mockSimpleMainRewarder(uint256 pid) public {
+    function mockSimpleMainRewarder(
+        uint256 pid
+    ) public {
         mockRewardPerToken(mainRewarder, REWARD_PER_TOKEN);
         mockRewardRate(mainRewarder, REWARD_RATE);
         mockPeriodFinish(mainRewarder, block.timestamp + PERIOD_FINISH_IN);
@@ -281,7 +283,9 @@ contract ConvexCalculatorTest is Test {
         }
     }
 
-    function create2StepsSnapshotWithTotalSupplyIncrease(uint256 moveForwardInTime) internal {
+    function create2StepsSnapshotWithTotalSupplyIncrease(
+        uint256 moveForwardInTime
+    ) internal {
         mockSimpleMainRewarder();
         calculator.snapshot();
 

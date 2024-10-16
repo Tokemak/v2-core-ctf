@@ -28,15 +28,21 @@ contract MockCurveRegistry is Ownable {
         pools[_pool] = Pool({ lpToken: _lpToken, numTokens: _numTokens, tokens: tokens });
     }
 
-    function get_coins(address poolAddress) external view returns (address[8] memory) {
+    function get_coins(
+        address poolAddress
+    ) external view returns (address[8] memory) {
         return pools[poolAddress].tokens;
     }
 
-    function get_n_coins(address poolAddress) external view returns (uint256) {
+    function get_n_coins(
+        address poolAddress
+    ) external view returns (uint256) {
         return pools[poolAddress].numTokens;
     }
 
-    function get_lp_token(address poolAddress) external view returns (address) {
+    function get_lp_token(
+        address poolAddress
+    ) external view returns (address) {
         return pools[poolAddress].lpToken;
     }
 }

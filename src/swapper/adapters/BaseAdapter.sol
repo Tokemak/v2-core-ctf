@@ -12,7 +12,9 @@ import { ISyncSwapper } from "src/interfaces/swapper/ISyncSwapper.sol";
 abstract contract BaseAdapter is ISyncSwapper {
     ISwapRouter public immutable router;
 
-    constructor(address _router) {
+    constructor(
+        address _router
+    ) {
         Errors.verifyNotZero(_router, "router");
         router = ISwapRouter(_router);
     }

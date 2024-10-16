@@ -8,7 +8,9 @@ import { IStaderOracle } from "src/interfaces/external/stader/IStaderOracle.sol"
 import { LSTCalculatorBase } from "src/stats/calculators/base/LSTCalculatorBase.sol";
 
 contract ETHxLSTCalculator is LSTCalculatorBase {
-    constructor(ISystemRegistry _systemRegistry) LSTCalculatorBase(_systemRegistry) { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) LSTCalculatorBase(_systemRegistry) { }
 
     /// @inheritdoc LSTCalculatorBase
     function calculateEthPerToken() public view override returns (uint256) {

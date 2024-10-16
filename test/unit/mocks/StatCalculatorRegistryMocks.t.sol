@@ -11,7 +11,9 @@ import { IStatsCalculatorRegistry } from "src/interfaces/stats/IStatsCalculatorR
 contract StatCalculatorRegistryMocks {
     Vm private vm;
 
-    constructor(Vm _vm) {
+    constructor(
+        Vm _vm
+    ) {
         vm = _vm;
     }
 

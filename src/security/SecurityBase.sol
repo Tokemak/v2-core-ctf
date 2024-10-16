@@ -10,7 +10,9 @@ contract SecurityBase {
 
     error UndefinedAddress();
 
-    constructor(address _accessController) {
+    constructor(
+        address _accessController
+    ) {
         if (_accessController == address(0)) revert UndefinedAddress();
 
         accessController = IAccessController(_accessController);
@@ -21,7 +23,9 @@ contract SecurityBase {
         _;
     }
 
-    modifier hasRole(bytes32 role) {
+    modifier hasRole(
+        bytes32 role
+    ) {
         if (!accessController.hasRole(role, msg.sender)) revert Errors.AccessDenied();
         _;
     }

@@ -19,7 +19,9 @@ contract SystemSecurityL2 is ISystemSecurity, SystemSecurity {
     event SequencerOverrideSet(bool overrideStatus);
 
     // slither-disable-next-line similar-names
-    constructor(ISystemRegistry _systemRegistry) SystemSecurity(_systemRegistry) { }
+    constructor(
+        ISystemRegistry _systemRegistry
+    ) SystemSecurity(_systemRegistry) { }
 
     /// @inheritdoc ISystemSecurity
     function isSystemPaused() external override returns (bool) {

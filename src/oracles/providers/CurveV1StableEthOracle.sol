@@ -109,7 +109,9 @@ contract CurveV1StableEthOracle is SystemComponent, SecurityBase, ISpotPriceOrac
     /// @dev Must already exist. More lenient than register with expectation checks, it's already in,
     /// assume you know what you're doing
     /// @param curveLpToken token to unregister
-    function unregister(address curveLpToken) external hasRole(Roles.ORACLE_MANAGER) {
+    function unregister(
+        address curveLpToken
+    ) external hasRole(Roles.ORACLE_MANAGER) {
         Errors.verifyNotZero(curveLpToken, "curveLpToken");
 
         // You're calling unregister so you're expecting it to be here
@@ -127,7 +129,9 @@ contract CurveV1StableEthOracle is SystemComponent, SecurityBase, ISpotPriceOrac
         emit TokenUnregistered(curveLpToken);
     }
 
-    function getLpTokenToUnderlying(address lpToken) external view returns (address[] memory tokens) {
+    function getLpTokenToUnderlying(
+        address lpToken
+    ) external view returns (address[] memory tokens) {
         uint256 len = lpTokenToUnderlying[lpToken].length;
         tokens = new address[](len);
 
@@ -243,7 +247,9 @@ contract CurveV1StableEthOracle is SystemComponent, SecurityBase, ISpotPriceOrac
         }
     }
 
-    function _checkEth(address tokenToCheck) private view returns (address) {
+    function _checkEth(
+        address tokenToCheck
+    ) private view returns (address) {
         if (tokenToCheck == LibAdapter.CURVE_REGISTRY_ETH_ADDRESS_POINTER) {
             return WETH;
         }

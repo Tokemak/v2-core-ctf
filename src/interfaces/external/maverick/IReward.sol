@@ -57,13 +57,19 @@ interface IReward {
 
     function rewardInfo() external view returns (RewardInfo[] memory);
 
-    function tokenIndex(address tokenAddress) external view returns (uint8);
+    function tokenIndex(
+        address tokenAddress
+    ) external view returns (uint8);
 
-    function balanceOf(address account) external view returns (uint256);
+    function balanceOf(
+        address account
+    ) external view returns (uint256);
 
     function earned(address account, address rewardTokenAddress) external view returns (uint256);
 
-    function earned(address account) external view returns (EarnedInfo[] memory earnedInfo);
+    function earned(
+        address account
+    ) external view returns (EarnedInfo[] memory earnedInfo);
 
     /// @notice Add rewards tokens account the pot of rewards with a transferFrom.
     /// @param  rewardTokenAddress address of reward token added
@@ -81,7 +87,9 @@ interface IReward {
 
     /// @notice Withdraw entire amount of LP token stake.
     /// @param  recipient Receiver of the LP tokens.
-    function unstakeAll(address recipient) external;
+    function unstakeAll(
+        address recipient
+    ) external;
 
     /// @notice Get reward proceeds for transaction sender account `account`.
     /// @param recipient Receiver of REWARD_TOKEN rewards.
@@ -96,7 +104,9 @@ interface IReward {
     /// @notice Remove stale tokens from the reward contract
     /// @param rewardTokenIndex is the index of the reward token in the
     //tokenIndex mapping
-    function removeStaleToken(uint8 rewardTokenIndex) external;
+    function removeStaleToken(
+        uint8 rewardTokenIndex
+    ) external;
 
     /// @notice Get address of the token used for staking for receiving rewards.
     /// @return address of the LP staking token

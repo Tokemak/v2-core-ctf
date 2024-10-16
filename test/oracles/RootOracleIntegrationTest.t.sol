@@ -397,7 +397,9 @@ contract RootOracleIntegrationTest is Test {
         priceOracle.registerPoolMapping(RETH_WETH_BAL_POOL, ISpotPriceOracle(balancerMetaOracle));
     }
 
-    function _getTwoPercentTolerance(uint256 price) internal pure returns (uint256 upperBound, uint256 lowerBound) {
+    function _getTwoPercentTolerance(
+        uint256 price
+    ) internal pure returns (uint256 upperBound, uint256 lowerBound) {
         uint256 twoPercentToleranceValue = (price * 2) / 100;
 
         upperBound = price + twoPercentToleranceValue;
