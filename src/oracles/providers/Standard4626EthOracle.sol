@@ -16,6 +16,7 @@ contract Standard4626EthOracle is SystemComponent, IPriceOracle {
     IERC4626 public immutable vault;
     address public immutable underlyingAsset;
     uint256 public immutable vaultTokenOne;
+    uint256 public immutable underlyingAssetOne;
 
     constructor(ISystemRegistry _systemRegistry, address _vault4626) SystemComponent(_systemRegistry) {
         // System registry must be properly initialized first
@@ -27,6 +28,7 @@ contract Standard4626EthOracle is SystemComponent, IPriceOracle {
 
         vaultTokenOne = 10 ** vault.decimals();
         underlyingAsset = vault.asset();
+        underlyingAssetOne = 10 ** IERC20Metadata(underlyingAsset).decimals();
 
         Errors.verifyNotZero(underlyingAsset, "underlyingAsset");
     }
@@ -49,6 +51,6 @@ contract Standard4626EthOracle is SystemComponent, IPriceOracle {
 
         uint256 vaultTokenPrice = systemRegistry.rootPriceOracle().getPriceInEth(address(vault));
 
-        price = vaultTokenPrice * vaultTokenOne / vault.convertToAssets(vaultTokenOne);
+        price = vaultTokenPrice * underlyingAssetOne / vault.convertToAssets(vaultTokenOne);
     }
 }
