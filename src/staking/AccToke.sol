@@ -127,7 +127,6 @@ contract AccToke is IAccToke, ERC20Votes, Pausable, SystemComponent, SecurityBas
         // duration checked inside previewPoints
         (uint256 points, uint256 end) = previewPoints(amount, duration);
 
-        // slither-disable-next-line timestamp
         _maxPointsCheck(points);
 
         // checkpoint rewards for caller
@@ -444,6 +443,7 @@ contract AccToke is IAccToke, ERC20Votes, Pausable, SystemComponent, SecurityBas
     function _maxPointsCheck(
         uint256 points
     ) private view {
+        // slither-disable-next-line timestamp
         if (points + totalSupply() > MAX_POINTS) {
             revert StakingPointsExceeded();
         }
