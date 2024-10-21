@@ -62,7 +62,7 @@ contract AccToke is IAccToke, ERC20Votes, Pausable, SystemComponent, SecurityBas
     mapping(address => uint256) public rewardsClaimed;
 
     /// @notice If true, users will be able to withdraw before locks end
-    bool public adminUnlock = false;
+    bool public adminUnlock;
 
     /// @notice In the event of an admin unlock, some functions should not run.  This protects those functions
     modifier whenNoAdminUnlock() {
