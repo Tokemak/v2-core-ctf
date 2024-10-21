@@ -146,8 +146,7 @@ interface IAccToke {
     ) external returns (uint256);
 
     /**
-     * @notice Preview the number of points that would be returned for the
-     * given amount and duration.
+     * @notice Calculate points based on duration from the staking system's start epoch to the user's staking end date
      *
      * @param amount TOKE to be staked
      * @param duration number of seconds to stake for
