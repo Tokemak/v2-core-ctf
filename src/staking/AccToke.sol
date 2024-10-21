@@ -33,6 +33,7 @@ contract AccToke is IAccToke, ERC20Votes, Pausable, SystemComponent, SecurityBas
     uint256 public maxStakeDuration = 1461 days; // default 4 years
     uint256 public constant MIN_STAKE_AMOUNT = 10_000;
     uint256 public constant MAX_STAKE_AMOUNT = 100e6 * 1e18; // default 100m toke
+    uint256 public constant MAX_POINTS = type(uint192).max;
 
     mapping(address => Lockup[]) public lockups;
 
@@ -127,9 +128,7 @@ contract AccToke is IAccToke, ERC20Votes, Pausable, SystemComponent, SecurityBas
         (uint256 points, uint256 end) = previewPoints(amount, duration);
 
         // slither-disable-next-line timestamp
-        if (points + totalSupply() > type(uint192).max) {
-            revert StakingPointsExceeded();
-        }
+        _maxPointsCheck(points);
 
         // checkpoint rewards for caller
         _collectRewards(to, to, false);
@@ -249,6 +248,8 @@ contract AccToke is IAccToke, ERC20Votes, Pausable, SystemComponent, SecurityBas
                 ++iter;
             }
         }
+
+        _maxPointsCheck(totalExtendedPoints);
 
         // issue extra points for extension
         _mint(msg.sender, totalExtendedPoints);
@@ -438,6 +439,14 @@ contract AccToke is IAccToke, ERC20Votes, Pausable, SystemComponent, SecurityBas
 
         // nothing collected
         return 0;
+    }
+
+    function _maxPointsCheck(
+        uint256 points
+    ) private view {
+        if (points + totalSupply() > MAX_POINTS) {
+            revert StakingPointsExceeded();
+        }
     }
 
     /// @notice Catch-all. If any eth is sent, wrap and add to rewards
