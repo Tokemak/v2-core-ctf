@@ -170,8 +170,8 @@ contract GetPriceInEthDecimals is Standard46426EthOracleTests {
         Standard4626EthOracle localOracle = new Standard4626EthOracle(systemRegistry, address(localOffsetVault));
 
         // Check that vaultTokenOne is expected, make sure that conversion to assets working as expected
-        assertEq(localOracle.vaultTokenOne(), 1e13, "1");
-        assertEq(localOffsetVault.convertToAssets(localOracle.vaultTokenOne()), 1e9, "2");
+        assertEq(localOracle.vaultTokenOne(), 1e13);
+        assertEq(localOffsetVault.convertToAssets(localOracle.vaultTokenOne()), 1e9);
 
         _mockGetPriceInEthCall(1e18, localOffsetVault);
 
@@ -179,7 +179,44 @@ contract GetPriceInEthDecimals is Standard46426EthOracleTests {
         //    getPriceInEth - 1e18
         //    underlyingAssetOne - 1e9
         //    convertToAssets - Takes in 1e13, returns in 1e9
-        assertEq(localOracle.getPriceInEth(address(mockTokenLocal)), 1e18, "3");
+        assertEq(localOracle.getPriceInEth(address(mockTokenLocal)), 1e18);
+    }
+
+    // Testing to make sure this is returning correctly taking both prices and decimals into account,
+    // above tests are only decimal based.  Using mocks for our price oracle and `convertToAssets`
+    function test_getPriceInEth_PricesAndDecimals() public {
+        // Create new token with 6 decimals
+        MockERC20 mockTokenLocal = new MockERC20("MockTokenLocal", "MTL", 6);
+
+        // new vault because of new asset
+        ERC4626DecimalOffset localOffsetVault = new ERC4626DecimalOffset(IERC20(mockTokenLocal));
+
+        // Decimal offset, vault will be 14 decimals
+        localOffsetVault.setDecimalOffset(8);
+
+        Standard4626EthOracle localOracle = new Standard4626EthOracle(systemRegistry, address(localOffsetVault));
+        uint256 vaultTokenOne = localOracle.vaultTokenOne();
+
+        // Check that vaultTokenOne is expected, make sure that conversion to assets working as expected
+        assertEq(localOracle.vaultTokenOne(), 1e14);
+        assertEq(localOffsetVault.convertToAssets(vaultTokenOne), 1e6);
+
+        // Mock vault asset is 2 eth
+        _mockGetPriceInEthCall(2e18, localOffsetVault);
+
+        // Mock convertToAssets call to give different conversion rate, vault will be 1:1.  Mocked to 1.5 asset per
+        // share
+        vm.mockCall(
+            address(localOffsetVault), abi.encodeCall(ERC4626.convertToAssets, (vaultTokenOne)), abi.encode(1.5e6)
+        );
+
+        // Price should return ~1.33e18
+        //    getPriceInEth - 1e18
+        //    underlyingAssetOne - 1e6
+        //    convertToAssets - Takes in 1e14, returns in 1e6
+        //    getPriceInEth(mockToken) - 2e18
+        //    convertToAssets(vaultTokenOne) - 1.5e18
+        assertEq(localOracle.getPriceInEth(address(mockTokenLocal)), 1_333_333_333_333_333_333);
     }
 
     // Not using root price oracle for direct interactions with 4626 oracle, only for `getPriceInEth` call in
