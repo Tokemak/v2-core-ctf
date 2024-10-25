@@ -21,3 +21,9 @@
 [submodule "lib/properties"]
 	path = lib/properties
 	url = https://github.com/crytic/properties
+
+[submodule "lib/redstone-evm-connector"]
+	path = lib/redstone-evm-connector
+	url = https://github.com/redstone-finance/redstone-oracles-monorepo
+	branch = main
+	# pinned to commit 49fa399b401492b7809ad16ca03c604d5e7fb892
