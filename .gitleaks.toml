@@ -32,6 +32,7 @@ paths = [
     '''test/echidna/fuzz/vault/BaseSetup.sol''',
     '''script/mainnet/10_Maverick.sol''',
     '''script/utils/ResendReceivingRouter.s.sol''',
+    '''test/vault/extensions/EtherFiDestinationVaultExtension.t.sol'''
 ]
 
 regexTarget = "match"
