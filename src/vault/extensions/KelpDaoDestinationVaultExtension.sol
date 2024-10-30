@@ -9,12 +9,16 @@ import { Errors } from "src/utils/Errors.sol";
 
 import { IMerkleDistributor } from "src/interfaces/external/kelpdao/IMerkleDistributor.sol";
 
+/// @title Destination vault extension for claiming KelpDao rewards
 contract KelpDaoDestinationVaultExtension is BaseDestinationVaultExtension {
     address public immutable claimContract;
     IERC20 public immutable claimToken;
 
-    error InvalidImplementation(address queriedImplementation);
-
+    /// @param account Account that can claim rewards
+    /// @param cumulativeAmout Cumulative amount of rewards for account.  Used in Merkle calculations
+    /// @param expectedClaimAmount The amount expected to be claimed on this claim
+    /// @param index The index of the claim
+    /// @param merkleProof Merkle proof used in verification of claim
     struct KelpDaoClaimParams {
         address account;
         uint256 cumulativeAmount;
@@ -23,6 +27,7 @@ contract KelpDaoDestinationVaultExtension is BaseDestinationVaultExtension {
         bytes32[] merkleProof;
     }
 
+    // slither-disable-start similar-names
     constructor(
         ISystemRegistry _systemRegsitry,
         address _asyncSwapper,
@@ -32,10 +37,13 @@ contract KelpDaoDestinationVaultExtension is BaseDestinationVaultExtension {
         Errors.verifyNotZero(_claimContract, "_claimContract");
         Errors.verifyNotZero(_claimToken, "_claimToken");
 
+        // slither-disable-next-line missing-zero-check
         claimContract = _claimContract;
         claimToken = IERC20(_claimToken);
     }
+    // slither-disable-end similar-names
 
+    /// @inheritdoc BaseDestinationVaultExtension
     function _claim(
         bytes memory data
     ) internal override returns (uint256[] memory amountsClaimed, address[] memory tokensClaimed) {

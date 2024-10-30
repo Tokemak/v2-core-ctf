@@ -15,27 +15,37 @@ import { ReentrancyGuard } from "openzeppelin-contracts/security/ReentrancyGuard
 import { IERC20 } from "openzeppelin-contracts/token/ERC20/ERC20.sol";
 import { Address } from "openzeppelin-contracts/utils/Address.sol";
 
+/// @title A base DV extension with claim, swap and queue rewards functionality
+/// @dev This contract is meant to be accessed in a delegatecall context
 abstract contract BaseDestinationVaultExtension is SystemComponent, ReentrancyGuard, IDestinationVaultExtension {
     using Address for address;
 
     address public immutable asyncSwapper;
     IERC20 public immutable weth;
 
+    /// @notice Thrown when an invalid amount of a token is received
     error InvalidAmountReceived(uint256 expected, uint256 received);
 
+    /// @notice Emitted when an extension is executed
+    /// @param amountsClaimed Amount of reward tokens claimed
+    /// @param tokensClaimed Addresses of tokens claimed
+    /// @param amountAddedToRewards Total amount of all tokens added to rewards
     event ExtensionExecuted(uint256[] amountsClaimed, address[] tokensClaimed, uint256 amountAddedToRewards);
 
+    /// @param claimData Bytes data to be passed to and decoded in claim function
+    /// @param swapParams Array of SwapParams structs, one per swap being made
     struct BaseExtensionParams {
         bytes claimData;
         SwapParams[] swapParams;
     }
 
-    // address(this) will be the DVs address in a delegatecall context
+    /// @dev address(this) will be the DVs address in a delegatecall context
     modifier onlyDestinationVault() {
         systemRegistry.destinationVaultRegistry().verifyIsRegistered(address(this));
         _;
     }
 
+    // slither-disable-next-line similar-names
     constructor(ISystemRegistry _systemRegistry, address _asyncSwapper) SystemComponent(_systemRegistry) {
         Errors.verifyNotZero(_asyncSwapper, "_asyncSwapper");
 
@@ -43,6 +53,7 @@ abstract contract BaseDestinationVaultExtension is SystemComponent, ReentrancyGu
         weth = systemRegistry.weth();
     }
 
+    /// @inheritdoc IDestinationVaultExtension
     function execute(
         bytes calldata data
     ) external onlyDestinationVault nonReentrant {
@@ -78,6 +89,8 @@ abstract contract BaseDestinationVaultExtension is SystemComponent, ReentrancyGu
         emit ExtensionExecuted(amountsClaimed, tokensClaimed, amountReceived);
     }
 
+    /// @notice Used to inheriting contracts to implement custom claiming functionalities
+    /// @dev Inheriting contract must implement necessary checks, this contract does not handle any checks with claiming
     function _claim(
         bytes memory data
     ) internal virtual returns (uint256[] memory amountClaimed, address[] memory tokensClaimed);

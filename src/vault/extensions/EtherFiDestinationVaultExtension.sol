@@ -9,10 +9,16 @@ import { Errors } from "src/utils/Errors.sol";
 
 import { ICumulativeMerkleDrop } from "src/interfaces/external/etherfi/ICumulativeMerkleDrop.sol";
 
+/// @title Destination Vault extension for claiming EtherFi rewards
 contract EtherFiDestinationVaultExtension is BaseDestinationVaultExtension {
     address public immutable claimContract;
     IERC20 public immutable claimToken;
 
+    /// @param account The account that haas accrued rewards.  DV in this context
+    /// @param cumulativeAmount Total amount of rewards accrued. Used in Merkle verifications
+    /// @param expectedClaimAmount Amount we expect to claim this time.  Used for validation on our end
+    /// @param expectedMerkleRoot The expected merkle root for this claim period
+    /// @param merkleProof This merkle proof, used for verification of claim
     struct EtherFiClaimParams {
         address account;
         uint256 cumulativeAmount;
@@ -30,10 +36,12 @@ contract EtherFiDestinationVaultExtension is BaseDestinationVaultExtension {
         Errors.verifyNotZero(_claimContract, "_claimContract");
         Errors.verifyNotZero(_claimToken, "_claimToken");
 
+        // slither-disable-next-line missing-zero-check
         claimContract = _claimContract;
         claimToken = IERC20(_claimToken);
     }
 
+    /// @inheritdoc BaseDestinationVaultExtension
     function _claim(
         bytes memory data
     ) internal override returns (uint256[] memory amountsClaimed, address[] memory tokensClaimed) {
