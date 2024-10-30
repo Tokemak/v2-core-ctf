@@ -7,26 +7,28 @@ import { IERC20 } from "openzeppelin-contracts/token/ERC20/IERC20.sol";
 import { ISystemRegistry } from "src/interfaces/ISystemRegistry.sol";
 import { Errors } from "src/utils/Errors.sol";
 
-import { ICumulativeMerkleDrop } from "src/interfaces/external/etherfi/ICumulativeMerkleDrop.sol";
+import { IMerkleDistributor } from "src/interfaces/external/kelpdao/IMerkleDistributor.sol";
 
-contract EtherFiDestinationVaultExtension is BaseDestinationVaultExtension {
+contract KelpDaoDestinationVaultExtension is BaseDestinationVaultExtension {
     address public immutable claimContract;
     IERC20 public immutable claimToken;
 
-    struct EtherFiClaimParams {
+    error InvalidImplementation(address queriedImplementation);
+
+    struct KelpDaoClaimParams {
         address account;
         uint256 cumulativeAmount;
         uint256 expectedClaimAmount;
-        bytes32 expectedMerkleRoot;
+        uint256 index;
         bytes32[] merkleProof;
     }
 
     constructor(
-        ISystemRegistry _systemRegistry,
+        ISystemRegistry _systemRegsitry,
         address _asyncSwapper,
         address _claimContract,
         address _claimToken
-    ) BaseDestinationVaultExtension(_systemRegistry, _asyncSwapper) {
+    ) BaseDestinationVaultExtension(_systemRegsitry, _asyncSwapper) {
         Errors.verifyNotZero(_claimContract, "_claimContract");
         Errors.verifyNotZero(_claimToken, "_claimToken");
 
@@ -37,14 +39,14 @@ contract EtherFiDestinationVaultExtension is BaseDestinationVaultExtension {
     function _claim(
         bytes memory data
     ) internal override returns (uint256[] memory amountsClaimed, address[] memory tokensClaimed) {
-        EtherFiClaimParams memory params = abi.decode(data, (EtherFiClaimParams));
+        KelpDaoClaimParams memory params = abi.decode(data, (KelpDaoClaimParams));
         uint256 expectedClaimAmount = params.expectedClaimAmount;
 
         Errors.verifyNotZero(expectedClaimAmount, "expectedClaimAmount");
 
         uint256 claimTokenBalanceBefore = claimToken.balanceOf(address(this));
-        ICumulativeMerkleDrop(claimContract).claim(
-            params.account, params.cumulativeAmount, params.expectedMerkleRoot, params.merkleProof
+        IMerkleDistributor(claimContract).claim(
+            params.index, params.account, params.cumulativeAmount, params.merkleProof
         );
 
         amountsClaimed = new uint256[](1);
@@ -53,7 +55,6 @@ contract EtherFiDestinationVaultExtension is BaseDestinationVaultExtension {
         amountsClaimed[0] = claimToken.balanceOf(address(this)) - claimTokenBalanceBefore;
         tokensClaimed[0] = address(claimToken);
 
-        // Amounts should be exact.  If something is going wrong offchain or with claim contract, this will catch it
         if (amountsClaimed[0] != expectedClaimAmount) {
             revert InvalidAmountReceived(amountsClaimed[0], expectedClaimAmount);
         }
