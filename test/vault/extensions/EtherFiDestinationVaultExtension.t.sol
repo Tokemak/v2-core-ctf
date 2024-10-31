@@ -34,8 +34,6 @@ contract EtherFiDestinationVaultExtensionTest is Test {
     uint256 public constant wethAmountReceived = 141_753_462_645_070_618;
     uint256 public constant claimAmount = 204_825_160_251_147_776;
 
-    // DV that can claim rewards at pinned block. Didn't add this one to addresses as it seemed like it likely
-    // won't be used often
     IDestinationVault public constant dv = IDestinationVault(0x148Ca723BefeA7b021C399413b8b7426A4701500);
     ISystemRegistry public constant systemRegistry = ISystemRegistry(SYSTEM_REGISTRY_MAINNET);
     address public constant etherFiClaim = ETHERFI_LRTSQUARED_CLAIM;
@@ -132,7 +130,7 @@ contract EtherFiDVExtensionConstructorTest is EtherFiDestinationVaultExtensionTe
 
     function test_StateSet() public {
         assertEq(address(extension.claimToken()), address(lrtSquaredToken));
-        assertEq(address(extension.weth()), WETH_MAINNET);
+        assertEq(address(extension.claimContract()), etherFiClaim);
     }
 }
 

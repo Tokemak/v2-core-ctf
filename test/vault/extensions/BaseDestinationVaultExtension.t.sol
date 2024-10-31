@@ -73,8 +73,8 @@ contract BaseDVExtensionConstructorTest is BaseDestinationVaultExtensionTest {
 }
 
 contract BaseDVExtensionExecuteTests is BaseDestinationVaultExtensionTest {
-    // Data doesn't matter, modifier check is first
     function test_RevertIf_NonDVCaller() public {
+        // Data doesn't matter, modifier check happens first
         bytes memory data = abi.encode("");
 
         // Modifier that tests this uses `address(this)` to validate DV in delegatecall context, will be address of
@@ -100,6 +100,7 @@ contract BaseDVExtensionExecuteTests is BaseDestinationVaultExtensionTest {
         uint256 mockToken1Claim = 1.5e18;
         uint256 wethAmountReceivedOnSwap = 0.75e18;
 
+        // Prep data
         MockDVExtension.MockExtensionParams[] memory mockExtensionParams = new MockDVExtension.MockExtensionParams[](1);
         SwapParams[] memory swapParams = new SwapParams[](1);
 
@@ -126,6 +127,7 @@ contract BaseDVExtensionExecuteTests is BaseDestinationVaultExtensionTest {
         amountsClaimed[0] = mockToken1Claim;
         tokensClaimed[0] = address(mockToken1);
 
+        // Snapshot some values
         uint256 wethAmountDVBefore = IERC20(WETH_MAINNET).balanceOf(address(dv));
         uint256 wethAmountRewarderBefore = IERC20(WETH_MAINNET).balanceOf(dv.rewarder());
 
@@ -148,6 +150,7 @@ contract BaseDVExtensionExecuteTests is BaseDestinationVaultExtensionTest {
         uint256 wethReceivedOnSwapMockToken1 = 0.75e18;
         uint256 wethReceivedOnSwapMockToken2 = 2.5e18;
 
+        // Prep data
         MockDVExtension.MockExtensionParams[] memory mockExtensionParams = new MockDVExtension.MockExtensionParams[](2);
         SwapParams[] memory swapParams = new SwapParams[](2);
 
@@ -188,6 +191,7 @@ contract BaseDVExtensionExecuteTests is BaseDestinationVaultExtensionTest {
         tokensClaimed[0] = address(mockToken1);
         tokensClaimed[1] = address(mockToken2);
 
+        // Snapshot values
         uint256 wethAmountDVBefore = IERC20(WETH_MAINNET).balanceOf(address(dv));
         uint256 wethAmountRewarderBefore = IERC20(WETH_MAINNET).balanceOf(dv.rewarder());
 

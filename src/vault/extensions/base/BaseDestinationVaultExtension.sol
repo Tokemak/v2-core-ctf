@@ -27,7 +27,7 @@ abstract contract BaseDestinationVaultExtension is SystemComponent, ReentrancyGu
     error InvalidAmountReceived(uint256 expected, uint256 received);
 
     /// @notice Emitted when an extension is executed
-    /// @param amountsClaimed Amount of reward tokens claimed
+    /// @param amountsClaimed Amounts of reward tokens claimed
     /// @param tokensClaimed Addresses of tokens claimed
     /// @param amountAddedToRewards Total amount of all tokens added to rewards
     event ExtensionExecuted(uint256[] amountsClaimed, address[] tokensClaimed, uint256 amountAddedToRewards);
@@ -89,8 +89,9 @@ abstract contract BaseDestinationVaultExtension is SystemComponent, ReentrancyGu
         emit ExtensionExecuted(amountsClaimed, tokensClaimed, amountReceived);
     }
 
-    /// @notice Used to inheriting contracts to implement custom claiming functionalities
-    /// @dev Inheriting contract must implement necessary checks, this contract does not handle any checks with claiming
+    /// @notice Used for inheriting contracts to implement custom claiming functionalities
+    /// @dev Inheriting contract should implement necessary checks, this contract does not handle any checks for
+    /// claiming
     function _claim(
         bytes memory data
     ) internal virtual returns (uint256[] memory amountClaimed, address[] memory tokensClaimed);

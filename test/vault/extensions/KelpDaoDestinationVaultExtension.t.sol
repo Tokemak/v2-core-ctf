@@ -34,8 +34,6 @@ contract KelpDaoDestinationVaultExtensionTest is Test {
     uint256 public constant wethAmountReceived = 1_052_410_302_394_626_443;
     uint256 public constant claimAmount = 922_922_497_097_911_641_827;
 
-    // DV that can claim rewards at pinned block. Didn't add this one to addresses as it seemed like it likely
-    // won't be used often
     IDestinationVault public constant dv = IDestinationVault(0x4E12227b350E8f8fEEc41A58D36cE2fB2e2d4575);
     ISystemRegistry public constant systemRegistry = ISystemRegistry(SYSTEM_REGISTRY_MAINNET);
     address public constant kelpDaoClaim = KELPDAO_EIGEN_CLAIM;
@@ -132,7 +130,7 @@ contract KelpDaoDVExtensionConstructorTest is KelpDaoDestinationVaultExtensionTe
 
     function test_StateSet() public {
         assertEq(address(extension.claimToken()), address(eigenToken));
-        assertEq(address(extension.weth()), WETH_MAINNET);
+        assertEq(address(extension.claimContract()), kelpDaoClaim);
     }
 }
 

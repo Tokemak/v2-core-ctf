@@ -9,7 +9,7 @@ import { Errors } from "src/utils/Errors.sol";
 
 import { ICumulativeMerkleDrop } from "src/interfaces/external/etherfi/ICumulativeMerkleDrop.sol";
 
-/// @title Destination Vault extension for claiming EtherFi rewards
+/// @title Destination vault extension for claiming EtherFi rewards
 contract EtherFiDestinationVaultExtension is BaseDestinationVaultExtension {
     address public immutable claimContract;
     IERC20 public immutable claimToken;
@@ -18,7 +18,7 @@ contract EtherFiDestinationVaultExtension is BaseDestinationVaultExtension {
     /// @param cumulativeAmount Total amount of rewards accrued. Used in Merkle verifications
     /// @param expectedClaimAmount Amount we expect to claim this time.  Used for validation on our end
     /// @param expectedMerkleRoot The expected merkle root for this claim period
-    /// @param merkleProof This merkle proof, used for verification of claim
+    /// @param merkleProof Merkle proof, used for verification of claim
     struct EtherFiClaimParams {
         address account;
         uint256 cumulativeAmount;
@@ -61,7 +61,7 @@ contract EtherFiDestinationVaultExtension is BaseDestinationVaultExtension {
         amountsClaimed[0] = claimToken.balanceOf(address(this)) - claimTokenBalanceBefore;
         tokensClaimed[0] = address(claimToken);
 
-        // Amounts should be exact.  If something is going wrong offchain or with claim contract, this will catch it
+        // Amounts should be exact, amount we will be claiming determined before call offchain
         if (amountsClaimed[0] != expectedClaimAmount) {
             revert InvalidAmountReceived(amountsClaimed[0], expectedClaimAmount);
         }

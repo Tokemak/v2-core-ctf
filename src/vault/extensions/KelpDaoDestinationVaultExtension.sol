@@ -63,6 +63,7 @@ contract KelpDaoDestinationVaultExtension is BaseDestinationVaultExtension {
         amountsClaimed[0] = claimToken.balanceOf(address(this)) - claimTokenBalanceBefore;
         tokensClaimed[0] = address(claimToken);
 
+        // Amounts should be exact, amount we will be claiming determined before call offchain
         if (amountsClaimed[0] != expectedClaimAmount) {
             revert InvalidAmountReceived(amountsClaimed[0], expectedClaimAmount);
         }
