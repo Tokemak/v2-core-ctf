@@ -34,6 +34,7 @@ library Roles {
     bytes32 public constant REWARD_LIQUIDATION_MANAGER = keccak256("REWARD_LIQUIDATION_MANAGER");
     bytes32 public constant EXTRA_REWARD_MANAGER = keccak256("EXTRA_REWARD_MANAGER_ROLE");
     bytes32 public constant REWARD_LIQUIDATION_EXECUTOR = keccak256("REWARD_LIQUIDATION_EXECUTOR");
+    bytes32 public constant BANK_SWAP_MANAGER = keccak256("BANK_SWAP_MANAGER");
 
     // Statistics and Reporting
     bytes32 public constant STATS_CALC_REGISTRY_MANAGER = keccak256("STATS_CALC_REGISTRY_MANAGER");
