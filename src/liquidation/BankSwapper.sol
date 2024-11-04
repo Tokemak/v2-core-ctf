@@ -9,7 +9,8 @@ import { Errors } from "src/utils/Errors.sol";
 import { Roles } from "src/libs/Roles.sol";
 
 /// @title Swaps tokens for weth on Tokemak controlled "bank" multisig to avoid high slippage swaps on illiq∫uid markets
-/// @dev Designed to interact with Tokemak controlled contract.  Forgoes some checks necessary for external contracts
+/// @dev WARNING!! Do NOT use this contract with a non Tokemak controlled contract.  This contract forgoes some
+/// necessary checks for interacting with external contracts
 contract BankSwapper is IAsyncSwapper, SystemComponent {
     address public immutable BANK;
 
@@ -24,6 +25,7 @@ contract BankSwapper is IAsyncSwapper, SystemComponent {
     constructor(address _bank, ISystemRegistry _systemRegistry) SystemComponent(_systemRegistry) {
         Errors.verifyNotZero(_bank, "_bank");
 
+        // slither-disable-next-line missing-zero-check
         BANK = _bank;
     }
 
@@ -46,9 +48,13 @@ contract BankSwapper is IAsyncSwapper, SystemComponent {
         if (sellTokenBalance < sellAmount) revert InsufficientBalance(sellTokenBalance, sellAmount);
         if (buyToken.balanceOf(BANK) < buyTokenAmountReceived) revert SwapFailed();
 
+        // slither-disable-start unchecked-transfer
         sellToken.transfer(BANK, sellAmount);
+        // slither-disable-next-line arbitrary-send-erc20
         buyToken.transferFrom(BANK, address(this), buyTokenAmountReceived);
+        // slither-disable-end unchecked-transfer
 
+        // slither-disable-next-line reentrancy-events
         emit Swapped(address(sellToken), address(buyToken), sellAmount, buyTokenAmountReceived, buyTokenAmountReceived);
 
         return buyTokenAmountReceived;
