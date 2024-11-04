@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.17;
+pragma solidity ^0.8.24;
 
 interface ICumulativeMerkleDrop {
     // Claim the given amount of the token to the given address. Reverts if the inputs are invalid

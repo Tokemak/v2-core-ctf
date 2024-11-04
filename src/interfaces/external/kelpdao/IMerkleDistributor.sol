@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BUSL-1.1
-pragma solidity 0.8.17;
+pragma solidity ^0.8.24;
 
 interface IMerkleDistributor {
     /// @dev claim the given amount of the token to the given address. Reverts if the inputs are invalid
