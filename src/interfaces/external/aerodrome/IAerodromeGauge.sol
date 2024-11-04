@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.17;
+pragma solidity ^0.8.24;
 
 interface IAerodromeGauge {
     /// @notice Deposit LP tokens into gauge for any user

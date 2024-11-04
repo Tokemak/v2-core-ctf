@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.17;
+pragma solidity ^0.8.24;
 
 // solhint-disable var-name-mixedcase,no-global-import,const-name-snakecase,max-line-length,gas-custom-errors
 

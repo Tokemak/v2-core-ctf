@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.17;
+pragma solidity ^0.8.24;
 
 // solhint-disable func-name-mixedcase, var-name-mixedcase
 /// @notice Works with Curve lp tokens version 2 and above, v1 does not expose a public `minter()` method.

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 // Copyright (c) 2023 Tokemak Foundation. All rights reserved.
-pragma solidity 0.8.17;
+pragma solidity ^0.8.24;
 
 // solhint-disable func-name-mixedcase,max-states-count,no-console,state-visibility,max-line-length,
 // solhint-disable avoid-low-level-calls,gas-custom-errors

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 // Copyright (c) 2023 Tokemak Foundation. All rights reserved.
 
-pragma solidity 0.8.17;
+pragma solidity ^0.8.24;
 
 /**
  * Most LSD tokens report the amount of funds they have staked on the Beacon Chain back to Mainnet periodically.

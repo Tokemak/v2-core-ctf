@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.17;
+pragma solidity ^0.8.24;
 
 /// @title Gets price of rEth from L1 Ethereum
 interface IRocketOvmPriceOracle {

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 // Copyright (c) 2023 Tokemak Foundation. All rights reserved.
 
-pragma solidity 0.8.17;
+pragma solidity ^0.8.24;
 
 import { ECDSA } from "openzeppelin-contracts/utils/cryptography/ECDSA.sol";
 import { IERC20Permit } from "openzeppelin-contracts/token/ERC20/extensions/draft-IERC20Permit.sol";

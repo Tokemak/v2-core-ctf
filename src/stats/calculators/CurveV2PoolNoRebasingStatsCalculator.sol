@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 // Copyright (c) 2023 Tokemak Ops Ltd. All rights reserved.
-pragma solidity 0.8.17;
+pragma solidity ^0.8.24;
 
 import { ISystemRegistry } from "src/interfaces/ISystemRegistry.sol";
 import { ICryptoSwapPool } from "src/interfaces/external/curve/ICryptoSwapPool.sol";

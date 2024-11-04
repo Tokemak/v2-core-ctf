@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 // Copyright (c) 2023 Tokemak Foundation. All rights reserved.
-pragma solidity >=0.8.7;
+pragma solidity ^0.8.24;
 
 import { IAutopool } from "src/interfaces/vault/IAutopool.sol";
 

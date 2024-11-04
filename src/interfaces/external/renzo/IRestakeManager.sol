@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BUSL-1.1
-pragma solidity 0.8.17;
+pragma solidity ^0.8.24;
 
 interface IRestakeManager {
     /// @dev This function calculates the TVLs for each operator delegator by individual token, total for each OD, and

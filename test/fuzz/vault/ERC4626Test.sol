@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0
-pragma solidity 0.8.17;
+pragma solidity ^0.8.24;
 
 import { ERC4626Prop } from "test/fuzz/vault/ERC4626Prop.sol";
 import { IERC20 } from "openzeppelin-contracts/token/ERC20/IERC20.sol";

@@ -5,7 +5,7 @@
 // However, due to version constraints, it has been copied into the project instead of being installed as a module.
 // Unused functions have been removed.
 
-pragma solidity 0.8.17;
+pragma solidity ^0.8.24;
 
 import { BytesLib } from "src/external/univ3/BytesLib.sol";
 

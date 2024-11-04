@@ -1,7 +1,7 @@
 // SPDX-License-Identifier:UNLICENSED
 // Copyright (c) 2023 Tokemak Foundation. All rights reserved.
 
-pragma solidity 0.8.17;
+pragma solidity ^0.8.24;
 
 import { Math } from "openzeppelin-contracts/utils/math/Math.sol";
 import { IERC20Metadata } from "openzeppelin-contracts/token/ERC20/extensions/IERC20Metadata.sol";

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 // Copyright (c) 2023 Tokemak Foundation. All rights reserved.
-pragma solidity 0.8.17;
+pragma solidity ^0.8.24;
 
 import { AutopoolMainRewarder } from "src/rewarders/AutopoolMainRewarder.sol";
 import { MockERC20 } from "test/mocks/MockERC20.sol";

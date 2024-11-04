@@ -1,6 +1,6 @@
 // forked from https://github.com/fei-protocol/ERC4626/blob/main/src/external/PeripheryPayments.sol
 // SPDX-License-Identifier: GPL-2.0-or-later
-pragma solidity >=0.8.7 <0.9.0;
+pragma solidity ^0.8.24;
 
 import { LibAdapter } from "src/libs/LibAdapter.sol";
 import { IWETH9 } from "src/interfaces/utils/IWETH9.sol";

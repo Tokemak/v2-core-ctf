@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.17;
+pragma solidity ^0.8.24;
 
 import { IAny2EVMMessageReceiver, Client } from "src/interfaces/external/chainlink/IAny2EVMMessageReceiver.sol";
 

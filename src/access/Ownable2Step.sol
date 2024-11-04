@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 // Copyright (c) 2023 Tokemak Foundation. All rights reserved.
 
-pragma solidity 0.8.17;
+pragma solidity ^0.8.24;
 
 import { Ownable2Step as OZOwnable2Step } from "openzeppelin-contracts/access/Ownable2Step.sol";
 

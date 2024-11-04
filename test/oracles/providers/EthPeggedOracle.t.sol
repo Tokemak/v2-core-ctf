@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 // Copyright (c) 2023 Tokemak Foundation. All rights reserved.
-pragma solidity 0.8.17;
+pragma solidity ^0.8.24;
 
 import { Test } from "forge-std/Test.sol";
 import { ISystemRegistry } from "src/interfaces/ISystemRegistry.sol";

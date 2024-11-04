@@ -1,7 +1,7 @@
 // solhint-disable no-console, not-rely-on-time, func-name-mixedcase
 // SPDX-License-Identifier: UNLICENSED
 // Copyright (c) 2023 Tokemak Foundation. All rights reserved.
-pragma solidity 0.8.17;
+pragma solidity ^0.8.24;
 
 import { IAccToke } from "src/interfaces/staking/IAccToke.sol";
 import { BaseTest } from "test/BaseTest.t.sol";

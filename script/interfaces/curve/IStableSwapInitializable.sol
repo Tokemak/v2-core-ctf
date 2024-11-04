@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.17;
+pragma solidity ^0.8.24;
 
 /// @dev Used for curve contracts that are meant to be initialized by a factory being initialized manually.
 interface IStableSwapInitializable {

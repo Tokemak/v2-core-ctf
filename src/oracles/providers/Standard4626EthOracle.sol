@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 // Copyright (c) 2024 Tokemak Foundation. All rights reserved.
 
-pragma solidity 0.8.17;
+pragma solidity ^0.8.24;
 
 import { Errors } from "src/utils/Errors.sol";
 import { IERC4626 } from "src/interfaces/vault/IERC4626.sol";

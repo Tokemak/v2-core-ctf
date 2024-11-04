@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 // Copyright (c) 2024 Tokemak Foundation. All rights reserved.
-pragma solidity >=0.8.7;
+pragma solidity ^0.8.24;
 
 import { BaseTest } from "test/BaseTest.t.sol";
 

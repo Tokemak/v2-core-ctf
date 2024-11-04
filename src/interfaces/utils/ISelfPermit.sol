@@ -1,6 +1,6 @@
 // forked from https://github.com/Uniswap/v3-periphery/blob/main/contracts/interfaces/ISelfPermit.sol
 // SPDX-License-Identifier: GPL-2.0-or-later
-pragma solidity >=0.8.7;
+pragma solidity ^0.8.24;
 
 /// @title Self Permit
 /// @notice Functionality to call permit on any EIP-2612-compliant token for use in the route

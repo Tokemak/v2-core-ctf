@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 // Copyright (c) 2023 Tokemak Foundation. All rights reserved.
 /* solhint-disable func-name-mixedcase,contract-name-camelcase,one-contract-per-file,max-states-count */
-pragma solidity >=0.8.7;
+pragma solidity ^0.8.24;
 
 import { Test } from "forge-std/Test.sol";
 

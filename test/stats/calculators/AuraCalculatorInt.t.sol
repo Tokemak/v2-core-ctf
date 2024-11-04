@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 // Copyright (c) 2023 Tokemak Foundation. All rights reserved.
 /* solhint-disable func-name-mixedcase,contract-name-camelcase,one-contract-per-file */
-pragma solidity >=0.8.7;
+pragma solidity ^0.8.24;
 
 import { ILSTStats } from "src/interfaces/stats/ILSTStats.sol";
 import { IDexLSTStats } from "src/interfaces/stats/IDexLSTStats.sol";

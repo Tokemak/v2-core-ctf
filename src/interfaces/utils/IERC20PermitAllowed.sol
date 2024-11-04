@@ -1,6 +1,6 @@
 // forked from https://github.com/Uniswap/v3-periphery/blob/main/contracts/interfaces/external/IERC20PermitAllowed.sol
 // SPDX-License-Identifier: GPL-2.0-or-later
-pragma solidity >=0.8.7;
+pragma solidity ^0.8.24;
 
 /// @title Interface for permit
 /// @notice Interface used by DAI/CHAI for permit

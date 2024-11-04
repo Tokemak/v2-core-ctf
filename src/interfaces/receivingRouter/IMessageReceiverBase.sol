@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 // Copyright (c) 2023 Tokemak Foundation. All rights reserved.
-pragma solidity 0.8.17;
+pragma solidity ^0.8.24;
 
 interface IMessageReceiverBase {
     /// @notice Called by ReceivingRouter.sol on message from ccipRouter that targets inheriting contract

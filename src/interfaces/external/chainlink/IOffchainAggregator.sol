@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.17;
+pragma solidity ^0.8.24;
 
 /**
  *  @dev Contract is used to get max and min answers that an oracle can return.  These are used

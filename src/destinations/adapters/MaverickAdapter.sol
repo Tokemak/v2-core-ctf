@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 // Copyright (c) 2023 Tokemak Foundation. All rights reserved.
-pragma solidity 0.8.17;
+pragma solidity ^0.8.24;
 
 import { IPool } from "src/interfaces/external/maverick/IPool.sol";
 import { IRouter } from "src/interfaces/external/maverick/IRouter.sol";

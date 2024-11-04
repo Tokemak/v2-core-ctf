@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.17;
+pragma solidity ^0.8.24;
 
 interface IwstEth {
     /// @notice Gets the amount of wstEth tokens per stEth token.

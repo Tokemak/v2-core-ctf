@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.17;
+pragma solidity ^0.8.24;
 
 /// @title Interface for ECLP and 2CLP pools
 interface IBalancerGyroPool {
