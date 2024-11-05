@@ -8,10 +8,13 @@ import { IERC20 } from "openzeppelin-contracts/token/ERC20/IERC20.sol";
 import { Errors } from "src/utils/Errors.sol";
 import { Roles } from "src/libs/Roles.sol";
 
-/// @title Swaps tokens for weth on Tokemak controlled "bank" multisig to avoid high slippage swaps on illiq∫uid markets
+/// @title Swaps tokens on Tokemak controlled "bank" multisig to avoid high slippage swaps on illiquid markets
 /// @dev WARNING!! Do NOT use this contract with a non Tokemak controlled contract.  This contract forgoes some
 /// necessary checks for interacting with external contracts
+/// @dev In addition to the above, this should only be used via the LiquidationRow.sol contract.  This contract performs
+/// pricing checks to ensure the execution we are getting is within some margin
 contract BankSwapper is IAsyncSwapper, SystemComponent {
+    /// @notice Address of the bank contract
     address public immutable BANK;
 
     // address(this) will be LiquidationRow contract in delegatecall context
@@ -43,7 +46,6 @@ contract BankSwapper is IAsyncSwapper, SystemComponent {
         if (sellAmount == 0) revert InsufficientSellAmount();
         if (buyTokenAmountReceived == 0) revert InsufficientBuyAmount();
 
-        // Transfers
         uint256 sellTokenBalance = sellToken.balanceOf(address(this));
         if (sellTokenBalance < sellAmount) revert InsufficientBalance(sellTokenBalance, sellAmount);
         if (buyToken.balanceOf(BANK) < buyTokenAmountReceived) revert SwapFailed();
@@ -56,7 +58,5 @@ contract BankSwapper is IAsyncSwapper, SystemComponent {
 
         // slither-disable-next-line reentrancy-events
         emit Swapped(address(sellToken), address(buyToken), sellAmount, buyTokenAmountReceived, buyTokenAmountReceived);
-
-        return buyTokenAmountReceived;
     }
 }

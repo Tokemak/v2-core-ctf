@@ -66,7 +66,7 @@ contract BankSwapperTest is Test {
         access.setupRole(Roles.BANK_SWAP_MANAGER, address(this));
     }
 
-    function test_RevertIf_DelegatCallerIncorrectRole() public {
+    function test_RevertIf_DelegatcallIncorrectRole() public {
         vm.expectRevert(Errors.AccessDenied.selector);
         Address.functionDelegateCall(address(swapper), abi.encodeCall(IAsyncSwapper.swap, (swapParams)));
     }
@@ -141,8 +141,11 @@ contract BankSwapperTest is Test {
             swapParams.buyAmount,
             swapParams.buyAmount
         );
-        Address.functionDelegateCall(address(swapper), abi.encodeCall(IAsyncSwapper.swap, (swapParams)));
+        bytes memory data =
+            Address.functionDelegateCall(address(swapper), abi.encodeCall(IAsyncSwapper.swap, (swapParams)));
+        uint256 amountReceived = abi.decode(data, (uint256));
 
+        assertEq(amountReceived, 1.1e18);
         assertEq(IERC20(WSTETH_BASE).balanceOf(address(this)), 0);
         assertEq(IERC20(WSTETH_BASE).balanceOf(bank), 1e18);
         assertEq(IERC20(WETH9_BASE).balanceOf(address(this)), 1.1e18);
