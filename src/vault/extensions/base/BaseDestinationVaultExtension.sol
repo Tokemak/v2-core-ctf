@@ -34,7 +34,7 @@ abstract contract BaseDestinationVaultExtension is SystemComponent, ReentrancyGu
     /// @param amountAddedToRewards Total amount of all tokens added to rewards
     event ExtensionExecuted(uint256[] amountsClaimed, address[] tokensClaimed, uint256 amountAddedToRewards);
 
-    /// @param sendToRewarder Send to DV rewarder if true
+    /// @param sendToRewarder Send to DV rewarder if true.  If false funds sent to msg.sender
     /// @param claimData Bytes data to be passed to and decoded in claim function
     /// @param swapParams Array of SwapParams structs, one per swap being made
     struct BaseExtensionParams {
@@ -84,7 +84,7 @@ abstract contract BaseDestinationVaultExtension is SystemComponent, ReentrancyGu
         }
 
         //
-        // Send rewards to either reward sink or rewarder
+        // Send rewards to either message sender or rewarder
         //
         if (params.sendToRewarder) {
             address rewarder = IDestinationVault(address(this)).rewarder();
