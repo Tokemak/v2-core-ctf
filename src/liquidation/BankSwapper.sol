@@ -4,6 +4,7 @@ pragma solidity ^0.8.24;
 
 import { IAsyncSwapper, SwapParams } from "src/interfaces/liquidation/IAsyncSwapper.sol";
 import { SystemComponent, ISystemRegistry } from "src/SystemComponent.sol";
+import { SafeERC20 } from "openzeppelin-contracts/token/ERC20/utils/SafeERC20.sol";
 import { IERC20 } from "openzeppelin-contracts/token/ERC20/IERC20.sol";
 import { Errors } from "src/utils/Errors.sol";
 import { Roles } from "src/libs/Roles.sol";
@@ -14,6 +15,8 @@ import { Roles } from "src/libs/Roles.sol";
 /// @dev In addition to the above, this should only be used via the LiquidationRow.sol contract.  This contract performs
 /// pricing checks to ensure the execution we are getting is within some margin
 contract BankSwapper is IAsyncSwapper, SystemComponent {
+    using SafeERC20 for IERC20;
+
     /// @notice Address of the bank contract
     address public immutable BANK;
 
@@ -50,11 +53,9 @@ contract BankSwapper is IAsyncSwapper, SystemComponent {
         if (sellTokenBalance < sellAmount) revert InsufficientBalance(sellTokenBalance, sellAmount);
         if (buyToken.balanceOf(BANK) < buyTokenAmountReceived) revert SwapFailed();
 
-        // slither-disable-start unchecked-transfer
-        sellToken.transfer(BANK, sellAmount);
+        sellToken.safeTransfer(BANK, sellAmount);
         // slither-disable-next-line arbitrary-send-erc20
-        buyToken.transferFrom(BANK, address(this), buyTokenAmountReceived);
-        // slither-disable-end unchecked-transfer
+        buyToken.safeTransferFrom(BANK, address(this), buyTokenAmountReceived);
 
         // slither-disable-next-line reentrancy-events
         emit Swapped(address(sellToken), address(buyToken), sellAmount, buyTokenAmountReceived, buyTokenAmountReceived);
