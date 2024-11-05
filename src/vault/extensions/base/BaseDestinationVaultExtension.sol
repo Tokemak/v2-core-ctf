@@ -12,6 +12,7 @@ import { Errors } from "src/utils/Errors.sol";
 import { LibAdapter } from "src/libs/LibAdapter.sol";
 
 import { ReentrancyGuard } from "openzeppelin-contracts/security/ReentrancyGuard.sol";
+import { SafeERC20 } from "openzeppelin-contracts/token/ERC20/utils/SafeERC20.sol";
 import { IERC20 } from "openzeppelin-contracts/token/ERC20/ERC20.sol";
 import { Address } from "openzeppelin-contracts/utils/Address.sol";
 
@@ -19,6 +20,7 @@ import { Address } from "openzeppelin-contracts/utils/Address.sol";
 /// @dev This contract is meant to be accessed in a delegatecall context
 abstract contract BaseDestinationVaultExtension is SystemComponent, ReentrancyGuard, IDestinationVaultExtension {
     using Address for address;
+    using SafeERC20 for IERC20;
 
     address public immutable asyncSwapper;
     IERC20 public immutable weth;
@@ -32,9 +34,11 @@ abstract contract BaseDestinationVaultExtension is SystemComponent, ReentrancyGu
     /// @param amountAddedToRewards Total amount of all tokens added to rewards
     event ExtensionExecuted(uint256[] amountsClaimed, address[] tokensClaimed, uint256 amountAddedToRewards);
 
+    /// @param sendToRewarder Send to DV rewarder if true
     /// @param claimData Bytes data to be passed to and decoded in claim function
     /// @param swapParams Array of SwapParams structs, one per swap being made
     struct BaseExtensionParams {
+        bool sendToRewarder;
         bytes claimData;
         SwapParams[] swapParams;
     }
@@ -80,11 +84,15 @@ abstract contract BaseDestinationVaultExtension is SystemComponent, ReentrancyGu
         }
 
         //
-        // Add rewards to DV rewarder
+        // Send rewards to either reward sink or rewarder
         //
-        address rewarder = IDestinationVault(address(this)).rewarder();
-        LibAdapter._approve(weth, rewarder, amountReceived);
-        IMainRewarder(rewarder).queueNewRewards(amountReceived);
+        if (params.sendToRewarder) {
+            address rewarder = IDestinationVault(address(this)).rewarder();
+            LibAdapter._approve(weth, rewarder, amountReceived);
+            IMainRewarder(rewarder).queueNewRewards(amountReceived);
+        } else {
+            weth.safeTransfer(msg.sender, amountReceived);
+        }
 
         emit ExtensionExecuted(amountsClaimed, tokensClaimed, amountReceived);
     }

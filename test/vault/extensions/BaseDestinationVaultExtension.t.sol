@@ -91,6 +91,7 @@ contract BaseDVExtensionExecuteTests is BaseDestinationVaultExtensionTest {
     function test_RevertIf_NoSwapParams() public {
         BaseDestinationVaultExtension.BaseExtensionParams memory params = BaseDestinationVaultExtension
             .BaseExtensionParams({
+            sendToRewarder: true,
             claimData: abi.encode(""), // Check happens before this is sent to _claim
             swapParams: new SwapParams[](0)
         });
@@ -122,7 +123,8 @@ contract BaseDVExtensionExecuteTests is BaseDestinationVaultExtensionTest {
         });
 
         BaseDestinationVaultExtension.BaseExtensionParams memory params = BaseDestinationVaultExtension
-            .BaseExtensionParams({ claimData: abi.encode(mockExtensionParams), swapParams: swapParams });
+            // solhint-disable-next-line max-line-length
+            .BaseExtensionParams({ sendToRewarder: true, claimData: abi.encode(mockExtensionParams), swapParams: swapParams });
 
         bytes memory data = abi.encode(params);
 
@@ -135,6 +137,7 @@ contract BaseDVExtensionExecuteTests is BaseDestinationVaultExtensionTest {
         // Snapshot some values
         uint256 wethAmountDVBefore = IERC20(WETH_MAINNET).balanceOf(address(dv));
         uint256 wethAmountRewarderBefore = IERC20(WETH_MAINNET).balanceOf(dv.rewarder());
+        uint256 wethAmountAddressThisBefore = IERC20(WETH_MAINNET).balanceOf(address(this));
 
         // Supply dv with eth.  Mock swapper is set up to deposit eth for weth
         vm.deal(address(dv), wethAmountReceivedOnSwap);
@@ -145,6 +148,61 @@ contract BaseDVExtensionExecuteTests is BaseDestinationVaultExtensionTest {
 
         assertEq(mockToken1.balanceOf(address(dv)), 0);
         assertEq(IERC20(WETH_MAINNET).balanceOf(dv.rewarder()), wethAmountRewarderBefore + wethAmountReceivedOnSwap);
+        assertEq(IERC20(WETH_MAINNET).balanceOf(address(dv)), wethAmountDVBefore);
+        assertEq(IERC20(WETH_MAINNET).balanceOf(address(this)), wethAmountAddressThisBefore);
+    }
+
+    function test_SingleTokenClaimed_SendToCaller() public {
+        // Constants
+        uint256 mockToken1Claim = 1.5e18;
+        uint256 wethAmountReceivedOnSwap = 0.75e18;
+
+        // Prep data
+        MockDVExtension.MockExtensionParams[] memory mockExtensionParams = new MockDVExtension.MockExtensionParams[](1);
+        SwapParams[] memory swapParams = new SwapParams[](1);
+
+        mockExtensionParams[0] = MockDVExtension.MockExtensionParams({ token: address(mockToken1), amount: 1.5e18 });
+
+        swapParams[0] = SwapParams({
+            sellTokenAddress: address(mockToken1),
+            sellAmount: mockToken1Claim,
+            buyTokenAddress: WETH_MAINNET,
+            buyAmount: wethAmountReceivedOnSwap,
+            data: abi.encode(""),
+            extraData: abi.encode(""),
+            deadline: block.timestamp
+        });
+
+        BaseDestinationVaultExtension.BaseExtensionParams memory params = BaseDestinationVaultExtension
+            .BaseExtensionParams({
+            sendToRewarder: false,
+            claimData: abi.encode(mockExtensionParams),
+            swapParams: swapParams
+        });
+
+        bytes memory data = abi.encode(params);
+
+        uint256[] memory amountsClaimed = new uint256[](1);
+        address[] memory tokensClaimed = new address[](1);
+
+        amountsClaimed[0] = mockToken1Claim;
+        tokensClaimed[0] = address(mockToken1);
+
+        // Snapshot some values
+        uint256 wethAmountDVBefore = IERC20(WETH_MAINNET).balanceOf(address(dv));
+        uint256 wethAmountRewarderBefore = IERC20(WETH_MAINNET).balanceOf(dv.rewarder());
+        uint256 wethAmountAddressThisBefore = IERC20(WETH_MAINNET).balanceOf(address(this));
+
+        // Supply dv with eth.  Mock swapper is set up to deposit eth for weth
+        vm.deal(address(dv), wethAmountReceivedOnSwap);
+
+        vm.expectEmit(true, true, true, true);
+        emit ExtensionExecuted(amountsClaimed, tokensClaimed, wethAmountReceivedOnSwap);
+        dv.executeExtension(data);
+
+        assertEq(mockToken1.balanceOf(address(dv)), 0);
+        assertEq(IERC20(WETH_MAINNET).balanceOf(address(this)), wethAmountAddressThisBefore + wethAmountReceivedOnSwap);
+        assertEq(IERC20(WETH_MAINNET).balanceOf(dv.rewarder()), wethAmountRewarderBefore);
         assertEq(IERC20(WETH_MAINNET).balanceOf(address(dv)), wethAmountDVBefore);
     }
 
@@ -184,7 +242,8 @@ contract BaseDVExtensionExecuteTests is BaseDestinationVaultExtensionTest {
         });
 
         BaseDestinationVaultExtension.BaseExtensionParams memory params = BaseDestinationVaultExtension
-            .BaseExtensionParams({ claimData: abi.encode(mockExtensionParams), swapParams: swapParams });
+            // solhint-disable-next-line max-line-length
+            .BaseExtensionParams({ sendToRewarder: true, claimData: abi.encode(mockExtensionParams), swapParams: swapParams });
 
         bytes memory data = abi.encode(params);
 
@@ -199,6 +258,7 @@ contract BaseDVExtensionExecuteTests is BaseDestinationVaultExtensionTest {
         // Snapshot values
         uint256 wethAmountDVBefore = IERC20(WETH_MAINNET).balanceOf(address(dv));
         uint256 wethAmountRewarderBefore = IERC20(WETH_MAINNET).balanceOf(dv.rewarder());
+        uint256 wethAmountAddressThisBefore = IERC20(WETH_MAINNET).balanceOf(address(this));
 
         // Supply dv with eth.  Mock swapper is set up to deposit eth for weth
         vm.deal(address(dv), wethReceivedOnSwapMockToken1 + wethReceivedOnSwapMockToken2);
@@ -216,6 +276,7 @@ contract BaseDVExtensionExecuteTests is BaseDestinationVaultExtensionTest {
             wethAmountRewarderBefore + wethReceivedOnSwapMockToken1 + wethReceivedOnSwapMockToken2
         );
         assertEq(IERC20(WETH_MAINNET).balanceOf(address(dv)), wethAmountDVBefore);
+        assertEq(IERC20(WETH_MAINNET).balanceOf(address(this)), wethAmountAddressThisBefore);
     }
 }
 

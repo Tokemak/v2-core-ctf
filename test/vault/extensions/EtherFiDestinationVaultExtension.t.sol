@@ -113,6 +113,7 @@ contract EtherFiDestinationVaultExtensionTest is Test {
         });
 
         dataStruct = BaseDestinationVaultExtension.BaseExtensionParams({
+            sendToRewarder: true,
             claimData: abi.encode(claimParams),
             swapParams: swapParams
         });
@@ -162,6 +163,7 @@ contract EtherFiDVExtensionExecuteTest is EtherFiDestinationVaultExtensionTest {
 
         uint256 dvWethBefore = wethERC20.balanceOf(address(dv));
         uint256 dvRewarderWethBefore = wethERC20.balanceOf(dv.rewarder());
+        uint256 addressThisWethBefore = wethERC20.balanceOf(address(this));
 
         uint256[] memory amountsClaimed = new uint256[](1);
         address[] memory tokensClaimed = new address[](1);
@@ -174,6 +176,32 @@ contract EtherFiDVExtensionExecuteTest is EtherFiDestinationVaultExtensionTest {
         dv.executeExtension(data);
 
         assertEq(wethERC20.balanceOf(dv.rewarder()), dvRewarderWethBefore + wethAmountReceived);
+        assertEq(wethERC20.balanceOf(address(dv)), dvWethBefore);
+        assertEq(wethERC20.balanceOf(address(this)), addressThisWethBefore);
+        assertEq(lrtSquaredToken.balanceOf(address(this)), 0);
+    }
+
+    function test_RunsProperly_SendsToCaller() public {
+        BaseDestinationVaultExtension.BaseExtensionParams memory params = _getExtensionData(claimAmount);
+        params.sendToRewarder = false;
+        bytes memory data = abi.encode(params);
+
+        uint256 dvWethBefore = wethERC20.balanceOf(address(dv));
+        uint256 dvRewarderWethBefore = wethERC20.balanceOf(dv.rewarder());
+        uint256 addressThisWethBefore = wethERC20.balanceOf(address(this));
+
+        uint256[] memory amountsClaimed = new uint256[](1);
+        address[] memory tokensClaimed = new address[](1);
+
+        amountsClaimed[0] = claimAmount;
+        tokensClaimed[0] = address(lrtSquaredToken);
+
+        vm.expectEmit(true, true, true, true);
+        emit ExtensionExecuted(amountsClaimed, tokensClaimed, wethAmountReceived);
+        dv.executeExtension(data);
+
+        assertEq(wethERC20.balanceOf(dv.rewarder()), dvRewarderWethBefore);
+        assertEq(wethERC20.balanceOf(address(this)), addressThisWethBefore + wethAmountReceived);
         assertEq(wethERC20.balanceOf(address(dv)), dvWethBefore);
         assertEq(lrtSquaredToken.balanceOf(address(this)), 0);
     }
