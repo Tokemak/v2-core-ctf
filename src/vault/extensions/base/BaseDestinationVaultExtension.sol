@@ -47,7 +47,7 @@ abstract contract BaseDestinationVaultExtension is SystemComponent, ReentrancyGu
 
     // slither-disable-next-line similar-names
     constructor(ISystemRegistry _systemRegistry, address _asyncSwapper) SystemComponent(_systemRegistry) {
-        Errors.verifyNotZero(_asyncSwapper, "_asyncSwapper");
+        _systemRegistry.asyncSwapperRegistry().verifyIsRegistered(_asyncSwapper);
 
         asyncSwapper = _asyncSwapper;
         weth = systemRegistry.weth();

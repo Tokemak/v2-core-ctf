@@ -40,14 +40,19 @@ contract BaseDestinationVaultExtensionTest is Test {
         mockToken1 = new MockERC20("Mock Token 1", "MT1", 18);
         mockToken2 = new MockERC20("Mock Token 2", "MT2", 18);
 
-        swapper = new MockAsyncSwapper(aggregator);
-        extension = new MockDVExtension(systemRegistry, address(swapper));
-
-        // Give test contract the ability to set and execute extensions
+        // Give test contract the ability to set and execute extensions, and to set swapper on async swapper registry
         vm.startPrank(TREASURY);
         systemRegistry.accessController().setupRole(Roles.DESTINATION_VAULT_MANAGER, address(this));
         systemRegistry.accessController().setupRole(Roles.DV_REWARD_MANAGER, address(this));
+        systemRegistry.accessController().setupRole(Roles.AUTO_POOL_REGISTRY_UPDATER, address(this));
         vm.stopPrank();
+
+        // Deploy swapper, set on async swap registry
+        swapper = new MockAsyncSwapper(aggregator);
+        systemRegistry.asyncSwapperRegistry().register(address(swapper));
+
+        // Deploy extension
+        extension = new MockDVExtension(systemRegistry, address(swapper));
 
         // Add DV to whitelist for rewarder
         IBaseRewarder(dv.rewarder()).addToWhitelist(address(dv));
@@ -62,7 +67,7 @@ contract BaseDestinationVaultExtensionTest is Test {
 
 contract BaseDVExtensionConstructorTest is BaseDestinationVaultExtensionTest {
     function test_RevertIf_Zero() public {
-        vm.expectRevert(abi.encodeWithSelector(Errors.ZeroAddress.selector, "_asyncSwapper"));
+        vm.expectRevert(Errors.NotRegistered.selector);
         new MockDVExtension(systemRegistry, address(0));
     }
 
