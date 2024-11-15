@@ -44,8 +44,8 @@ jobs:
         with:
           ignore-compile: true
           fail-on: all
-          solc-version: 0.8.17
-          slither-version: 0.10.0
+          solc-version: 0.8.24
+          slither-version: 0.10.4
           node-version: 20
 
       - name: Lint commits - PR

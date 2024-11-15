@@ -76,7 +76,16 @@ contract SwapRouter is SystemComponent, ISwapRouter, SecurityBase, ReentrancyGua
         uint256 sellAmount,
         address quoteToken,
         uint256 minBuyAmount
-    ) external onlyDestinationVault(msg.sender) nonReentrant returns (uint256) {
+    ) external virtual override onlyDestinationVault(msg.sender) nonReentrant returns (uint256) {
+        return _swapForQuote(assetToken, sellAmount, quoteToken, minBuyAmount);
+    }
+
+    function _swapForQuote(
+        address assetToken,
+        uint256 sellAmount,
+        address quoteToken,
+        uint256 minBuyAmount
+    ) internal returns (uint256) {
         if (sellAmount == 0) revert Errors.ZeroAmount();
         if (assetToken == quoteToken) revert Errors.InvalidParams();
         Errors.verifyNotZero(assetToken, "assetToken");

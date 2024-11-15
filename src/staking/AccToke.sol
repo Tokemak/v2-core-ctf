@@ -209,6 +209,7 @@ contract AccToke is IAccToke, ERC20Votes, Pausable, SystemComponent, SecurityBas
     }
 
     /// @inheritdoc IAccToke
+    //slither-disable-start timestamp
     function extend(uint256[] memory lockupIds, uint256[] memory durations) external whenNotPaused whenNoAdminUnlock {
         uint256 length = lockupIds.length;
         if (length == 0) revert InvalidLockupIds();
@@ -253,6 +254,7 @@ contract AccToke is IAccToke, ERC20Votes, Pausable, SystemComponent, SecurityBas
         // issue extra points for extension
         _mint(msg.sender, totalExtendedPoints);
     }
+    //slither-disable-end timestamp
 
     /// @inheritdoc IAccToke
     function previewPoints(uint256 amount, uint256 duration) public view returns (uint256 points, uint256 end) {

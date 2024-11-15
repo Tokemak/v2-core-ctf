@@ -10,6 +10,8 @@ import { IAutopool, IAutopilotRouter } from "src/interfaces/vault/IAutopilotRout
 import { IAccToke } from "src/interfaces/staking/IAccToke.sol";
 import { IRewards } from "src/interfaces/rewarders/IRewards.sol";
 import { SwapParams, IAsyncSwapper } from "src/interfaces/liquidation/IAsyncSwapper.sol";
+import { ISwapRouterV2 } from "src/interfaces/swapper/ISwapRouterV2.sol";
+
 import { AutopilotRouterBase, ISystemRegistry } from "src/vault/AutopilotRouterBase.sol";
 import { Errors } from "src/utils/Errors.sol";
 import { ContractTypes } from "src/libs/ContractTypes.sol";
@@ -117,6 +119,23 @@ contract AutopilotRouter is IAutopilotRouter, AutopilotRouterBase, ReentrancyGua
         uint256 maxRedeem = vault.maxRedeem(msg.sender);
         uint256 amountShares = maxRedeem < shareBalance ? maxRedeem : shareBalance;
         return redeem(vault, to, amountShares, minAmountOut);
+    }
+
+    function redeemWithRoutes(
+        IAutopool vault,
+        address to,
+        uint256 shares,
+        uint256 minAmountOut,
+        ISwapRouterV2.UserSwapData[] calldata customRoutes
+    ) public returns (uint256 amountOut) {
+        ISwapRouterV2 swapRouter = ISwapRouterV2(payable(address(systemRegistry.swapRouter())));
+        swapRouter.initTransientSwap(customRoutes);
+
+        amountOut = redeem(vault, to, shares, minAmountOut);
+
+        //clear the routes
+        swapRouter.exitTransientSwap();
+        return amountOut;
     }
 
     /// @inheritdoc IAutopilotRouter

@@ -172,6 +172,7 @@ contract TellorOracle is BaseOracleDenominations, UsingTellor {
 
         // Pre caching checks, zero checks for timestamp and price.  If these are zero, something is wrong,
         //      want to revert.
+        // slither-disable-next-line incorrect-equality
         if (timestampRetrieved == 0 || price == 0) {
             revert Errors.InvalidDataReturned();
         }
