@@ -9,4 +9,9 @@ interface IBasePool {
     /// @notice Returns the current swap fee percentage as a 18 decimal fixed point number
     /// @return The current swap fee percentage
     function getSwapFeePercentage() external view returns (uint256);
+
+    /// @notice Gets scaling factors for tokens in pool in order
+    /// @dev Accounts for rate scaling as well
+    /// @return Array of scaling factors, in e18
+    function getScalingFactors() external view returns (uint256[] memory);
 }
