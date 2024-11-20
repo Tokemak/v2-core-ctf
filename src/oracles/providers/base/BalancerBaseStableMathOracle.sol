@@ -40,14 +40,17 @@ abstract contract BalancerBaseStableMathOracle is ISpotPriceOracle, SystemCompon
         (price, actualQuoteToken) = _getSpotPrice(token, pool, requestedQuoteToken, tokens, data);
     }
 
+    /// @inheritdoc ISpotPriceOracle
     function getSafeSpotPriceInfo(
         address pool,
         address lpToken,
         address quoteToken
     ) external virtual override returns (uint256 totalLpSupply, ReserveItemInfo[] memory reserves) {
         Errors.verifyNotZero(pool, "pool");
-        Errors.verifyNotZero(lpToken, "lpToken");
         Errors.verifyNotZero(quoteToken, "quoteToken");
+
+        // Pool and LP token always the same for Bal
+        if (lpToken != pool) revert InvalidPool(pool);
 
         totalLpSupply = _getTotalSupply(pool);
 

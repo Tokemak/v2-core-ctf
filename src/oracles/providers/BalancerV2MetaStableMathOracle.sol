@@ -3,6 +3,7 @@
 
 pragma solidity ^0.8.24;
 
+import { IBasePool } from "src/interfaces/external/balancer/IBasePool.sol";
 import { IERC20 } from "openzeppelin-contracts/token/ERC20/IERC20.sol";
 
 import { BalancerUtilities } from "src/libs/BalancerUtilities.sol";
@@ -37,5 +38,11 @@ contract BalancerV2MetaStableMathOracle is BalancerV2BaseStableMathOracle {
     {
         (poolTokens, rawBalances) = BalancerUtilities._getPoolTokens(vault, pool);
         extraData = abi.encode(BalancerV2StableOracleData({ pool: pool, rawBalances: rawBalances }));
+    }
+
+    function _getScalingFactors(
+        address pool
+    ) internal view virtual override returns (uint256[] memory) {
+        return IBasePool(pool).getScalingFactors();
     }
 }

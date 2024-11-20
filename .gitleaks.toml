@@ -33,7 +33,8 @@ paths = [
     '''script/mainnet/10_Maverick.sol''',
     '''script/utils/ResendReceivingRouter.s.sol''',
     '''test/vault/extensions/EtherFiDestinationVaultExtension.t.sol''',
-    '''test/vault/extensions/KelpDaoDestinationVaultExtension.t.sol'''
+    '''test/vault/extensions/KelpDaoDestinationVaultExtension.t.sol''',
+    '''test/oracles/providers/BalV2StableMathOracleIntegration.t.sol'''
 ]
 
 regexTarget = "match"
