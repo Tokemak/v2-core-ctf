@@ -80,30 +80,6 @@ contract BankSwapperTest is Test {
         Address.functionCall(address(swapper), abi.encodeCall(IAsyncSwapper.swap, (swapParams)));
     }
 
-    function test_RevertIf_ZeroValuesSwapParams() public {
-        _setupRole();
-
-        swapParams.sellTokenAddress = address(0);
-        vm.expectRevert(IAsyncSwapper.TokenAddressZero.selector);
-        Address.functionDelegateCall(address(swapper), abi.encodeCall(IAsyncSwapper.swap, (swapParams)));
-        swapParams.sellTokenAddress = WSTETH_BASE;
-
-        swapParams.buyTokenAddress = address(0);
-        vm.expectRevert(IAsyncSwapper.TokenAddressZero.selector);
-        Address.functionDelegateCall(address(swapper), abi.encodeCall(IAsyncSwapper.swap, (swapParams)));
-        swapParams.buyTokenAddress = WETH9_BASE;
-
-        swapParams.sellAmount = 0;
-        vm.expectRevert(IAsyncSwapper.InsufficientSellAmount.selector);
-        Address.functionDelegateCall(address(swapper), abi.encodeCall(IAsyncSwapper.swap, (swapParams)));
-        swapParams.sellAmount = 1e18;
-
-        swapParams.buyAmount = 0;
-        vm.expectRevert(IAsyncSwapper.InsufficientBuyAmount.selector);
-        Address.functionDelegateCall(address(swapper), abi.encodeCall(IAsyncSwapper.swap, (swapParams)));
-        swapParams.buyAmount = 1.1e18;
-    }
-
     function test_RevertIf_NotEnoughSellToken() public {
         _setupRole();
         assertEq(IERC20(WSTETH_BASE).balanceOf(address(this)), 0);

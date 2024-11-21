@@ -13,7 +13,7 @@ import { Roles } from "src/libs/Roles.sol";
 /// @dev WARNING!! Do NOT use this contract with a non Tokemak controlled contract.  This contract forgoes some
 /// necessary checks for interacting with external contracts
 /// @dev In addition to the above, this should only be used via the LiquidationRow.sol contract.  This contract performs
-/// pricing checks to ensure the execution we are getting is within some margin
+/// pricing, token and amount checks to ensure the execution we are getting is within some margin
 contract BankSwapper is IAsyncSwapper, SystemComponent {
     using SafeERC20 for IERC20;
 
@@ -43,11 +43,6 @@ contract BankSwapper is IAsyncSwapper, SystemComponent {
         IERC20 buyToken = IERC20(swapParams.buyTokenAddress);
         uint256 sellAmount = swapParams.sellAmount;
         buyTokenAmountReceived = swapParams.buyAmount;
-
-        if (address(sellToken) == address(0)) revert TokenAddressZero();
-        if (address(buyToken) == address(0)) revert TokenAddressZero();
-        if (sellAmount == 0) revert InsufficientSellAmount();
-        if (buyTokenAmountReceived == 0) revert InsufficientBuyAmount();
 
         uint256 sellTokenBalance = sellToken.balanceOf(address(this));
         if (sellTokenBalance < sellAmount) revert InsufficientBalance(sellTokenBalance, sellAmount);
