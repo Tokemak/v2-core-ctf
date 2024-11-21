@@ -98,7 +98,9 @@ import {
     SWETH_RS_FEED_MAINNET,
     RSETH_RS_FEED_MAINNET,
     MAV_WSTETH_WETH_BOOSTED_POS_LATEST,
-    MAV_WSTETH_WETH_POOL
+    MAV_WSTETH_WETH_POOL,
+    RETH_WETH_BAL_POOL,
+    WSTETH_WETH_BAL_COMP_POOL
 } from "../utils/Addresses.sol";
 
 import { SystemRegistry } from "src/SystemRegistry.sol";
@@ -115,6 +117,8 @@ import { CurveV2CryptoEthOracle } from "src/oracles/providers/CurveV2CryptoEthOr
 import { BaseOracleDenominations } from "src/oracles/providers/base/BaseOracleDenominations.sol";
 import { CustomSetOracle } from "src/oracles/providers/CustomSetOracle.sol";
 import { CrvUsdOracle } from "test/mocks/CrvUsdOracle.sol";
+import { BalancerV2MetaStableMathOracle } from "src/oracles/providers/BalancerV2MetaStableMathOracle.sol";
+import { BalancerV2ComposableStableMathOracle } from "src/oracles/providers/BalancerV2ComposableStableMathOracle.sol";
 
 import { IVault as IBalancerVault } from "src/interfaces/external/balancer/IVault.sol";
 import { CurveResolverMainnet, ICurveResolver, ICurveMetaRegistry } from "src/utils/CurveResolverMainnet.sol";
@@ -155,6 +159,8 @@ contract RootOracleIntegrationTest is Test {
     CustomSetOracle public customSetOracle;
     CrvUsdOracle public crvUsdOracle;
     RedstoneOracle public redstoneOracle;
+    BalancerV2MetaStableMathOracle public balMetaStableMathOracle;
+    BalancerV2ComposableStableMathOracle public balComposableStableMathOracle;
 
     function setUp() public virtual {
         vm.createSelectFork(vm.envString("MAINNET_RPC_URL"), 17_474_729);
@@ -187,6 +193,9 @@ contract RootOracleIntegrationTest is Test {
             IAggregatorV3Interface(ETH_CL_FEED_MAINNET)
         );
         redstoneOracle = new RedstoneOracle(systemRegistry);
+        balMetaStableMathOracle = new BalancerV2MetaStableMathOracle(IBalancerVault(BAL_VAULT), systemRegistry);
+        balComposableStableMathOracle =
+            new BalancerV2ComposableStableMathOracle(IBalancerVault(BAL_VAULT), systemRegistry);
 
         //
         // Make persistent for multiple forks
@@ -206,6 +215,8 @@ contract RootOracleIntegrationTest is Test {
         vm.makePersistent(address(customSetOracle));
         vm.makePersistent(address(crvUsdOracle));
         vm.makePersistent(address(redstoneOracle));
+        vm.makePersistent(address(balMetaStableMathOracle));
+        vm.makePersistent(address(balComposableStableMathOracle));
 
         //
         // Root price oracle setup
@@ -395,6 +406,7 @@ contract RootOracleIntegrationTest is Test {
         priceOracle.registerPoolMapping(STETH_ETH_CURVE_POOL, curveStableOracle);
         priceOracle.registerPoolMapping(CBETH_ETH_V2_POOL, ISpotPriceOracle(curveCryptoOracle));
         priceOracle.registerPoolMapping(RETH_WETH_BAL_POOL, ISpotPriceOracle(balancerMetaOracle));
+        priceOracle.registerPoolMapping(WSTETH_WETH_BAL_COMP_POOL, ISpotPriceOracle(balComposableStableMathOracle));
     }
 
     function _getTwoPercentTolerance(
@@ -646,6 +658,30 @@ contract GetRangePricesLP is RootOracleIntegrationTest {
         assertLt(lowerBound, spotPrice);
 
         assertTrue(isSpotSafe);
+    }
+
+    function test_BalComposableStableMathOracle() external {
+        vm.createSelectFork(vm.envString("MAINNET_RPC_URL"), 21_236_858);
+
+        // Calculated weth - 1.035399962761464754
+        uint256 calculatedPrice = uint256(1.035399962761464754e18);
+        (uint256 spot, uint256 safe, bool isSpotSafe) =
+            priceOracle.getRangePricesLP(WSTETH_WETH_BAL_COMP_POOL, WSTETH_WETH_BAL_COMP_POOL, WETH9_ADDRESS);
+
+        _verifySafePriceByPercentTolerance(calculatedPrice, safe, spot, 2, isSpotSafe);
+    }
+
+    function test_BalMetaStableMathOracle_1111() external {
+        vm.createSelectFork(vm.envString("MAINNET_RPC_URL"), 21_236_858);
+
+        priceOracle.replacePoolMapping(RETH_WETH_BAL_POOL, balancerMetaOracle, balMetaStableMathOracle);
+
+        // Calculated weth - 1.036473675969451611
+        uint256 calculatedPrice = uint256(1.036473675969451611e18);
+        (uint256 spot, uint256 safe, bool isSpotSafe) =
+            priceOracle.getRangePricesLP(RETH_WETH_BAL_POOL, RETH_WETH_BAL_POOL, WETH9_ADDRESS);
+
+        _verifySafePriceByPercentTolerance(calculatedPrice, safe, spot, 2, isSpotSafe);
     }
 
     function test_BalComposableStablePoolOracle() external {
@@ -1336,6 +1372,60 @@ contract GetFloorCeilingPrice is RootOracleIntegrationTest {
     // ----------------
     // Test floor and ceiling for each `ISpotPriceOracle` contract.
     // ----------------
+
+    /**
+     * Ceiling calculated - 1121077873926154011
+     * Ceiling returned -   1119650380230017089
+     *
+     * Floor calculated -  945698042649340411
+     * Floor returned -    944124948436101311
+     */
+    function test_BalancerComposableStableMathOracle_WithFloorCeilingPrice() public {
+        vm.createSelectFork(vm.envString("MAINNET_RPC_URL"), 21_237_016);
+
+        uint256 calculatedFloor = 945_698_042_649_340_411;
+        uint256 calculatedCeiling = 1_121_077_873_926_154_011;
+
+        uint256 floor =
+            priceOracle.getFloorCeilingPrice(WSTETH_WETH_BAL_COMP_POOL, WSTETH_WETH_BAL_COMP_POOL, WETH9_ADDRESS, false);
+        uint256 ceiling =
+            priceOracle.getFloorCeilingPrice(WSTETH_WETH_BAL_COMP_POOL, WSTETH_WETH_BAL_COMP_POOL, WETH9_ADDRESS, true);
+
+        (uint256 upperBound, uint256 lowerBound) = _getTwoPercentTolerance(calculatedFloor);
+        assertGt(upperBound, floor);
+        assertLt(lowerBound, floor);
+
+        (upperBound, lowerBound) = _getTwoPercentTolerance(calculatedCeiling);
+        assertGt(upperBound, ceiling);
+        assertLt(lowerBound, ceiling);
+    }
+
+    /**
+     * Ceiling calculated - 1093897786239790280
+     * Ceiling returned -   1093956683887048583
+     *
+     * Floor calculated -  977829432591213265
+     * Floor returned -    977829432591213265
+     */
+    function test_BalancerMetaStableMathOracle_WithFloorCeilingPrice() public {
+        vm.createSelectFork(vm.envString("MAINNET_RPC_URL"), 21_237_016);
+
+        priceOracle.replacePoolMapping(RETH_WETH_BAL_POOL, balancerMetaOracle, balMetaStableMathOracle);
+
+        uint256 calculatedFloor = 977_829_432_591_213_265;
+        uint256 calculatedCeiling = 1_093_897_786_239_790_280;
+
+        uint256 floor = priceOracle.getFloorCeilingPrice(RETH_WETH_BAL_POOL, RETH_WETH_BAL_POOL, WETH9_ADDRESS, false);
+        uint256 ceiling = priceOracle.getFloorCeilingPrice(RETH_WETH_BAL_POOL, RETH_WETH_BAL_POOL, WETH9_ADDRESS, true);
+
+        (uint256 upperBound, uint256 lowerBound) = _getTwoPercentTolerance(calculatedFloor);
+        assertGt(upperBound, floor);
+        assertLt(lowerBound, floor);
+
+        (upperBound, lowerBound) = _getTwoPercentTolerance(calculatedCeiling);
+        assertGt(upperBound, ceiling);
+        assertLt(lowerBound, ceiling);
+    }
 
     /**
      * Ceiling calculated - 1069285457353509362
