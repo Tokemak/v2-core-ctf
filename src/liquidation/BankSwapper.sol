@@ -5,6 +5,7 @@ pragma solidity ^0.8.24;
 import { IAsyncSwapper, SwapParams } from "src/interfaces/liquidation/IAsyncSwapper.sol";
 import { SystemComponent, ISystemRegistry } from "src/SystemComponent.sol";
 import { SafeERC20 } from "openzeppelin-contracts/token/ERC20/utils/SafeERC20.sol";
+import { IRootPriceOracle } from "src/interfaces/oracles/IRootPriceOracle.sol";
 import { IERC20 } from "openzeppelin-contracts/token/ERC20/IERC20.sol";
 import { Errors } from "src/utils/Errors.sol";
 import { Roles } from "src/libs/Roles.sol";
@@ -13,7 +14,7 @@ import { Roles } from "src/libs/Roles.sol";
 /// @dev WARNING!! Do NOT use this contract with a non Tokemak controlled contract.  This contract forgoes some
 /// necessary checks for interacting with external contracts
 /// @dev In addition to the above, this should only be used via the LiquidationRow.sol contract.  This contract performs
-/// pricing, token and amount checks to ensure the execution we are getting is within some margin
+/// necessary checks to ensure the execution we are getting is within some margin
 contract BankSwapper is IAsyncSwapper, SystemComponent {
     using SafeERC20 for IERC20;
 
@@ -30,6 +31,7 @@ contract BankSwapper is IAsyncSwapper, SystemComponent {
 
     constructor(address _bank, ISystemRegistry _systemRegistry) SystemComponent(_systemRegistry) {
         Errors.verifyNotZero(_bank, "_bank");
+        Errors.verifyNotZero(address(_systemRegistry.rootPriceOracle()), "_systemRegistry.rootPriceOracle");
 
         // slither-disable-next-line missing-zero-check
         BANK = _bank;
@@ -42,7 +44,13 @@ contract BankSwapper is IAsyncSwapper, SystemComponent {
         IERC20 sellToken = IERC20(swapParams.sellTokenAddress);
         IERC20 buyToken = IERC20(swapParams.buyTokenAddress);
         uint256 sellAmount = swapParams.sellAmount;
-        buyTokenAmountReceived = swapParams.buyAmount;
+
+        IRootPriceOracle oracle = systemRegistry.rootPriceOracle();
+        uint256 sellTokenPrice = oracle.getPriceInEth(swapParams.sellTokenAddress);
+        uint256 buyTokenPrice = oracle.getPriceInEth(swapParams.buyTokenAddress);
+
+        // Expected buy amount from Price Oracle
+        buyTokenAmountReceived = (sellAmount * sellTokenPrice) / buyTokenPrice;
 
         uint256 sellTokenBalance = sellToken.balanceOf(address(this));
         if (sellTokenBalance < sellAmount) revert InsufficientBalance(sellTokenBalance, sellAmount);

@@ -13,6 +13,7 @@ import { Errors } from "src/utils/Errors.sol";
 import { BankSwapper } from "src/liquidation/BankSwapper.sol";
 import { SystemRegistryL2 } from "src/SystemRegistryL2.sol";
 import { AccessController } from "src/security/AccessController.sol";
+import { IRootPriceOracle } from "src/interfaces/oracles/IRootPriceOracle.sol";
 import { SwapParams, IAsyncSwapper } from "src/interfaces/liquidation/IAsyncSwapper.sol";
 
 // solhint-disable func-name-mixedcase
@@ -32,6 +33,7 @@ contract BankSwapperTest is Test {
     address public bank;
     SystemRegistryL2 public registry;
     AccessController public access;
+    IRootPriceOracle public oracle;
     SwapParams public swapParams;
 
     function setUp() public {
@@ -46,6 +48,11 @@ contract BankSwapperTest is Test {
         access = new AccessController(address(registry));
         registry.setAccessController(address(access));
 
+        // Oracle
+        oracle = IRootPriceOracle(makeAddr("Oracle"));
+        vm.mockCall(address(oracle), abi.encodeWithSignature("getSystemRegistry()"), abi.encode(address(registry)));
+        registry.setRootPriceOracle(address(oracle));
+
         // Swapper
         bank = makeAddr("Bank");
         swapper = new BankSwapper(bank, registry);
@@ -55,7 +62,7 @@ contract BankSwapperTest is Test {
             sellTokenAddress: WSTETH_BASE,
             sellAmount: 1e18,
             buyTokenAddress: WETH9_BASE,
-            buyAmount: 1.1e18,
+            buyAmount: 0, // Doesn't matter in this context, determined by oracle pricing
             data: abi.encode(""),
             extraData: abi.encode(""),
             deadline: block.timestamp
@@ -66,7 +73,21 @@ contract BankSwapperTest is Test {
         access.setupRole(Roles.BANK_SWAP_MANAGER, address(this));
     }
 
-    function test_RevertIf_DelegatcallIncorrectRole() public {
+    function _mockOracle(address token, uint256 price) private {
+        vm.mockCall(address(oracle), abi.encodeCall(IRootPriceOracle.getPriceInEth, (token)), abi.encode(price));
+    }
+
+    function test_Revert_Construction() public {
+        vm.expectRevert(abi.encodeWithSelector(Errors.ZeroAddress.selector, "_bank"));
+        new BankSwapper(address(0), registry);
+
+        vm.mockCall(address(registry), abi.encodeWithSignature("rootPriceOracle()"), abi.encode(address(0)));
+
+        vm.expectRevert(abi.encodeWithSelector(Errors.ZeroAddress.selector, "_systemRegistry.rootPriceOracle"));
+        new BankSwapper(bank, registry);
+    }
+
+    function test_RevertIf_DelegatecallIncorrectRole() public {
         vm.expectRevert(Errors.AccessDenied.selector);
         Address.functionDelegateCall(address(swapper), abi.encodeCall(IAsyncSwapper.swap, (swapParams)));
     }
@@ -84,12 +105,19 @@ contract BankSwapperTest is Test {
         _setupRole();
         assertEq(IERC20(WSTETH_BASE).balanceOf(address(this)), 0);
 
+        _mockOracle(WETH9_BASE, 1e18);
+        _mockOracle(WSTETH_BASE, 1.1e18);
+
         vm.expectRevert(abi.encodeWithSelector(IAsyncSwapper.InsufficientBalance.selector, 0, 1e18));
         Address.functionDelegateCall(address(swapper), abi.encodeCall(IAsyncSwapper.swap, (swapParams)));
     }
 
     function test_RevertIf_BalanceOfBuyToken_InBank_NotEnoughForSwap() public {
         _setupRole();
+
+        _mockOracle(WETH9_BASE, 1e18);
+        _mockOracle(WSTETH_BASE, 1.1e18);
+
         deal(WSTETH_BASE, address(this), 1e18);
         assertEq(IERC20(WETH9_BASE).balanceOf(bank), 0);
 
@@ -97,7 +125,10 @@ contract BankSwapperTest is Test {
         Address.functionDelegateCall(address(swapper), abi.encodeCall(IAsyncSwapper.swap, (swapParams)));
     }
 
-    function test_RunsProperly_EmitsEvent_CorrectBalances() public {
+    function test_IgnoresBuyAmount_RunsProperly() public {
+        uint256 wethPrice = 1e18;
+        uint256 wstEthPrice = 1.1e18;
+
         _setupRole();
 
         // Give each swap participant the amount of funds needed
@@ -106,25 +137,36 @@ contract BankSwapperTest is Test {
 
         // Bank approval
         vm.startPrank(bank);
-        IERC20(WETH9_BASE).approve(address(this), 1.1e18);
+        IERC20(WETH9_BASE).approve(address(this), type(uint256).max);
         vm.stopPrank();
 
+        // Updating swap params - Ridiculous number received for amount sent
+        swapParams.buyAmount = 1e25;
+
+        // Oracle mocks
+        _mockOracle(WETH9_BASE, wethPrice);
+        _mockOracle(WSTETH_BASE, wstEthPrice);
+
+        // Calculate amount received via swap
+        uint256 expectedReceived = swapParams.sellAmount * wstEthPrice / wethPrice;
+
+        // Swap and checks
         vm.expectEmit(true, true, true, true);
         emit Swapped(
             swapParams.sellTokenAddress,
             swapParams.buyTokenAddress,
             swapParams.sellAmount,
-            swapParams.buyAmount,
-            swapParams.buyAmount
+            expectedReceived,
+            expectedReceived
         );
         bytes memory data =
             Address.functionDelegateCall(address(swapper), abi.encodeCall(IAsyncSwapper.swap, (swapParams)));
         uint256 amountReceived = abi.decode(data, (uint256));
 
-        assertEq(amountReceived, 1.1e18);
+        assertEq(amountReceived, expectedReceived);
         assertEq(IERC20(WSTETH_BASE).balanceOf(address(this)), 0);
         assertEq(IERC20(WSTETH_BASE).balanceOf(bank), 1e18);
-        assertEq(IERC20(WETH9_BASE).balanceOf(address(this)), 1.1e18);
+        assertEq(IERC20(WETH9_BASE).balanceOf(address(this)), expectedReceived);
         assertEq(IERC20(WETH9_BASE).balanceOf(bank), 0);
     }
 }
