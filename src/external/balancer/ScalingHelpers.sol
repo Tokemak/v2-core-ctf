@@ -4,6 +4,11 @@ pragma solidity ^0.8.24;
 
 import { FixedPoint } from "src/external/balancer/FixedPoint.sol";
 
+// solhint-disable max-line-length
+
+/// @dev Functionality taken from BalV3 monorepo. Original here -
+/// https://github.com/balancer/balancer-v3-monorepo/blob/73708b75898a62dac0535f38d1bf471ac0e538c6/pkg/solidity-utils/contracts/helpers/ScalingHelpers.sol
+
 /**
  * @notice Helper functions to apply/undo token decimal and rate adjustments, rounding in the direction indicated.
  * @dev To simplify Pool logic, all token balances and amounts are normalized to behave as if the token had

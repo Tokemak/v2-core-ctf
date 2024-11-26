@@ -19,7 +19,9 @@ abstract contract BalancerBaseStableMathOracle is ISpotPriceOracle, SystemCompon
 
     constructor(
         ISystemRegistry _registry
-    ) SystemComponent(_registry) { }
+    ) SystemComponent(_registry) {
+        Errors.verifyNotZero(address(_registry.rootPriceOracle()), "_registry.rootPriceOracle");
+    }
 
     /// @inheritdoc ISpotPriceOracle
     function getSpotPrice(

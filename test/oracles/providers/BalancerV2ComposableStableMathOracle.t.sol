@@ -33,6 +33,9 @@ contract BalancerV2ComposableStableMathOracleTest is Test {
 
         registry = ISystemRegistry(makeAddr("registry"));
 
+        // Mock rootPriceOracle call on system registry.  Can be any address not zero
+        vm.mockCall(address(registry), abi.encodeCall(ISystemRegistry.rootPriceOracle, ()), abi.encode(address(1)));
+
         oracle = new MockBalancerV2ComposableStableMathOracle(BAL_VAULT_INSTANCE, registry);
     }
 
@@ -76,13 +79,14 @@ contract BalancerV2ComposableStableMathOracleTest is Test {
     function test_getScalingFactors_RunsProperly() public {
         uint256[] memory poolScalingFactors = IBasePool(BAL_COMPOSABLE_OSETH_WETH).getScalingFactors();
 
-        // Bpt ind 1 for this pool, adjusting manually
+        // Bpt idx 1 for this pool, adjusting manually
         uint256[] memory poolScalingFactorsNoBpt = new uint256[](2);
         poolScalingFactorsNoBpt[0] = poolScalingFactors[0];
         poolScalingFactorsNoBpt[1] = poolScalingFactors[2];
 
         uint256[] memory oracleScalingFactors = oracle.getScalingFactors(BAL_COMPOSABLE_OSETH_WETH);
 
+        assertEq(oracleScalingFactors.length, 2);
         assertEq(poolScalingFactorsNoBpt[0], oracleScalingFactors[0]);
         assertEq(poolScalingFactorsNoBpt[1], oracleScalingFactors[1]);
     }

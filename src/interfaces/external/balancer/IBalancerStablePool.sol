@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.24;
 
-/// @dev This interface is currently used for BalV2 and V3 stable pools, all have the same signature for this function
+/// @dev This interface is being used for v2 and v3, as both a constant signature for this function
 interface IBalancerStablePool {
     function getAmplificationParameter() external view returns (uint256 value, bool isUpdating, uint256 precision);
 }

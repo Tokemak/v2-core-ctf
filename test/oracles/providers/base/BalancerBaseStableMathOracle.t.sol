@@ -32,11 +32,23 @@ contract BalancerBaseStableMathOracleTest is Test {
         quote = makeAddr("quote");
         lp = pool; // Same in Bal pools
 
+        vm.mockCall(
+            address(registry),
+            abi.encodeCall(ISystemRegistry.rootPriceOracle, ()),
+            abi.encode(makeAddr("rootPriceOracle"))
+        );
         baseOracle = new MockBalancerBaseStableMathOracle(registry);
     }
 }
 
 contract BalancerBaseStableMathOracleConstructorTest is BalancerBaseStableMathOracleTest {
+    function test_RevertIf_RootPriceZeroAddress() public {
+        // Mock zero address return to test failure
+        vm.mockCall(address(registry), abi.encodeCall(ISystemRegistry.rootPriceOracle, ()), abi.encode(address(0)));
+        vm.expectRevert(abi.encodeWithSelector(Errors.ZeroAddress.selector, "_registry.rootPriceOracle"));
+        new MockBalancerBaseStableMathOracle(registry);
+    }
+
     function test_StateSetOnConstruction() public {
         assertEq(address(baseOracle.getSystemRegistry()), address(registry));
     }

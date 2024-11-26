@@ -16,7 +16,7 @@ import {
 
 contract BalancerV2MetaStableMathOracle is BalancerV2BaseStableMathOracle {
     function getDescription() external pure override returns (string memory) {
-        return "balV2MetaStable";
+        return "balV2MetaStableMath";
     }
 
     constructor(IVault _vault, ISystemRegistry _registry) BalancerV2BaseStableMathOracle(_vault, _registry) { }

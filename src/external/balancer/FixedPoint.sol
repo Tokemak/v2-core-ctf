@@ -4,6 +4,11 @@ pragma solidity ^0.8.24;
 
 import { LogExpMath } from "./LogExpMath.sol";
 
+// solhint-disable max-line-length
+
+/// @dev Taken from Bal V3 monorepo.  Link here -
+/// https://github.com/balancer/balancer-v3-monorepo/blob/73708b75898a62dac0535f38d1bf471ac0e538c6/pkg/solidity-utils/contracts/math/FixedPoint.sol
+
 /// @notice Support 18-decimal fixed point arithmetic. All Vault calculations use this for high and uniform precision.
 library FixedPoint {
     /// @notice Attempted division by zero.

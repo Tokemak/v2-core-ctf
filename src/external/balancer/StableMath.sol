@@ -6,8 +6,7 @@ import { FixedPoint } from "src/external/balancer/FixedPoint.sol";
 
 // solhint-disable
 
-/// @dev This functionality is taken directly from Balancer's V3 monorepo.  Functionality not being used has been
-/// deleted.
+/// @dev This functionality is taken directly from Balancer's V3 monorepo.
 /// @dev For the original code -
 /// https://github.com/balancer/balancer-v3-monorepo/blob/652d6a8cdcbb8666dacccf705529ba53922485a4/pkg/solidity-utils/contracts/math/StableMath.sol
 

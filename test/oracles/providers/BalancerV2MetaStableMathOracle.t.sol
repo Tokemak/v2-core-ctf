@@ -32,6 +32,9 @@ contract BalancerV2MetaStableMathOracleTest is Test {
 
         registry = ISystemRegistry(makeAddr("registry"));
 
+        // Mock rootPriceOracle call on system registry.  Can be any address not zero
+        vm.mockCall(address(registry), abi.encodeCall(ISystemRegistry.rootPriceOracle, ()), abi.encode(address(1)));
+
         oracle = new MockBalancerV2MetaStableMathOracle(BAL_VAULT_INSTANCE, registry);
     }
 
