@@ -1641,4 +1641,32 @@ contract GetSpotPriceInEth is RootOracleIntegrationTest {
         assertGt(upperBound, spotPrice);
         assertLt(lowerBound, spotPrice);
     }
+
+    function test_getSpotPriceInEth_BalV2StableMathOracles() public {
+        vm.createSelectFork(vm.envString("MAINNET_RPC_URL"), 21_274_055);
+
+        // Meta pool
+        priceOracle.replacePoolMapping(RETH_WETH_BAL_POOL, balancerMetaOracle, balMetaStableMathOracle);
+
+        // weth -> reth
+        // Calculated - 1000355547939429028
+        // Returned   - 999836845877434966
+        uint256 spotPrice = priceOracle.getSpotPriceInEth(WETH9_ADDRESS, RETH_WETH_BAL_POOL);
+
+        uint256 calculated = uint256(1_000_355_547_939_429_028);
+        spotPrice = priceOracle.getSpotPriceInEth(WETH_MAINNET, RETH_WETH_BAL_POOL);
+        (uint256 upperBound, uint256 lowerBound) = _getTwoPercentTolerance(calculated);
+        assertGt(upperBound, spotPrice);
+        assertLt(lowerBound, spotPrice);
+
+        // Composable pool
+        // weth -> wstEth
+        // Calculated - 1000107545039332716
+        // Returned   - 999930977932148003
+        calculated = uint256(1_000_107_545_039_332_716);
+        spotPrice = priceOracle.getSpotPriceInEth(WETH9_ADDRESS, WSTETH_WETH_BAL_COMP_POOL);
+        (upperBound, lowerBound) = _getTwoPercentTolerance(calculated);
+        assertGt(upperBound, spotPrice);
+        assertLt(lowerBound, spotPrice);
+    }
 }
