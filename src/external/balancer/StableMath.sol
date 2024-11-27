@@ -5,6 +5,7 @@ pragma solidity ^0.8.24;
 import { FixedPoint } from "src/external/balancer/FixedPoint.sol";
 
 // solhint-disable
+// slither-disable-start divide-before-multiply,dead-code,unused-state
 
 /// @dev This functionality is taken directly from Balancer's V3 monorepo.
 /// @dev For the original code -
@@ -274,3 +275,4 @@ library StableMath {
         revert StableComputeBalanceDidNotConverge();
     }
 }
+// slither-disable-end divide-before-multiply,dead-code,unused-state

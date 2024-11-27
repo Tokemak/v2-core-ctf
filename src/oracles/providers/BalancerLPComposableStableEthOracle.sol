@@ -10,6 +10,8 @@ import { IVault } from "src/interfaces/external/balancer/IVault.sol";
 import { IBalancerComposableStablePool } from "src/interfaces/external/balancer/IBalancerComposableStablePool.sol";
 import { BalancerBaseOracle, ISpotPriceOracle } from "src/oracles/providers/base/BalancerBaseOracle.sol";
 
+/// @dev This version of Bal oracles are DEPRECATED.  See BalancerV2ComposableStableMathOracle.sol for new version
+
 /// @title Price oracle for Balancer Composable Stable pools
 /// @dev getPriceEth is not a view fn to support reentrancy checks. Dont actually change state.
 contract BalancerLPComposableStableEthOracle is BalancerBaseOracle {

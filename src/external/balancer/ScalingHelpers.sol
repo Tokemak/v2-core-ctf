@@ -5,6 +5,7 @@ pragma solidity ^0.8.24;
 import { FixedPoint } from "src/external/balancer/FixedPoint.sol";
 
 // solhint-disable max-line-length
+// slither-disable-start dead-code
 
 /// @dev Functionality taken from BalV3 monorepo. Original here -
 /// https://github.com/balancer/balancer-v3-monorepo/blob/73708b75898a62dac0535f38d1bf471ac0e538c6/pkg/solidity-utils/contracts/helpers/ScalingHelpers.sol
@@ -154,3 +155,4 @@ library ScalingHelpers {
         return FixedPoint.divUp(amount, scalingFactor.mulDown(tokenRate));
     }
 }
+// slither-disable-end dead-code

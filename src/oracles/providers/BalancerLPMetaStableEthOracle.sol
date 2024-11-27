@@ -9,6 +9,8 @@ import { IERC20 } from "openzeppelin-contracts/token/ERC20/IERC20.sol";
 import { IVault } from "src/interfaces/external/balancer/IVault.sol";
 import { BalancerBaseOracle, ISpotPriceOracle } from "src/oracles/providers/base/BalancerBaseOracle.sol";
 
+/// @dev This version of Bal oracles have been DEPRECATED.  See BalancerV2MetaStableMathOracle.sol for newest version
+
 /// @title Price oracle for Balancer Meta Stable pools
 /// @dev getPriceEth is not a view fn to support reentrancy checks. Dont actually change state.
 contract BalancerLPMetaStableEthOracle is BalancerBaseOracle {

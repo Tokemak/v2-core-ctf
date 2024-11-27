@@ -5,6 +5,7 @@ pragma solidity ^0.8.24;
 import { LogExpMath } from "./LogExpMath.sol";
 
 // solhint-disable max-line-length
+// slither-disable-start assembly,dead-code
 
 /// @dev Taken from Bal V3 monorepo.  Link here -
 /// https://github.com/balancer/balancer-v3-monorepo/blob/73708b75898a62dac0535f38d1bf471ac0e538c6/pkg/solidity-utils/contracts/math/FixedPoint.sol
@@ -160,3 +161,5 @@ library FixedPoint {
         }
     }
 }
+
+// slither-disable-end assembly,dead-code

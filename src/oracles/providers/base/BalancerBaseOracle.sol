@@ -15,6 +15,8 @@ import { IVault } from "src/interfaces/external/balancer/IVault.sol";
 import { IAsset } from "src/interfaces/external/balancer/IAsset.sol";
 import { ISpotPriceOracle } from "src/interfaces/oracles/ISpotPriceOracle.sol";
 
+/// @dev This version of Bal oracles have been DEPRECATED.  See BalancerBaseStableMathOracle.sol for newest version
+
 abstract contract BalancerBaseOracle is SystemComponent, ISpotPriceOracle {
     /// @notice The Balancer Vault that all tokens we're resolving here should reference
     /// @dev BPTs themselves are configured with an immutable vault reference

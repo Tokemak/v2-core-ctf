@@ -15,6 +15,7 @@ import {
     IVault
 } from "src/oracles/providers/base/BalancerV2BaseStableMathOracle.sol";
 
+/// @title An oracle for Balancer composablestable pools using stablemath for calculations
 contract BalancerV2ComposableStableMathOracle is BalancerV2BaseStableMathOracle {
     function getDescription() external pure override returns (string memory) {
         return "balV2ComposableStableMath";

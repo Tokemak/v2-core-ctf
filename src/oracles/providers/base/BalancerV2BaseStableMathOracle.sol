@@ -12,7 +12,7 @@ import {
     BalancerBaseStableMathOracle, ISystemRegistry
 } from "src/oracles/providers/base/BalancerBaseStableMathOracle.sol";
 
-/// @notice Contains common functionality between MetaStable and ComposableStable pool oracles
+/// @title A base oracle for common Balancer V2 functionalities
 abstract contract BalancerV2BaseStableMathOracle is BalancerBaseStableMathOracle {
     IVault public immutable vault;
 
@@ -27,6 +27,7 @@ abstract contract BalancerV2BaseStableMathOracle is BalancerBaseStableMathOracle
         vault = _vault;
     }
 
+    /// @inheritdoc BalancerBaseStableMathOracle
     function _getLiveBalancesAndScalingFactors(
         bytes memory data
     ) internal view override returns (uint256[] memory scaledBalances, uint256[] memory scalingFactors) {
@@ -43,6 +44,9 @@ abstract contract BalancerV2BaseStableMathOracle is BalancerBaseStableMathOracle
         }
     }
 
+    /// @notice Gets scaling factors for pool
+    /// @param pool Address of pool
+    /// @return scalingFactors Scaling factors for tokens in pool
     function _getScalingFactors(
         address pool
     ) internal view virtual returns (uint256[] memory scalingFactors);

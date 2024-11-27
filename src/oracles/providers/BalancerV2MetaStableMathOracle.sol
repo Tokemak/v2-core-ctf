@@ -14,6 +14,7 @@ import {
     IVault
 } from "src/oracles/providers/base/BalancerV2BaseStableMathOracle.sol";
 
+/// @title An oracle for Balancer metastable pools using stablemath for calculations
 contract BalancerV2MetaStableMathOracle is BalancerV2BaseStableMathOracle {
     function getDescription() external pure override returns (string memory) {
         return "balV2MetaStableMath";
@@ -27,7 +28,6 @@ contract BalancerV2MetaStableMathOracle is BalancerV2BaseStableMathOracle {
         return IERC20(pool).totalSupply();
     }
 
-    // Get tokens through vault
     function _getPoolTokens(
         address pool
     )

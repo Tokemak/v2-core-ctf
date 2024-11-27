@@ -13,6 +13,7 @@ import { Errors } from "src/utils/Errors.sol";
 
 import { SystemComponent, ISystemRegistry } from "src/SystemComponent.sol";
 
+/// @title A base contract for Balancer StableMath oracle functionalities
 abstract contract BalancerBaseStableMathOracle is ISpotPriceOracle, SystemComponent {
     error InvalidToken(address token);
     error InvalidPool(address pool);
@@ -72,7 +73,7 @@ abstract contract BalancerBaseStableMathOracle is ISpotPriceOracle, SystemCompon
     /// @param token The token to get the price of
     /// @param pool The pool to use to get the price of the token
     /// @param requestedQuoteToken Desired quote token.  Will pick another token if this one is not available
-    /// @param tokens Array of IERC20 instances of all tokens in pool.  Does not include BPT
+    /// @param tokens Array of IERC20 instances of all tokens in pool.  Does not contain BPT
     /// @param extraData Data retrieved farther up the call that will be used to determine spot prices.  Varies by pool
     function _getSpotPrice(
         address token,
@@ -121,9 +122,12 @@ abstract contract BalancerBaseStableMathOracle is ISpotPriceOracle, SystemCompon
         // StableMath calcs are always done with rate and decimal scaled balances
         uint256 currentInvariant = StableMath.computeInvariant(poolAmplification, adjustedBalances);
 
+        // Bal swap amounts are adjusted by rate and decimal scaling
         uint256 scaledSwapAmount = ScalingHelpers.toScaled18RoundDown(
             10 ** IERC20Metadata(token).decimals(), scalingFactors[uint256(tokenIndex)]
         );
+
+        // Returns price still scaled by rate and decimal
         uint256 unscaledPrice = StableMath.computeOutGivenExactIn(
             poolAmplification,
             adjustedBalances,
@@ -133,35 +137,50 @@ abstract contract BalancerBaseStableMathOracle is ISpotPriceOracle, SystemCompon
             currentInvariant
         );
 
+        // Spot price should be raw price, so downscale here
         price = _downscalePrice(unscaledPrice, scalingFactors[uint256(quoteTokenIndex)]);
     }
 
-    /// @dev This call signature is the same across BalV2 and V3 pools
+    /// @notice Gets the current amplification coefficient for a Balancer pool
+    /// @param pool Address of the pool
+    /// @return amplification Uint256 amplification param
     function _getAmplificationParam(
         address pool
     ) internal view virtual returns (uint256 amplification) {
+        // slither-disable-next-line unused-return
         (amplification,,) = IBalancerStablePool(pool).getAmplificationParameter();
     }
 
-    function _downscalePrice(uint256 unscaledPrice, uint256 scalingFactor) internal pure virtual returns (uint256) {
+    /// @notice Scaled a price down by rate and decimals scaling factor
+    /// @param scaledPrice Price that is currently scaled up by rate and decimals
+    /// @param scalingFactor Factor to scale price down by
+    /// @return Raw value, in this context a price without rate and decimal scaling applied
+    function _downscalePrice(uint256 scaledPrice, uint256 scalingFactor) internal pure virtual returns (uint256) {
         // Scaling factor here is combined for decimal and rate
-        return ScalingHelpers.toRawRoundDown(unscaledPrice, scalingFactor);
+        return ScalingHelpers.toRawRoundDown(scaledPrice, scalingFactor);
     }
 
-    /// @dev This function should adjust balances for any scaling and fees.  The goal is to send the exact amounts a
-    /// pool would see on swap to the StableMath library
-    /// @param data Any data this function needs to operate.  Returned from higher up call
+    /// @notice Returns live balances and scaling factors for pool tokens
+    /// @param data Any data this function needs to operate.  Returned from _getPoolTokens call
     /// @return liveBalances Balances scaled to 18 decimals and by rate if applicable
     /// @return scalingFactors Factors that balances are scaled by, includes decimal and rate scale
     function _getLiveBalancesAndScalingFactors(
         bytes memory data
     ) internal view virtual returns (uint256[] memory liveBalances, uint256[] memory scalingFactors);
 
+    /// @notice Gets total supply for a pool
+    /// @param pool Address of a pool
+    /// @return totalSupply Total supply of a pools lp token
     function _getTotalSupply(
         address pool
     ) internal view virtual returns (uint256 totalSupply);
 
-    /// @dev This function will return excess data that may be u
+    /// @notice Gets information about tokens in a pool
+    /// @dev Returns encoded data that may be needed in later operations
+    /// @param pool Address of pool to get information on
+    /// @return poolTokens Token in pool
+    /// @return balances Balances of tokens in pool
+    /// @return data Any data that may be need in _getLiveBalancesAndScalingFactors
     function _getPoolTokens(
         address pool
     ) internal view virtual returns (IERC20[] memory poolTokens, uint256[] memory balances, bytes memory data);
