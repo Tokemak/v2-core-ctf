@@ -73,7 +73,7 @@ abstract contract BalancerBaseStableMathOracle is ISpotPriceOracle, SystemCompon
     /// @param token The token to get the price of
     /// @param pool The pool to use to get the price of the token
     /// @param requestedQuoteToken Desired quote token.  Will pick another token if this one is not available
-    /// @param tokens Array of IERC20 instances of all tokens in pool.  Does not contain BPT
+    /// @param tokens Array of IERC20 instances of all tokens in pool
     /// @param extraData Data retrieved farther up the call that will be used to determine spot prices.  Varies by pool
     function _getSpotPrice(
         address token,
@@ -115,11 +115,10 @@ abstract contract BalancerBaseStableMathOracle is ISpotPriceOracle, SystemCompon
         // Set the actual quote token based on the found index.
         actualQuoteToken = address(tokens[uint256(quoteTokenIndex)]);
 
+        // Get live balances and scaling.  StableMath done with scaled balances
         (uint256[] memory adjustedBalances, uint256[] memory scalingFactors) =
             _getLiveBalancesAndScalingFactors(extraData);
         uint256 poolAmplification = _getAmplificationParam(pool);
-
-        // StableMath calcs are always done with rate and decimal scaled balances
         uint256 currentInvariant = StableMath.computeInvariant(poolAmplification, adjustedBalances);
 
         // Bal swap amounts are adjusted by rate and decimal scaling

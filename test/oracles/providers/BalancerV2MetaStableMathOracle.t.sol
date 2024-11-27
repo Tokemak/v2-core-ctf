@@ -3,10 +3,10 @@
 
 pragma solidity ^0.8.24;
 
-// solhint-disable func-name-mixedcase
+// solhint-disable func-name-mixedcase,max-line-length
 
 import { Test } from "forge-std/Test.sol";
-import { BAL_VAULT } from "test/utils/Addresses.sol";
+import { BAL_VAULT, WSTETH_WETH_BAL_COMP_POOL } from "test/utils/Addresses.sol";
 
 import { IBasePool } from "src/interfaces/external/balancer/IBasePool.sol";
 import { IERC20 } from "openzeppelin-contracts/token/ERC20/IERC20.sol";
@@ -55,6 +55,11 @@ contract BalancerV2MetaStableMathOracleTest is Test {
         assertEq(supplyFromOracle, supplyFromPool);
     }
 
+    function test_getPoolTokens_RevertIf_Composable() public {
+        vm.expectRevert(Errors.InvalidConfiguration.selector);
+        oracle.getPoolTokens(WSTETH_WETH_BAL_COMP_POOL);
+    }
+
     function test_getPoolTokens_RunsProperly() public {
         (IERC20[] memory tokens, uint256[] memory rawBalances) =
             BalancerUtilities._getPoolTokens(BAL_VAULT_INSTANCE, BAL_META_RETH_WETH);
@@ -82,6 +87,22 @@ contract BalancerV2MetaStableMathOracleTest is Test {
 
         assertEq(poolScalingFactors[0], oracleScalingFactors[0]);
         assertEq(poolScalingFactors[1], oracleScalingFactors[1]);
+    }
+
+    function test_getLiveBalancesAndScalingFactors_RevertIf_MismatchArrays() public {
+        // Create data with array with three balances
+        uint256[] memory balances = new uint256[](3);
+
+        balances[0] = 1e18;
+        balances[1] = 1e18;
+        balances[2] = 1e18;
+
+        bytes memory incorrectData = abi.encode(
+            BalancerV2BaseStableMathOracle.BalancerV2StableOracleData({ pool: BAL_META_RETH_WETH, rawBalances: balances })
+        );
+
+        vm.expectRevert(abi.encodeWithSelector(Errors.ArrayLengthMismatch.selector, 3, 2, "rawBalances+scalingFactors"));
+        oracle.getLiveBalancesAndScalingFactors(incorrectData);
     }
 
     function test_getLiveBalancesAndScalingFactors_RunsProperly() public {

@@ -38,6 +38,8 @@ abstract contract BalancerV2BaseStableMathOracle is BalancerBaseStableMathOracle
         uint256[] memory rawBalances = decodedData.rawBalances;
         uint256 length = rawBalances.length;
 
+        Errors.verifyArrayLengths(length, scalingFactors.length, "rawBalances+scalingFactors");
+
         scaledBalances = new uint256[](length);
         for (uint256 i = 0; i < length; ++i) {
             scaledBalances[i] = ScalingHelpers.toScaled18RoundDown(rawBalances[i], scalingFactors[i]);

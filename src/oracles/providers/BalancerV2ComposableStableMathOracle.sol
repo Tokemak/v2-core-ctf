@@ -8,6 +8,7 @@ import { IBasePool } from "src/interfaces/external/balancer/IBasePool.sol";
 import { IERC20 } from "openzeppelin-contracts/token/ERC20/IERC20.sol";
 
 import { BalancerUtilities } from "src/libs/BalancerUtilities.sol";
+import { Errors } from "src/utils/Errors.sol";
 
 import {
     BalancerV2BaseStableMathOracle,
@@ -37,13 +38,15 @@ contract BalancerV2ComposableStableMathOracle is BalancerV2BaseStableMathOracle 
         override
         returns (IERC20[] memory poolTokens, uint256[] memory rawBalances, bytes memory extraData)
     {
+        if (!BalancerUtilities.isComposablePool(pool)) revert Errors.InvalidConfiguration();
+
         (poolTokens, rawBalances) = BalancerUtilities._getComposablePoolTokensSkipBpt(vault, pool);
         extraData = abi.encode(BalancerV2StableOracleData({ pool: pool, rawBalances: rawBalances }));
     }
 
     function _getScalingFactors(
         address pool
-    ) internal view virtual override returns (uint256[] memory scalingFactorsNoBpt) {
+    ) internal view override returns (uint256[] memory scalingFactorsNoBpt) {
         uint256 bptIdx = IBalancerComposableStablePool(pool).getBptIndex();
         uint256[] memory scalingFactors = IBasePool(pool).getScalingFactors();
 
