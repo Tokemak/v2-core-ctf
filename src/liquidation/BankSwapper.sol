@@ -52,10 +52,6 @@ contract BankSwapper is IAsyncSwapper, SystemComponent {
         // Expected buy amount from Price Oracle
         buyTokenAmountReceived = (sellAmount * sellTokenPrice) / buyTokenPrice;
 
-        uint256 sellTokenBalance = sellToken.balanceOf(address(this));
-        if (sellTokenBalance < sellAmount) revert InsufficientBalance(sellTokenBalance, sellAmount);
-        if (buyToken.balanceOf(BANK) < buyTokenAmountReceived) revert SwapFailed();
-
         sellToken.safeTransfer(BANK, sellAmount);
         // slither-disable-next-line arbitrary-send-erc20
         buyToken.safeTransferFrom(BANK, address(this), buyTokenAmountReceived);

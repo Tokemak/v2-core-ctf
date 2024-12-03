@@ -101,30 +101,6 @@ contract BankSwapperTest is Test {
         Address.functionCall(address(swapper), abi.encodeCall(IAsyncSwapper.swap, (swapParams)));
     }
 
-    function test_RevertIf_NotEnoughSellToken() public {
-        _setupRole();
-        assertEq(IERC20(WSTETH_BASE).balanceOf(address(this)), 0);
-
-        _mockOracle(WETH9_BASE, 1e18);
-        _mockOracle(WSTETH_BASE, 1.1e18);
-
-        vm.expectRevert(abi.encodeWithSelector(IAsyncSwapper.InsufficientBalance.selector, 0, 1e18));
-        Address.functionDelegateCall(address(swapper), abi.encodeCall(IAsyncSwapper.swap, (swapParams)));
-    }
-
-    function test_RevertIf_BalanceOfBuyToken_InBank_NotEnoughForSwap() public {
-        _setupRole();
-
-        _mockOracle(WETH9_BASE, 1e18);
-        _mockOracle(WSTETH_BASE, 1.1e18);
-
-        deal(WSTETH_BASE, address(this), 1e18);
-        assertEq(IERC20(WETH9_BASE).balanceOf(bank), 0);
-
-        vm.expectRevert(IAsyncSwapper.SwapFailed.selector);
-        Address.functionDelegateCall(address(swapper), abi.encodeCall(IAsyncSwapper.swap, (swapParams)));
-    }
-
     function test_IgnoresBuyAmount_RunsProperly() public {
         uint256 wethPrice = 1e18;
         uint256 wstEthPrice = 1.1e18;
