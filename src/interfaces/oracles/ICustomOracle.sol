@@ -3,33 +3,44 @@
 
 pragma solidity ^0.8.24;
 
-/// @notice Interface for a deployed CustomSetOracle to access its prices and setPrices function
+/// @notice Interface for a deployed CustomSetOracle to access its functions and state variables
 interface ICustomOracle {
+    /// STATE VARIABLES
+
+    /// @notice Access controller for the CustomOracle from SecurityBase
+    function accessController() external view returns (address);
+
+    /// @notice Maximum age a price can be from when it was originally queried
+    function maxAge() external view returns (uint256);
+
+    /// @notice All current prices for registered tokens
+    function prices(address token) external view returns (Price memory);
+
+    /// @notice Struct to hold the price, max age, and timestamp of a token in the prices mapping
     struct Price {
         uint192 price;
         uint32 maxAge;
         uint32 timestamp;
     }
 
-    function accessController() external view returns (address);
+    /// FUNCTIONS
 
-    /// @notice Get the price of one of the registered tokens from prices mapping in CustomSetOracle
-    function prices(
-        address token
-    ) external view returns (Price memory);
+    /// @notice Register tokens that should be resolvable through this oracle
+    /// @param tokens addresses of tokens to register
+    /// @param maxAges the max allowed age of a tokens price before it will revert on retrieval
+    function registerTokens(address[] memory tokens, uint256[] memory maxAges) external;
 
-    /// @dev Access to the CustomSetOracle contract to set prices
+    /// @notice Update the price of one or more registered tokens
+    /// @param tokens address of the tokens price we are setting
+    /// @param ethPrices prices of the tokens we're setting
+    /// @param queriedTimestamps the timestamps of when each price was queried
     function setPrices(
         address[] memory tokens,
         uint256[] memory ethPrices,
         uint256[] memory queriedTimestamps
     ) external;
 
-    function registerTokens(address[] memory tokens, uint256[] memory maxAges) external;
-
-    function isRegistered(
-        address token
-    ) external view returns (bool);
-
-    function maxAge() external view returns (uint256);
+    /// @notice Returns true for a token that is registered with this oracle
+    /// @param token address to check
+    function isRegistered(address token) external view returns (bool);
 }

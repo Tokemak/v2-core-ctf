@@ -36,6 +36,7 @@ contract CustomRedStoneOracleAdapter is PrimaryProdDataServiceConsumerBase, Syst
         address _customOracle,
         uint8 _uniqueSignersThreshold
     ) SystemComponent(_systemRegistry) SecurityBase(address(_systemRegistry.accessController())) {
+        Errors.verifyNotZero(_customOracle, "customOracle");
         customOracle = ICustomOracle(_customOracle);
 
         // Register the feedId for ETH
@@ -98,7 +99,7 @@ contract CustomRedStoneOracleAdapter is PrimaryProdDataServiceConsumerBase, Syst
         for (uint256 i = 0; i < len; ++i) {
             // Save token address from the registered mapping
             address tokenAddress = feedIdToAddress[feedIds[i]];
-            if (tokenAddress == address(0) || !customOracle.isRegistered(tokenAddress)) {
+            if (tokenAddress == address(0)) {
                 revert TokenNotRegistered(feedIds[i], tokenAddress);
             }
             baseTokens[i] = tokenAddress;
@@ -129,6 +130,7 @@ contract CustomRedStoneOracleAdapter is PrimaryProdDataServiceConsumerBase, Syst
     /// @param feedId The Redstone feedId to register
     /// @param tokenAddress The token address to map to
     function registerFeedIdToAddress(bytes32 feedId, address tokenAddress) external hasRole(Roles.ORACLE_MANAGER) {
+        Errors.verifyNotZero(feedId, "feedId");
         Errors.verifyNotZero(address(tokenAddress), "tokenAddress");
         feedIdToAddress[feedId] = tokenAddress;
         emit FeedIdRegistered(feedId, tokenAddress);
