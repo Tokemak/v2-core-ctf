@@ -51,23 +51,6 @@ contract CustomRedStoneOracleAdapter is PrimaryProdDataServiceConsumerBase, Syst
         uniqueSignersThreshold = _uniqueSignersThreshold;
     }
 
-    function _initializeSignerAddressToIndex(
-        address[] memory signerAddresses
-    ) private {
-        uint256 len = signerAddresses.length;
-        Errors.verifyNotZero(len, "len");
-
-        for (uint256 i = 0; i < len; ++i) {
-            address signerAddress = signerAddresses[i];
-            Errors.verifyNotZero(signerAddress, "signerAddress");
-            // We save the index + 1 to avoid 0 index
-            // as it is used as a flag to check if the signer is authorized in getter function
-            signerAddressToIndex[signerAddress] = uint8(i + 1);
-        }
-        // Set the new authorized signers array
-        _authorizedSigners = signerAddresses;
-    }
-
     /// @notice Returns array of authorized signer addresses
     /// @return Array of authorized signer addresses
     function authorizedSigners() external view returns (address[] memory) {
@@ -102,14 +85,6 @@ contract CustomRedStoneOracleAdapter is PrimaryProdDataServiceConsumerBase, Syst
             // Validate the price
             Errors.verifyNotZero(values[i], "baseToken price");
 
-            // Get the last set price from the custom oracle
-            // slither-disable-next-line unused-return
-            (,, uint32 lastSetTimestamp) = customOracle.prices(tokenAddress);
-
-            // Check that the price has not been updated more recently than the timestamp in the Redstone payload
-            if (lastSetTimestamp >= timestamp) {
-                revert Errors.InvalidParam("timestamp");
-            }
             // Set the same timestamp from the Redstone payload for all base tokens
             queriedTimestamps[i] = timestamp / 1000; // adapted to seconds
         }
@@ -175,5 +150,19 @@ contract CustomRedStoneOracleAdapter is PrimaryProdDataServiceConsumerBase, Syst
             revert SignerNotAuthorised(signerAddress);
         }
         return signerIndex - 1; // We subtract 1 to avoid 0 index as a flag
+    }
+
+    function _initializeSignerAddressToIndex(
+        address[] memory signerAddresses
+    ) private {
+        for (uint256 i = 0; i < signerAddresses.length; ++i) {
+            address signerAddress = signerAddresses[i];
+            Errors.verifyNotZero(signerAddress, "signerAddress");
+            // We save the index + 1 to avoid 0 index
+            // as it is used as a flag to check if the signer is authorized in getter function
+            signerAddressToIndex[signerAddress] = uint8(i + 1);
+        }
+        // Set the new authorized signers array
+        _authorizedSigners = signerAddresses;
     }
 }

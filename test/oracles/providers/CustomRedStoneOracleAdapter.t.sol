@@ -99,6 +99,10 @@ contract SignersTests is CustomRedStoneOracleAdapterTest {
 
         vm.expectRevert(abi.encodeWithSignature("SignerNotAuthorised(address)", initialAuthorizedSigners[0]));
         redstoneAdapter.getAuthorisedSignerIndex(initialAuthorizedSigners[0]);
+
+        // Resetting the authorized signers array
+        redstoneAdapter.registerAuthorizedSigners(new address[](0));
+        assertEq(redstoneAdapter.authorizedSigners().length, 0);
     }
 
     function test_GetsUniqueSignersThreshold() public {
