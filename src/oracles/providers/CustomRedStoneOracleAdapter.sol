@@ -124,7 +124,9 @@ contract CustomRedStoneOracleAdapter is PrimaryProdDataServiceConsumerBase, Syst
 
     /// @notice Sets the unique signers threshold
     /// @param _uniqueSignersThreshold The unique signers threshold to set
-    function setUniqueSignersThreshold(uint8 _uniqueSignersThreshold) external hasRole(Roles.ORACLE_MANAGER) {
+    function setUniqueSignersThreshold(
+        uint8 _uniqueSignersThreshold
+    ) external hasRole(Roles.ORACLE_MANAGER) {
         uniqueSignersThreshold = _uniqueSignersThreshold;
     }
 

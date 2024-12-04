@@ -18,6 +18,7 @@ address constant TREASURY = 0x8b4334d4812C530574Bd4F2763FcD22dE94A969B;
 address constant MAINNET_CUSTOM_ORACLE = 0x53ff9D648a8A1cf70c6B60ae26B93047cc24066f;
 address constant MAINNET_ORACLE_EXECUTOR = 0x1b9841A65c6777fdE03Be97C9A9E70C3d5C01E9c;
 
+// solhint-disable func-name-mixedcase
 contract CustomRedStoneOracleAdapterTest is Test {
     SystemRegistry internal systemRegistry;
     AccessController internal accessController;
