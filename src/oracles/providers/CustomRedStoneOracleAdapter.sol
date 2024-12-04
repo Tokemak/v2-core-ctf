@@ -13,6 +13,16 @@ import { ICustomSetOracle } from "src/interfaces/oracles/ICustomSetOracle.sol";
 import { Errors } from "src/utils/Errors.sol";
 import { Roles } from "src/libs/Roles.sol";
 
+/**
+ * @notice This contract is used to adapt the Redstone oracle payloads sent by our backend for the CustomSetOracle
+ * updates.
+ * The main logic is implemented in the updatePriceWithFeedId function.
+ * The rest of the functions are used to register and manage the feedId to token address mapping and authorized signers
+ * who we trust to sign the Redstone payload.
+ * @dev This contract extends a hierarchy of Redstone contracts that are able to fetch the Redstone payload from the
+ * transactions calldata.
+ * ref: https://docs.redstone.finance/docs/get-started/models/redstone-pull/#manual-payload
+ */
 contract CustomRedStoneOracleAdapter is PrimaryProdDataServiceConsumerBase, SystemComponent, SecurityBase {
     event FeedIdRegistered(bytes32 indexed feedId, address indexed tokenAddress);
     event FeedIdRemoved(bytes32 indexed feedId);
