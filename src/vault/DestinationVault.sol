@@ -21,6 +21,9 @@ import { SystemComponent } from "src/SystemComponent.sol";
 import { IERC1271 } from "openzeppelin-contracts/interfaces/IERC1271.sol";
 import { Address } from "openzeppelin-contracts/utils/Address.sol";
 
+// TODO: Remove
+// cspell: disable
+
 abstract contract DestinationVault is
     SecurityBase,
     SystemComponent,
@@ -50,7 +53,6 @@ abstract contract DestinationVault is
     error NothingToRecover();
     error DuplicateToken(address token);
     error VaultShutdown();
-    error VaultNotShutdown();
     error InvalidIncentiveCalculator(address calc, address local, string param);
     error PricesOutOfRange(uint256 spot, uint256 safe);
     error ExtensionNotActive();
@@ -509,7 +511,6 @@ abstract contract DestinationVault is
     function setIncentiveCalculator(
         address incentiveCalculator_
     ) external hasRole(Roles.AUTO_POOL_DESTINATION_UPDATER) {
-        if (!_shutdown) revert VaultNotShutdown();
         _validateCalculator(incentiveCalculator_);
 
         emit IncentiveCalculatorUpdated(incentiveCalculator_);

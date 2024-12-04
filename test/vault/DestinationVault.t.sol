@@ -435,16 +435,6 @@ contract DestinationVaultBaseTests is Test {
         assertEq(returnedValue, bytes4(0xFFFFFFFF));
     }
 
-    function test_setIncentiveCalculatorRevertVaultNotShutdown() public {
-        TestIncentiveCalculator newIncentiveCalculator = new TestIncentiveCalculator();
-        newIncentiveCalculator.setLpToken(address(underlyer));
-
-        accessController.grantRole(Roles.AUTO_POOL_DESTINATION_UPDATER, address(this));
-
-        vm.expectRevert(abi.encodeWithSelector(DestinationVault.VaultNotShutdown.selector));
-        testVault.setIncentiveCalculator(address(newIncentiveCalculator));
-    }
-
     function test_setIncentiveCalculatorRevertInvalidRole() public {
         TestIncentiveCalculator newIncentiveCalculator = new TestIncentiveCalculator();
         newIncentiveCalculator.setLpToken(address(underlyer));
@@ -475,9 +465,6 @@ contract DestinationVaultBaseTests is Test {
     function test_setIncentiveCalculator() public {
         TestIncentiveCalculator newIncentiveCalculator = new TestIncentiveCalculator();
         newIncentiveCalculator.setLpToken(address(underlyer));
-
-        accessController.grantRole(Roles.DESTINATION_VAULT_MANAGER, address(this));
-        testVault.shutdown(IDestinationVault.VaultShutdownStatus.Deprecated);
 
         accessController.grantRole(Roles.AUTO_POOL_DESTINATION_UPDATER, address(this));
 
