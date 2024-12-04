@@ -20,7 +20,7 @@ contract CustomRedStoneOracleAdapter is PrimaryProdDataServiceConsumerBase, Syst
     error TokenNotRegistered(bytes32 feedId, address tokenAddress);
 
     ICustomSetOracle public immutable customOracle;
-    uint8 private immutable uniqueSignersThreshold;
+    uint8 public uniqueSignersThreshold;
 
     /// @notice Mapping between a Redstone feedId and token address
     mapping(bytes32 => address) public feedIdToAddress;
@@ -38,22 +38,7 @@ contract CustomRedStoneOracleAdapter is PrimaryProdDataServiceConsumerBase, Syst
     ) SystemComponent(_systemRegistry) SecurityBase(address(_systemRegistry.accessController())) {
         Errors.verifyNotZero(_customOracle, "customOracle");
         customOracle = ICustomSetOracle(_customOracle);
-
-        // Register the feedId for ETH
-        feedIdToAddress[bytes32("ETH")] = address(_systemRegistry.weth());
-
         uniqueSignersThreshold = _uniqueSignersThreshold;
-
-        // Set default authorized signers from PrimaryProdDataServiceConsumerBase
-        address[] memory defaultAuthorizedSigners = new address[](6);
-        defaultAuthorizedSigners[0] = 0x8BB8F32Df04c8b654987DAaeD53D6B6091e3B774;
-        defaultAuthorizedSigners[1] = 0xdEB22f54738d54976C4c0fe5ce6d408E40d88499;
-        defaultAuthorizedSigners[2] = 0x51Ce04Be4b3E32572C4Ec9135221d0691Ba7d202;
-        defaultAuthorizedSigners[3] = 0xDD682daEC5A90dD295d14DA4b0bec9281017b5bE;
-        defaultAuthorizedSigners[4] = 0x9c5AE89C4Af6aA32cE58588DBaF90d18a855B6de;
-        defaultAuthorizedSigners[5] = 0xFABB0ac9d68B0B445fB7357272Ff202C5651694a;
-
-        _initializeSignerAddressToIndex(defaultAuthorizedSigners);
     }
 
     function _initializeSignerAddressToIndex(
@@ -124,6 +109,12 @@ contract CustomRedStoneOracleAdapter is PrimaryProdDataServiceConsumerBase, Syst
     ///@dev This is a default implementation as referenced in the RedstoneConsumerNumericMock contract
     function getUniqueSignersThreshold() public view virtual override returns (uint8) {
         return uniqueSignersThreshold;
+    }
+
+    /// @notice Sets the unique signers threshold
+    /// @param _uniqueSignersThreshold The unique signers threshold to set
+    function setUniqueSignersThreshold(uint8 _uniqueSignersThreshold) external hasRole(Roles.ORACLE_MANAGER) {
+        uniqueSignersThreshold = _uniqueSignersThreshold;
     }
 
     /// @notice Registers a mapping between a Redstone feedId and token address

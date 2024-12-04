@@ -44,6 +44,15 @@ contract CustomRedStoneOracleAdapterTest is Test {
         accessController.grantRole(Roles.CUSTOM_ORACLE_EXECUTOR, address(this));
 
         accessController.grantRole(Roles.CUSTOM_ORACLE_EXECUTOR, MAINNET_ORACLE_EXECUTOR);
+
+        address[] memory defaultAuthorizedSigners = new address[](5);
+        defaultAuthorizedSigners[0] = 0x8BB8F32Df04c8b654987DAaeD53D6B6091e3B774;
+        defaultAuthorizedSigners[1] = 0xdEB22f54738d54976C4c0fe5ce6d408E40d88499;
+        defaultAuthorizedSigners[2] = 0x51Ce04Be4b3E32572C4Ec9135221d0691Ba7d202;
+        defaultAuthorizedSigners[3] = 0xDD682daEC5A90dD295d14DA4b0bec9281017b5bE;
+        defaultAuthorizedSigners[4] = 0x9c5AE89C4Af6aA32cE58588DBaF90d18a855B6de;
+        // Register the default authorized signers from the base contract
+        redstoneAdapter.registerAuthorizedSigners(defaultAuthorizedSigners);
     }
 
     ///@dev Get the Redstone payload snapshot for a given feedId
@@ -63,31 +72,6 @@ contract CustomRedStoneOracleAdapterTest is Test {
     }
 }
 
-contract ConstructuctionTests is CustomRedStoneOracleAdapterTest {
-    function test_Constructor() public {
-        // Check that the feedId for ETH is registered to WETH
-        bytes32 ethFeedId = bytes32("ETH");
-        assertEq(redstoneAdapter.feedIdToAddress(ethFeedId), address(WETH9_ADDRESS));
-
-        address[] memory defaultAuthorisedSigners = redstoneAdapter.authorizedSigners();
-        assertEq(defaultAuthorisedSigners.length, 6);
-        assertEq(defaultAuthorisedSigners[0], 0x8BB8F32Df04c8b654987DAaeD53D6B6091e3B774);
-        assertEq(defaultAuthorisedSigners[1], 0xdEB22f54738d54976C4c0fe5ce6d408E40d88499);
-        assertEq(defaultAuthorisedSigners[2], 0x51Ce04Be4b3E32572C4Ec9135221d0691Ba7d202);
-        assertEq(defaultAuthorisedSigners[3], 0xDD682daEC5A90dD295d14DA4b0bec9281017b5bE);
-        assertEq(defaultAuthorisedSigners[4], 0x9c5AE89C4Af6aA32cE58588DBaF90d18a855B6de);
-        assertEq(defaultAuthorisedSigners[5], 0xFABB0ac9d68B0B445fB7357272Ff202C5651694a);
-
-        // Check that the default authorised signer index is correct
-        assertEq(redstoneAdapter.getAuthorisedSignerIndex(0x8BB8F32Df04c8b654987DAaeD53D6B6091e3B774), 0);
-        assertEq(redstoneAdapter.getAuthorisedSignerIndex(0xdEB22f54738d54976C4c0fe5ce6d408E40d88499), 1);
-        assertEq(redstoneAdapter.getAuthorisedSignerIndex(0x51Ce04Be4b3E32572C4Ec9135221d0691Ba7d202), 2);
-        assertEq(redstoneAdapter.getAuthorisedSignerIndex(0xDD682daEC5A90dD295d14DA4b0bec9281017b5bE), 3);
-        assertEq(redstoneAdapter.getAuthorisedSignerIndex(0x9c5AE89C4Af6aA32cE58588DBaF90d18a855B6de), 4);
-        assertEq(redstoneAdapter.getAuthorisedSignerIndex(0xFABB0ac9d68B0B445fB7357272Ff202C5651694a), 5);
-    }
-}
-
 contract SignersTests is CustomRedStoneOracleAdapterTest {
     function test_GetAuthorisedSignerIndexRevertsIfSignerNotAuthorised() public {
         vm.expectRevert(abi.encodeWithSignature("SignerNotAuthorised(address)", RANDOM));
@@ -95,12 +79,11 @@ contract SignersTests is CustomRedStoneOracleAdapterTest {
     }
 
     function test_RegistersAuthorisedSigners() public {
-        address[] memory authorisedSigners = redstoneAdapter.authorizedSigners();
-        assertEq(authorisedSigners.length, 6);
+        address[] memory initialAuthorizedSigners = new address[](1);
+        initialAuthorizedSigners[0] = MAINNET_ORACLE_EXECUTOR;
+        redstoneAdapter.registerAuthorizedSigners(initialAuthorizedSigners);
 
-        address defaultSigner = authorisedSigners[1];
-        assertEq(redstoneAdapter.getAuthorisedSignerIndex(defaultSigner), 1);
-
+        // New authorized signers override the existing ones
         address[] memory newAuthorizedSigners = new address[](2);
         newAuthorizedSigners[0] = RANDOM;
         newAuthorizedSigners[1] = TREASURY;
@@ -113,18 +96,17 @@ contract SignersTests is CustomRedStoneOracleAdapterTest {
         assertEq(redstoneAdapter.getAuthorisedSignerIndex(RANDOM), 0);
         assertEq(redstoneAdapter.getAuthorisedSignerIndex(TREASURY), 1);
 
-        vm.expectRevert(abi.encodeWithSignature("SignerNotAuthorised(address)", defaultSigner));
-        redstoneAdapter.getAuthorisedSignerIndex(defaultSigner);
+        vm.expectRevert(abi.encodeWithSignature("SignerNotAuthorised(address)", initialAuthorizedSigners[0]));
+        redstoneAdapter.getAuthorisedSignerIndex(initialAuthorizedSigners[0]);
     }
 
     function test_GetsUniqueSignersThreshold() public {
-        // Return value is hardcoded in the adapter
         assertEq(redstoneAdapter.getUniqueSignersThreshold(), 3);
     }
 
-    function test_GetsAuthorisedSignerIndex() public {
-        // Validate access to the signer index set in base contract
-        assertEq(redstoneAdapter.getAuthorisedSignerIndex(0xdEB22f54738d54976C4c0fe5ce6d408E40d88499), 1);
+    function test_SetsUniqueSignersThreshold() public {
+        redstoneAdapter.setUniqueSignersThreshold(4);
+        assertEq(redstoneAdapter.getUniqueSignersThreshold(), 4);
     }
 }
 
