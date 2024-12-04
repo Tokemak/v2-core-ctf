@@ -139,7 +139,7 @@ contract BaseDVExtensionExecuteTests is BaseDestinationVaultExtensionTest {
         uint256 wethAmountRewarderBefore = IERC20(WETH_MAINNET).balanceOf(dv.rewarder());
         uint256 wethAmountAddressThisBefore = IERC20(WETH_MAINNET).balanceOf(address(this));
 
-        // Supply dv with eth.  Mock swapper is set up to deposit eth for weth
+        // Supply dv with eth. Mock swapper is set up to deposit eth for weth
         vm.deal(address(dv), wethAmountReceivedOnSwap);
 
         vm.expectEmit(true, true, true, true);
@@ -193,7 +193,7 @@ contract BaseDVExtensionExecuteTests is BaseDestinationVaultExtensionTest {
         uint256 wethAmountRewarderBefore = IERC20(WETH_MAINNET).balanceOf(dv.rewarder());
         uint256 wethAmountAddressThisBefore = IERC20(WETH_MAINNET).balanceOf(address(this));
 
-        // Supply dv with eth.  Mock swapper is set up to deposit eth for weth
+        // Supply dv with eth. Mock swapper is set up to deposit eth for weth
         vm.deal(address(dv), wethAmountReceivedOnSwap);
 
         vm.expectEmit(true, true, true, true);

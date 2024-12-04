@@ -15,7 +15,7 @@ contract KelpDaoDestinationVaultExtension is BaseDestinationVaultExtension {
     IERC20 public immutable claimToken;
 
     /// @param account Account that can claim rewards
-    /// @param cumulativeAmout Cumulative amount of rewards for account.  Used in Merkle calculations
+    /// @param cumulativeAmout Cumulative amount of rewards for account. Used in Merkle calculations
     /// @param expectedClaimAmount The amount expected to be claimed on this claim
     /// @param index The index of the claim
     /// @param merkleProof Merkle proof used in verification of claim
