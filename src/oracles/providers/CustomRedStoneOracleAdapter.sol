@@ -44,11 +44,13 @@ contract CustomRedStoneOracleAdapter is PrimaryProdDataServiceConsumerBase, Syst
     constructor(
         ISystemRegistry _systemRegistry,
         address _customOracle,
-        uint8 _uniqueSignersThreshold
+        uint8 _uniqueSignersThreshold,
+        address[] memory initAuthorizedSigners
     ) SystemComponent(_systemRegistry) SecurityBase(address(_systemRegistry.accessController())) {
         Errors.verifyNotZero(_customOracle, "customOracle");
         customOracle = ICustomSetOracle(_customOracle);
         uniqueSignersThreshold = _uniqueSignersThreshold;
+        _initializeSignerAddressToIndex(initAuthorizedSigners);
     }
 
     /// @notice Returns array of authorized signer addresses

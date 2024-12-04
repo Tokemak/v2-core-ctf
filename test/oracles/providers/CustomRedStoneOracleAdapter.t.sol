@@ -37,23 +37,24 @@ contract CustomRedStoneOracleAdapterTest is Test {
 
         // Setup oracles
         customOracle = ICustomSetOracle(MAINNET_CUSTOM_ORACLE);
-        redstoneAdapter =
-            new CustomRedStoneOracleAdapter(systemRegistry, address(customOracle), DEFAULT_UNIQUE_SIGNERS_THRESHOLD);
 
-        // Setup roles
-        accessController.grantRole(Roles.ORACLE_MANAGER, address(this));
-        accessController.grantRole(Roles.CUSTOM_ORACLE_EXECUTOR, address(this));
-
-        accessController.grantRole(Roles.CUSTOM_ORACLE_EXECUTOR, MAINNET_ORACLE_EXECUTOR);
-
+        // Pass the default authorized signers from the base contract to register on init
         address[] memory defaultAuthorizedSigners = new address[](5);
         defaultAuthorizedSigners[0] = 0x8BB8F32Df04c8b654987DAaeD53D6B6091e3B774;
         defaultAuthorizedSigners[1] = 0xdEB22f54738d54976C4c0fe5ce6d408E40d88499;
         defaultAuthorizedSigners[2] = 0x51Ce04Be4b3E32572C4Ec9135221d0691Ba7d202;
         defaultAuthorizedSigners[3] = 0xDD682daEC5A90dD295d14DA4b0bec9281017b5bE;
         defaultAuthorizedSigners[4] = 0x9c5AE89C4Af6aA32cE58588DBaF90d18a855B6de;
-        // Register the default authorized signers from the base contract
-        redstoneAdapter.registerAuthorizedSigners(defaultAuthorizedSigners);
+
+        redstoneAdapter = new CustomRedStoneOracleAdapter(
+            systemRegistry, address(customOracle), DEFAULT_UNIQUE_SIGNERS_THRESHOLD, defaultAuthorizedSigners
+        );
+
+        // Setup roles
+        accessController.grantRole(Roles.ORACLE_MANAGER, address(this));
+        accessController.grantRole(Roles.CUSTOM_ORACLE_EXECUTOR, address(this));
+
+        accessController.grantRole(Roles.CUSTOM_ORACLE_EXECUTOR, MAINNET_ORACLE_EXECUTOR);
     }
 
     ///@dev Get the Redstone payload snapshot for a given feedId
@@ -209,8 +210,6 @@ contract UpdatePriceTests is CustomRedStoneOracleAdapterTest {
         IAccessController mainnetAccessController = ISecurityBase(address(customOracle)).accessController();
         vm.prank(TREASURY);
         mainnetAccessController.grantRole(Roles.CUSTOM_ORACLE_EXECUTOR, address(redstoneAdapter));
-
-        (uint192 priceBefore,,) = customOracle.prices(address(PXETH_MAINNET));
 
         vm.prank(MAINNET_ORACLE_EXECUTOR);
         // solhint-disable-next-line avoid-low-level-calls
