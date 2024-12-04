@@ -12,8 +12,10 @@ import {
     TREASURY
 } from "test/utils/Addresses.sol";
 
-import { EtherFiDestinationVaultExtension } from "src/vault/extensions/EtherFiDestinationVaultExtension.sol";
-import { BaseDestinationVaultExtension } from "src/vault/extensions/base/BaseDestinationVaultExtension.sol";
+import { EtherFiClaimingDestinationVaultExtension } from
+    "src/vault/extensions/EtherFiClaimingDestinationVaultExtension.sol";
+import { BaseClaimingDestinationVaultExtension } from
+    "src/vault/extensions/base/BaseClaimingDestinationVaultExtension.sol";
 import { SwapParams } from "src/interfaces/liquidation/IAsyncSwapper.sol";
 import { IDestinationVault } from "src/interfaces/vault/IDestinationVault.sol";
 import { IBaseRewarder } from "src/interfaces/rewarders/IBaseRewarder.sol";
@@ -26,7 +28,7 @@ import { IERC20 } from "openzeppelin-contracts/token/ERC20/IERC20.sol";
 
 // solhint-disable const-name-snakecase,max-line-length,func-name-mixedcase
 
-contract EtherFiDestinationVaultExtensionTest is Test {
+contract EtherFiClaimingDestinationVaultExtensionTest is Test {
     bytes public constant swapDataAtPinnedBlock =
         hex"6af479b2000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000002d7af65e5d5060000000000000000000000000000000000000000000000000001f292c872c64df40000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002b8f08b70456eb22f6109f57b8fafe862ed28e6040002710c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2000000000000000000000000000000000000000000869584cd000000000000000000000000100000000000000000000000000000000000001100000000000000000000000000000000000000003b5689d9cecb0143f9c5c460";
 
@@ -41,15 +43,16 @@ contract EtherFiDestinationVaultExtensionTest is Test {
     IERC20 public constant lrtSquaredToken = IERC20(LRTSQUARED_MAINNET);
     IERC20 public constant wethERC20 = IERC20(WETH_MAINNET);
 
-    EtherFiDestinationVaultExtension public extension;
+    EtherFiClaimingDestinationVaultExtension public extension;
 
-    event ExtensionExecuted(uint256[] amountsClaimed, address[] tokensClaimed, uint256 amountAddedToRewards);
+    event ClaimingExtensionExecuted(uint256[] amountsClaimed, address[] tokensClaimed, uint256 amountAddedToRewards);
 
     function setUp() public virtual {
         vm.createSelectFork(vm.envString("MAINNET_RPC_URL"), 21_066_621);
 
-        extension =
-            new EtherFiDestinationVaultExtension(systemRegistry, zeroExSwapper, etherFiClaim, address(lrtSquaredToken));
+        extension = new EtherFiClaimingDestinationVaultExtension(
+            systemRegistry, zeroExSwapper, etherFiClaim, address(lrtSquaredToken)
+        );
 
         // Give test contract the ability to set and execute extensions
         vm.startPrank(TREASURY);
@@ -69,7 +72,7 @@ contract EtherFiDestinationVaultExtensionTest is Test {
 
     function _getExtensionData(
         uint256 expectedClaim
-    ) internal view returns (BaseDestinationVaultExtension.BaseExtensionParams memory dataStruct) {
+    ) internal view returns (BaseClaimingDestinationVaultExtension.BaseClaimingExtensionParams memory dataStruct) {
         bytes32[] memory merkleProof = new bytes32[](19);
         SwapParams[] memory swapParams = new SwapParams[](1);
 
@@ -93,8 +96,8 @@ contract EtherFiDestinationVaultExtensionTest is Test {
         merkleProof[17] = 0x5cb70c9b5a9153ec927ef61b36fcb117e1fe842aae8126dfd860a47a8559538f;
         merkleProof[18] = 0x429837e8dbb22a1a02ffe5665ce70f4efeb2f3d312b8866cd02cd09045c444de;
 
-        EtherFiDestinationVaultExtension.EtherFiClaimParams memory claimParams = EtherFiDestinationVaultExtension
-            .EtherFiClaimParams({
+        EtherFiClaimingDestinationVaultExtension.EtherFiClaimParams memory claimParams =
+        EtherFiClaimingDestinationVaultExtension.EtherFiClaimParams({
             account: address(dv),
             cumulativeAmount: claimAmount,
             expectedClaimAmount: expectedClaim,
@@ -112,7 +115,7 @@ contract EtherFiDestinationVaultExtensionTest is Test {
             deadline: block.timestamp
         });
 
-        dataStruct = BaseDestinationVaultExtension.BaseExtensionParams({
+        dataStruct = BaseClaimingDestinationVaultExtension.BaseClaimingExtensionParams({
             sendToRewarder: true,
             claimData: abi.encode(claimParams),
             swapParams: swapParams
@@ -120,13 +123,15 @@ contract EtherFiDestinationVaultExtensionTest is Test {
     }
 }
 
-contract EtherFiDVExtensionConstructorTest is EtherFiDestinationVaultExtensionTest {
+contract EtherFiDVExtensionConstructorTest is EtherFiClaimingDestinationVaultExtensionTest {
     function test_RevertsWhenZeroAddresses() public {
         vm.expectRevert(abi.encodeWithSelector(Errors.ZeroAddress.selector, "_claimContract"));
-        new EtherFiDestinationVaultExtension(systemRegistry, zeroExSwapper, address(0), address(lrtSquaredToken));
+        new EtherFiClaimingDestinationVaultExtension(
+            systemRegistry, zeroExSwapper, address(0), address(lrtSquaredToken)
+        );
 
         vm.expectRevert(abi.encodeWithSelector(Errors.ZeroAddress.selector, "_claimToken"));
-        new EtherFiDestinationVaultExtension(systemRegistry, zeroExSwapper, etherFiClaim, address(0));
+        new EtherFiClaimingDestinationVaultExtension(systemRegistry, zeroExSwapper, etherFiClaim, address(0));
     }
 
     function test_StateSet() public {
@@ -135,9 +140,9 @@ contract EtherFiDVExtensionConstructorTest is EtherFiDestinationVaultExtensionTe
     }
 }
 
-contract EtherFiDVExtensionExecuteTest is EtherFiDestinationVaultExtensionTest {
+contract EtherFiDVExtensionExecuteTest is EtherFiClaimingDestinationVaultExtensionTest {
     function test_RevertIf_claimAmount_Zero() public {
-        BaseDestinationVaultExtension.BaseExtensionParams memory params = _getExtensionData(0);
+        BaseClaimingDestinationVaultExtension.BaseClaimingExtensionParams memory params = _getExtensionData(0);
 
         bytes memory data = abi.encode(params);
 
@@ -146,18 +151,20 @@ contract EtherFiDVExtensionExecuteTest is EtherFiDestinationVaultExtensionTest {
     }
 
     function test_RevertIf_ClaimAmount_And_ExpectedAmount_AreNotEqual() public {
-        BaseDestinationVaultExtension.BaseExtensionParams memory params = _getExtensionData(10);
+        BaseClaimingDestinationVaultExtension.BaseClaimingExtensionParams memory params = _getExtensionData(10);
 
         bytes memory data = abi.encode(params);
 
         vm.expectRevert(
-            abi.encodeWithSelector(BaseDestinationVaultExtension.InvalidAmountReceived.selector, claimAmount, 10)
+            abi.encodeWithSelector(
+                BaseClaimingDestinationVaultExtension.InvalidAmountReceived.selector, claimAmount, 10
+            )
         );
         dv.executeExtension(data);
     }
 
     function test_RunsProperly() public {
-        BaseDestinationVaultExtension.BaseExtensionParams memory params = _getExtensionData(claimAmount);
+        BaseClaimingDestinationVaultExtension.BaseClaimingExtensionParams memory params = _getExtensionData(claimAmount);
 
         bytes memory data = abi.encode(params);
 
@@ -172,7 +179,7 @@ contract EtherFiDVExtensionExecuteTest is EtherFiDestinationVaultExtensionTest {
         tokensClaimed[0] = address(lrtSquaredToken);
 
         vm.expectEmit(true, true, true, true);
-        emit ExtensionExecuted(amountsClaimed, tokensClaimed, wethAmountReceived);
+        emit ClaimingExtensionExecuted(amountsClaimed, tokensClaimed, wethAmountReceived);
         dv.executeExtension(data);
 
         assertEq(wethERC20.balanceOf(dv.rewarder()), dvRewarderWethBefore + wethAmountReceived);
@@ -182,7 +189,7 @@ contract EtherFiDVExtensionExecuteTest is EtherFiDestinationVaultExtensionTest {
     }
 
     function test_RunsProperly_SendsToCaller() public {
-        BaseDestinationVaultExtension.BaseExtensionParams memory params = _getExtensionData(claimAmount);
+        BaseClaimingDestinationVaultExtension.BaseClaimingExtensionParams memory params = _getExtensionData(claimAmount);
         params.sendToRewarder = false;
         bytes memory data = abi.encode(params);
 
@@ -197,7 +204,7 @@ contract EtherFiDVExtensionExecuteTest is EtherFiDestinationVaultExtensionTest {
         tokensClaimed[0] = address(lrtSquaredToken);
 
         vm.expectEmit(true, true, true, true);
-        emit ExtensionExecuted(amountsClaimed, tokensClaimed, wethAmountReceived);
+        emit ClaimingExtensionExecuted(amountsClaimed, tokensClaimed, wethAmountReceived);
         dv.executeExtension(data);
 
         assertEq(wethERC20.balanceOf(dv.rewarder()), dvRewarderWethBefore);

@@ -15,13 +15,14 @@ import { IBaseRewarder } from "src/interfaces/rewarders/IBaseRewarder.sol";
 import { ISystemRegistry } from "src/interfaces/ISystemRegistry.sol";
 import { IWETH9 } from "src/interfaces/utils/IWETH9.sol";
 
-import { BaseDestinationVaultExtension } from "src/vault/extensions/base/BaseDestinationVaultExtension.sol";
+import { BaseClaimingDestinationVaultExtension } from
+    "src/vault/extensions/base/BaseClaimingDestinationVaultExtension.sol";
 import { Errors } from "src/utils/Errors.sol";
 import { Roles } from "src/libs/Roles.sol";
 
 //solhint-disable const-name-snakecase,func-name-mixedcase
 
-contract BaseDestinationVaultExtensionTest is Test {
+contract BaseClaimingDestinationVaultExtensionTest is Test {
     IDestinationVault public constant dv = IDestinationVault(0x4E12227b350E8f8fEEc41A58D36cE2fB2e2d4575);
     ISystemRegistry public constant systemRegistry = ISystemRegistry(SYSTEM_REGISTRY_MAINNET);
 
@@ -32,7 +33,7 @@ contract BaseDestinationVaultExtensionTest is Test {
     MockERC20 public mockToken1;
     MockERC20 public mockToken2;
 
-    event ExtensionExecuted(uint256[] amountsClaimed, address[] tokensClaimed, uint256 amountAddedToRewards);
+    event ClaimingExtensionExecuted(uint256[] amountsClaimed, address[] tokensClaimed, uint256 amountAddedToRewards);
 
     function setUp() public {
         vm.createSelectFork(vm.envString("MAINNET_RPC_URL"), 21_066_621);
@@ -65,7 +66,7 @@ contract BaseDestinationVaultExtensionTest is Test {
     }
 }
 
-contract BaseDVExtensionConstructorTest is BaseDestinationVaultExtensionTest {
+contract BaseDVExtensionConstructorTest is BaseClaimingDestinationVaultExtensionTest {
     function test_RevertIf_Zero() public {
         vm.expectRevert(Errors.NotRegistered.selector);
         new MockDVExtension(systemRegistry, address(0));
@@ -77,7 +78,7 @@ contract BaseDVExtensionConstructorTest is BaseDestinationVaultExtensionTest {
     }
 }
 
-contract BaseDVExtensionExecuteTests is BaseDestinationVaultExtensionTest {
+contract BaseDVExtensionExecuteTests is BaseClaimingDestinationVaultExtensionTest {
     function test_RevertIf_NonDVCaller() public {
         // Data doesn't matter, modifier check happens first
         bytes memory data = abi.encode("");
@@ -89,8 +90,8 @@ contract BaseDVExtensionExecuteTests is BaseDestinationVaultExtensionTest {
     }
 
     function test_RevertIf_NoSwapParams() public {
-        BaseDestinationVaultExtension.BaseExtensionParams memory params = BaseDestinationVaultExtension
-            .BaseExtensionParams({
+        BaseClaimingDestinationVaultExtension.BaseClaimingExtensionParams memory params =
+        BaseClaimingDestinationVaultExtension.BaseClaimingExtensionParams({
             sendToRewarder: true,
             claimData: abi.encode(""), // Check happens before this is sent to _claim
             swapParams: new SwapParams[](0)
@@ -122,9 +123,14 @@ contract BaseDVExtensionExecuteTests is BaseDestinationVaultExtensionTest {
             deadline: block.timestamp
         });
 
-        BaseDestinationVaultExtension.BaseExtensionParams memory params = BaseDestinationVaultExtension
+        BaseClaimingDestinationVaultExtension.BaseClaimingExtensionParams memory params =
+        BaseClaimingDestinationVaultExtension
             // solhint-disable-next-line max-line-length
-            .BaseExtensionParams({ sendToRewarder: true, claimData: abi.encode(mockExtensionParams), swapParams: swapParams });
+            .BaseClaimingExtensionParams({
+            sendToRewarder: true,
+            claimData: abi.encode(mockExtensionParams),
+            swapParams: swapParams
+        });
 
         bytes memory data = abi.encode(params);
 
@@ -143,7 +149,7 @@ contract BaseDVExtensionExecuteTests is BaseDestinationVaultExtensionTest {
         vm.deal(address(dv), wethAmountReceivedOnSwap);
 
         vm.expectEmit(true, true, true, true);
-        emit ExtensionExecuted(amountsClaimed, tokensClaimed, wethAmountReceivedOnSwap);
+        emit ClaimingExtensionExecuted(amountsClaimed, tokensClaimed, wethAmountReceivedOnSwap);
         dv.executeExtension(data);
 
         assertEq(mockToken1.balanceOf(address(dv)), 0);
@@ -173,8 +179,8 @@ contract BaseDVExtensionExecuteTests is BaseDestinationVaultExtensionTest {
             deadline: block.timestamp
         });
 
-        BaseDestinationVaultExtension.BaseExtensionParams memory params = BaseDestinationVaultExtension
-            .BaseExtensionParams({
+        BaseClaimingDestinationVaultExtension.BaseClaimingExtensionParams memory params =
+        BaseClaimingDestinationVaultExtension.BaseClaimingExtensionParams({
             sendToRewarder: false,
             claimData: abi.encode(mockExtensionParams),
             swapParams: swapParams
@@ -197,7 +203,7 @@ contract BaseDVExtensionExecuteTests is BaseDestinationVaultExtensionTest {
         vm.deal(address(dv), wethAmountReceivedOnSwap);
 
         vm.expectEmit(true, true, true, true);
-        emit ExtensionExecuted(amountsClaimed, tokensClaimed, wethAmountReceivedOnSwap);
+        emit ClaimingExtensionExecuted(amountsClaimed, tokensClaimed, wethAmountReceivedOnSwap);
         dv.executeExtension(data);
 
         assertEq(mockToken1.balanceOf(address(dv)), 0);
@@ -241,9 +247,14 @@ contract BaseDVExtensionExecuteTests is BaseDestinationVaultExtensionTest {
             deadline: block.timestamp
         });
 
-        BaseDestinationVaultExtension.BaseExtensionParams memory params = BaseDestinationVaultExtension
+        BaseClaimingDestinationVaultExtension.BaseClaimingExtensionParams memory params =
+        BaseClaimingDestinationVaultExtension
             // solhint-disable-next-line max-line-length
-            .BaseExtensionParams({ sendToRewarder: true, claimData: abi.encode(mockExtensionParams), swapParams: swapParams });
+            .BaseClaimingExtensionParams({
+            sendToRewarder: true,
+            claimData: abi.encode(mockExtensionParams),
+            swapParams: swapParams
+        });
 
         bytes memory data = abi.encode(params);
 
@@ -264,7 +275,7 @@ contract BaseDVExtensionExecuteTests is BaseDestinationVaultExtensionTest {
         vm.deal(address(dv), wethReceivedOnSwapMockToken1 + wethReceivedOnSwapMockToken2);
 
         vm.expectEmit(true, true, true, true);
-        emit ExtensionExecuted(
+        emit ClaimingExtensionExecuted(
             amountsClaimed, tokensClaimed, wethReceivedOnSwapMockToken1 + wethReceivedOnSwapMockToken2
         );
         dv.executeExtension(data);
@@ -280,7 +291,7 @@ contract BaseDVExtensionExecuteTests is BaseDestinationVaultExtensionTest {
     }
 }
 
-contract MockDVExtension is BaseDestinationVaultExtension {
+contract MockDVExtension is BaseClaimingDestinationVaultExtension {
     struct MockExtensionParams {
         address token;
         uint256 amount;
@@ -289,7 +300,7 @@ contract MockDVExtension is BaseDestinationVaultExtension {
     constructor(
         ISystemRegistry _systemRegistry,
         address _asyncSwapper
-    ) BaseDestinationVaultExtension(_systemRegistry, _asyncSwapper) { }
+    ) BaseClaimingDestinationVaultExtension(_systemRegistry, _asyncSwapper) { }
 
     function _claim(
         bytes memory data

@@ -2,7 +2,8 @@
 // Copyright (c) 2023 Tokemak Foundation. All rights reserved.
 pragma solidity ^0.8.24;
 
-import { BaseDestinationVaultExtension } from "src/vault/extensions/base/BaseDestinationVaultExtension.sol";
+import { BaseClaimingDestinationVaultExtension } from
+    "src/vault/extensions/base/BaseClaimingDestinationVaultExtension.sol";
 import { IERC20 } from "openzeppelin-contracts/token/ERC20/IERC20.sol";
 import { ISystemRegistry } from "src/interfaces/ISystemRegistry.sol";
 import { Errors } from "src/utils/Errors.sol";
@@ -10,12 +11,12 @@ import { Errors } from "src/utils/Errors.sol";
 import { IMerkleDistributor } from "src/interfaces/external/kelpdao/IMerkleDistributor.sol";
 
 /// @title Destination vault extension for claiming KelpDao rewards
-contract KelpDaoDestinationVaultExtension is BaseDestinationVaultExtension {
+contract KelpDaoClaimingDestinationVaultExtension is BaseClaimingDestinationVaultExtension {
     address public immutable claimContract;
     IERC20 public immutable claimToken;
 
     /// @param account Account that can claim rewards
-    /// @param cumulativeAmout Cumulative amount of rewards for account. Used in Merkle calculations
+    /// @param cumulativeAmount Cumulative amount of rewards for account. Used in Merkle calculations
     /// @param expectedClaimAmount The amount expected to be claimed on this claim
     /// @param index The index of the claim
     /// @param merkleProof Merkle proof used in verification of claim
@@ -29,11 +30,11 @@ contract KelpDaoDestinationVaultExtension is BaseDestinationVaultExtension {
 
     // slither-disable-start similar-names
     constructor(
-        ISystemRegistry _systemRegsitry,
+        ISystemRegistry _systemRegistry,
         address _asyncSwapper,
         address _claimContract,
         address _claimToken
-    ) BaseDestinationVaultExtension(_systemRegsitry, _asyncSwapper) {
+    ) BaseClaimingDestinationVaultExtension(_systemRegistry, _asyncSwapper) {
         Errors.verifyNotZero(_claimContract, "_claimContract");
         Errors.verifyNotZero(_claimToken, "_claimToken");
 
@@ -43,7 +44,7 @@ contract KelpDaoDestinationVaultExtension is BaseDestinationVaultExtension {
     }
     // slither-disable-end similar-names
 
-    /// @inheritdoc BaseDestinationVaultExtension
+    /// @inheritdoc BaseClaimingDestinationVaultExtension
     function _claim(
         bytes memory data
     ) internal override returns (uint256[] memory amountsClaimed, address[] memory tokensClaimed) {

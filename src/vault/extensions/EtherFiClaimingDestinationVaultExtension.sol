@@ -2,7 +2,8 @@
 // Copyright (c) 2023 Tokemak Foundation. All rights reserved.
 pragma solidity ^0.8.24;
 
-import { BaseDestinationVaultExtension } from "src/vault/extensions/base/BaseDestinationVaultExtension.sol";
+import { BaseClaimingDestinationVaultExtension } from
+    "src/vault/extensions/base/BaseClaimingDestinationVaultExtension.sol";
 import { IERC20 } from "openzeppelin-contracts/token/ERC20/IERC20.sol";
 import { ISystemRegistry } from "src/interfaces/ISystemRegistry.sol";
 import { Errors } from "src/utils/Errors.sol";
@@ -10,7 +11,7 @@ import { Errors } from "src/utils/Errors.sol";
 import { ICumulativeMerkleDrop } from "src/interfaces/external/etherfi/ICumulativeMerkleDrop.sol";
 
 /// @title Destination vault extension for claiming EtherFi rewards
-contract EtherFiDestinationVaultExtension is BaseDestinationVaultExtension {
+contract EtherFiClaimingDestinationVaultExtension is BaseClaimingDestinationVaultExtension {
     address public immutable claimContract;
     IERC20 public immutable claimToken;
 
@@ -32,7 +33,7 @@ contract EtherFiDestinationVaultExtension is BaseDestinationVaultExtension {
         address _asyncSwapper,
         address _claimContract,
         address _claimToken
-    ) BaseDestinationVaultExtension(_systemRegistry, _asyncSwapper) {
+    ) BaseClaimingDestinationVaultExtension(_systemRegistry, _asyncSwapper) {
         Errors.verifyNotZero(_claimContract, "_claimContract");
         Errors.verifyNotZero(_claimToken, "_claimToken");
 
@@ -41,7 +42,7 @@ contract EtherFiDestinationVaultExtension is BaseDestinationVaultExtension {
         claimToken = IERC20(_claimToken);
     }
 
-    /// @inheritdoc BaseDestinationVaultExtension
+    /// @inheritdoc BaseClaimingDestinationVaultExtension
     function _claim(
         bytes memory data
     ) internal override returns (uint256[] memory amountsClaimed, address[] memory tokensClaimed) {

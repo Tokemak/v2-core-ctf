@@ -12,8 +12,10 @@ import {
     TREASURY
 } from "test/utils/Addresses.sol";
 
-import { KelpDaoDestinationVaultExtension } from "src/vault/extensions/KelpDaoDestinationVaultExtension.sol";
-import { BaseDestinationVaultExtension } from "src/vault/extensions/base/BaseDestinationVaultExtension.sol";
+import { KelpDaoClaimingDestinationVaultExtension } from
+    "src/vault/extensions/KelpDaoClaimingDestinationVaultExtension.sol";
+import { BaseClaimingDestinationVaultExtension } from
+    "src/vault/extensions/base/BaseClaimingDestinationVaultExtension.sol";
 import { SwapParams } from "src/interfaces/liquidation/IAsyncSwapper.sol";
 import { IDestinationVault } from "src/interfaces/vault/IDestinationVault.sol";
 import { IBaseRewarder } from "src/interfaces/rewarders/IBaseRewarder.sol";
@@ -26,7 +28,7 @@ import { IERC20 } from "openzeppelin-contracts/token/ERC20/IERC20.sol";
 
 // solhint-disable const-name-snakecase,max-line-length,func-name-mixedcase
 
-contract KelpDaoDestinationVaultExtensionTest is Test {
+contract KelpDaoClaimingDestinationVaultExtensionTest is Test {
     bytes public constant swapDataAtPinnedBlock =
         hex"6af479b20000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000032081f6141f18226e30000000000000000000000000000000000000000000000000e7585fa69df07480000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002bec53bf9167f50cdeb3ae105f56099aaab9061f83000bb8c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2000000000000000000000000000000000000000000869584cd0000000000000000000000001000000000000000000000000000000000000011000000000000000000000000000000000000000051f7b1af0e3b21d583d560a9";
 
@@ -41,15 +43,16 @@ contract KelpDaoDestinationVaultExtensionTest is Test {
     IERC20 public constant eigenToken = IERC20(EIGEN_MAINNET);
     IERC20 public constant wethERC20 = IERC20(WETH_MAINNET);
 
-    KelpDaoDestinationVaultExtension public extension;
+    KelpDaoClaimingDestinationVaultExtension public extension;
 
-    event ExtensionExecuted(uint256[] amountsClaimed, address[] tokensClaimed, uint256 amountAddedToRewards);
+    event ClaimingExtensionExecuted(uint256[] amountsClaimed, address[] tokensClaimed, uint256 amountAddedToRewards);
 
     function setUp() public virtual {
         vm.createSelectFork(vm.envString("MAINNET_RPC_URL"), 21_079_081);
 
-        extension =
-            new KelpDaoDestinationVaultExtension(systemRegistry, zeroExSwapper, kelpDaoClaim, address(eigenToken));
+        extension = new KelpDaoClaimingDestinationVaultExtension(
+            systemRegistry, zeroExSwapper, kelpDaoClaim, address(eigenToken)
+        );
 
         // Give test contract the ability to set and execute extensions
         vm.startPrank(TREASURY);
@@ -69,7 +72,7 @@ contract KelpDaoDestinationVaultExtensionTest is Test {
 
     function _getExtensionData(
         uint256 expectedClaim
-    ) internal view returns (BaseDestinationVaultExtension.BaseExtensionParams memory dataStruct) {
+    ) internal view returns (BaseClaimingDestinationVaultExtension.BaseClaimingExtensionParams memory dataStruct) {
         bytes32[] memory merkleProof = new bytes32[](19);
         SwapParams[] memory swapParams = new SwapParams[](1);
 
@@ -93,8 +96,8 @@ contract KelpDaoDestinationVaultExtensionTest is Test {
         merkleProof[17] = 0x0b4153f9c27fb85b6b98be45428f73e3d86f3d3c589b0b00954f3f45cd051ecd;
         merkleProof[18] = 0x0556bb54a9f39b56bff3a0beba8b4ce86525f3b0e57897630d6f888ff0f42d4a;
 
-        KelpDaoDestinationVaultExtension.KelpDaoClaimParams memory claimParams = KelpDaoDestinationVaultExtension
-            .KelpDaoClaimParams({
+        KelpDaoClaimingDestinationVaultExtension.KelpDaoClaimParams memory claimParams =
+        KelpDaoClaimingDestinationVaultExtension.KelpDaoClaimParams({
             account: address(dv),
             cumulativeAmount: claimAmount,
             expectedClaimAmount: expectedClaim,
@@ -112,7 +115,7 @@ contract KelpDaoDestinationVaultExtensionTest is Test {
             deadline: block.timestamp
         });
 
-        dataStruct = BaseDestinationVaultExtension.BaseExtensionParams({
+        dataStruct = BaseClaimingDestinationVaultExtension.BaseClaimingExtensionParams({
             sendToRewarder: true,
             claimData: abi.encode(claimParams),
             swapParams: swapParams
@@ -120,13 +123,13 @@ contract KelpDaoDestinationVaultExtensionTest is Test {
     }
 }
 
-contract KelpDaoDVExtensionConstructorTest is KelpDaoDestinationVaultExtensionTest {
+contract KelpDaoDVExtensionConstructorTest is KelpDaoClaimingDestinationVaultExtensionTest {
     function test_RevertsWhenZeroAddresses() public {
         vm.expectRevert(abi.encodeWithSelector(Errors.ZeroAddress.selector, "_claimContract"));
-        new KelpDaoDestinationVaultExtension(systemRegistry, zeroExSwapper, address(0), address(eigenToken));
+        new KelpDaoClaimingDestinationVaultExtension(systemRegistry, zeroExSwapper, address(0), address(eigenToken));
 
         vm.expectRevert(abi.encodeWithSelector(Errors.ZeroAddress.selector, "_claimToken"));
-        new KelpDaoDestinationVaultExtension(systemRegistry, zeroExSwapper, kelpDaoClaim, address(0));
+        new KelpDaoClaimingDestinationVaultExtension(systemRegistry, zeroExSwapper, kelpDaoClaim, address(0));
     }
 
     function test_StateSet() public {
@@ -135,9 +138,9 @@ contract KelpDaoDVExtensionConstructorTest is KelpDaoDestinationVaultExtensionTe
     }
 }
 
-contract KelpDaoDVExtensionExecuteTest is KelpDaoDestinationVaultExtensionTest {
+contract KelpDaoDVExtensionExecuteTest is KelpDaoClaimingDestinationVaultExtensionTest {
     function test_RevertIf_claimAmount_Zero() public {
-        BaseDestinationVaultExtension.BaseExtensionParams memory params = _getExtensionData(0);
+        BaseClaimingDestinationVaultExtension.BaseClaimingExtensionParams memory params = _getExtensionData(0);
 
         bytes memory data = abi.encode(params);
 
@@ -146,18 +149,20 @@ contract KelpDaoDVExtensionExecuteTest is KelpDaoDestinationVaultExtensionTest {
     }
 
     function test_RevertIf_ClaimAmount_And_ExpectedAmount_AreNotEqual() public {
-        BaseDestinationVaultExtension.BaseExtensionParams memory params = _getExtensionData(10);
+        BaseClaimingDestinationVaultExtension.BaseClaimingExtensionParams memory params = _getExtensionData(10);
 
         bytes memory data = abi.encode(params);
 
         vm.expectRevert(
-            abi.encodeWithSelector(BaseDestinationVaultExtension.InvalidAmountReceived.selector, claimAmount, 10)
+            abi.encodeWithSelector(
+                BaseClaimingDestinationVaultExtension.InvalidAmountReceived.selector, claimAmount, 10
+            )
         );
         dv.executeExtension(data);
     }
 
     function test_RunsProperly() public {
-        BaseDestinationVaultExtension.BaseExtensionParams memory params = _getExtensionData(claimAmount);
+        BaseClaimingDestinationVaultExtension.BaseClaimingExtensionParams memory params = _getExtensionData(claimAmount);
 
         bytes memory data = abi.encode(params);
 
@@ -172,7 +177,7 @@ contract KelpDaoDVExtensionExecuteTest is KelpDaoDestinationVaultExtensionTest {
         tokensClaimed[0] = address(eigenToken);
 
         vm.expectEmit(true, true, true, true);
-        emit ExtensionExecuted(amountsClaimed, tokensClaimed, wethAmountReceived);
+        emit ClaimingExtensionExecuted(amountsClaimed, tokensClaimed, wethAmountReceived);
         dv.executeExtension(data);
 
         assertEq(wethERC20.balanceOf(dv.rewarder()), dvRewarderWethBefore + wethAmountReceived);
@@ -182,7 +187,7 @@ contract KelpDaoDVExtensionExecuteTest is KelpDaoDestinationVaultExtensionTest {
     }
 
     function test_RunsProperly_SendsToCaller() public {
-        BaseDestinationVaultExtension.BaseExtensionParams memory params = _getExtensionData(claimAmount);
+        BaseClaimingDestinationVaultExtension.BaseClaimingExtensionParams memory params = _getExtensionData(claimAmount);
         params.sendToRewarder = false;
         bytes memory data = abi.encode(params);
 
@@ -197,7 +202,7 @@ contract KelpDaoDVExtensionExecuteTest is KelpDaoDestinationVaultExtensionTest {
         tokensClaimed[0] = address(eigenToken);
 
         vm.expectEmit(true, true, true, true);
-        emit ExtensionExecuted(amountsClaimed, tokensClaimed, wethAmountReceived);
+        emit ClaimingExtensionExecuted(amountsClaimed, tokensClaimed, wethAmountReceived);
         dv.executeExtension(data);
 
         assertEq(wethERC20.balanceOf(dv.rewarder()), dvRewarderWethBefore);
