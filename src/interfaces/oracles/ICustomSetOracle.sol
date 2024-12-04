@@ -4,24 +4,21 @@
 pragma solidity ^0.8.24;
 
 /// @notice Interface for a deployed CustomSetOracle to access its functions and state variables
-interface ICustomOracle {
-    /// STATE VARIABLES
-
-    /// @notice Access controller for the CustomOracle from SecurityBase
-    function accessController() external view returns (address);
-
-    /// @notice Maximum age a price can be from when it was originally queried
-    function maxAge() external view returns (uint256);
-
-    /// @notice All current prices for registered tokens
-    function prices(address token) external view returns (Price memory);
-
+interface ICustomSetOracle {
     /// @notice Struct to hold the price, max age, and timestamp of a token in the prices mapping
     struct Price {
         uint192 price;
         uint32 maxAge;
         uint32 timestamp;
     }
+
+    /// STATE VARIABLES
+
+    /// @notice Maximum age a price can be from when it was originally queried
+    function maxAge() external view returns (uint256);
+
+    /// @notice All current prices for registered tokens
+    function prices(address token) external view returns (uint192 price, uint32 maxAge, uint32 timestamp);
 
     /// FUNCTIONS
 

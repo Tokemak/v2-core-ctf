@@ -4,7 +4,8 @@ pragma solidity ^0.8.24;
 import { Test } from "forge-std/Test.sol";
 
 import { CustomRedStoneOracleAdapter } from "src/oracles/providers/CustomRedStoneOracleAdapter.sol";
-import { ICustomOracle } from "src/interfaces/oracles/ICustomOracle.sol";
+import { ICustomSetOracle } from "src/interfaces/oracles/ICustomSetOracle.sol";
+import { ISecurityBase } from "src/interfaces/security/ISecurityBase.sol";
 import { IAccessController } from "src/interfaces/security/IAccessController.sol";
 import { AccessController } from "src/security/AccessController.sol";
 import { SystemRegistry } from "src/SystemRegistry.sol";
@@ -21,7 +22,7 @@ contract CustomRedStoneOracleAdapterTest is Test {
     SystemRegistry internal systemRegistry;
     AccessController internal accessController;
     CustomRedStoneOracleAdapter internal redstoneAdapter;
-    ICustomOracle internal customOracle;
+    ICustomSetOracle internal customOracle;
     uint8 internal constant DEFAULT_UNIQUE_SIGNERS_THRESHOLD = 3;
 
     function setUp() public {
@@ -34,7 +35,7 @@ contract CustomRedStoneOracleAdapterTest is Test {
         systemRegistry.setAccessController(address(accessController));
 
         // Setup oracles
-        customOracle = ICustomOracle(MAINNET_CUSTOM_ORACLE);
+        customOracle = ICustomSetOracle(MAINNET_CUSTOM_ORACLE);
         redstoneAdapter =
             new CustomRedStoneOracleAdapter(systemRegistry, address(customOracle), DEFAULT_UNIQUE_SIGNERS_THRESHOLD);
 
@@ -60,8 +61,10 @@ contract CustomRedStoneOracleAdapterTest is Test {
         }
         return data;
     }
+}
 
-    function testConstructor() public {
+contract ConstructuctionTests is CustomRedStoneOracleAdapterTest {
+    function test_Constructor() public {
         // Check that the feedId for ETH is registered to WETH
         bytes32 ethFeedId = bytes32("ETH");
         assertEq(redstoneAdapter.feedIdToAddress(ethFeedId), address(WETH9_ADDRESS));
@@ -83,52 +86,15 @@ contract CustomRedStoneOracleAdapterTest is Test {
         assertEq(redstoneAdapter.getAuthorisedSignerIndex(0x9c5AE89C4Af6aA32cE58588DBaF90d18a855B6de), 4);
         assertEq(redstoneAdapter.getAuthorisedSignerIndex(0xFABB0ac9d68B0B445fB7357272Ff202C5651694a), 5);
     }
+}
 
-    function testGetAuthorisedSignerIndexRevertsIfSignerNotAuthorised() public {
+contract SignersTests is CustomRedStoneOracleAdapterTest {
+    function test_GetAuthorisedSignerIndexRevertsIfSignerNotAuthorised() public {
         vm.expectRevert(abi.encodeWithSignature("SignerNotAuthorised(address)", RANDOM));
         redstoneAdapter.getAuthorisedSignerIndex(RANDOM);
     }
 
-    function testRegisterFeedId() public {
-        bytes32 feedId = bytes32("TEST");
-        address token = makeAddr("token");
-
-        redstoneAdapter.registerFeedIdToAddress(feedId, token);
-
-        assertEq(redstoneAdapter.feedIdToAddress(feedId), token);
-    }
-
-    function testRegisterFeedIdRevertsIfNoAccess() public {
-        bytes32 feedId = bytes32("TEST");
-        address token = makeAddr("token");
-
-        vm.prank(RANDOM);
-        vm.expectRevert(abi.encodeWithSignature("AccessDenied()"));
-        redstoneAdapter.registerFeedIdToAddress(feedId, token);
-    }
-
-    function testRemoveFeedId() public {
-        bytes32 feedId = bytes32("TEST");
-        address token = makeAddr("token");
-
-        redstoneAdapter.registerFeedIdToAddress(feedId, token);
-        redstoneAdapter.removeFeedIdToAddress(feedId);
-
-        assertEq(redstoneAdapter.feedIdToAddress(feedId), address(0));
-    }
-
-    function testRemoveFeedIdRevertsIfNoAccess() public {
-        bytes32 feedId = bytes32("TEST");
-        address token = makeAddr("token");
-
-        redstoneAdapter.registerFeedIdToAddress(feedId, token);
-
-        vm.prank(RANDOM);
-        vm.expectRevert(abi.encodeWithSignature("AccessDenied()"));
-        redstoneAdapter.removeFeedIdToAddress(feedId);
-    }
-
-    function testRegisterAuthorisedSigners() public {
+    function test_RegistersAuthorisedSigners() public {
         address[] memory authorisedSigners = redstoneAdapter.authorizedSigners();
         assertEq(authorisedSigners.length, 6);
 
@@ -151,17 +117,60 @@ contract CustomRedStoneOracleAdapterTest is Test {
         redstoneAdapter.getAuthorisedSignerIndex(defaultSigner);
     }
 
-    function testGetUniqueSignersThreshold() public {
+    function test_GetsUniqueSignersThreshold() public {
         // Return value is hardcoded in the adapter
         assertEq(redstoneAdapter.getUniqueSignersThreshold(), 3);
     }
 
-    function testGetAuthorisedSignerIndex() public {
+    function test_GetsAuthorisedSignerIndex() public {
         // Validate access to the signer index set in base contract
         assertEq(redstoneAdapter.getAuthorisedSignerIndex(0xdEB22f54738d54976C4c0fe5ce6d408E40d88499), 1);
     }
+}
 
-    function testUpdatePriceWithFeedIdRevertsIfNoAccess() public {
+contract FeedIdsTests is CustomRedStoneOracleAdapterTest {
+    function test_RegistersFeedId() public {
+        bytes32 feedId = bytes32("TEST");
+        address token = makeAddr("token");
+
+        redstoneAdapter.registerFeedIdToAddress(feedId, token);
+
+        assertEq(redstoneAdapter.feedIdToAddress(feedId), token);
+    }
+
+    function testRegisterFeedIdRevertsIfNoAccess() public {
+        bytes32 feedId = bytes32("TEST");
+        address token = makeAddr("token");
+
+        vm.prank(RANDOM);
+        vm.expectRevert(abi.encodeWithSignature("AccessDenied()"));
+        redstoneAdapter.registerFeedIdToAddress(feedId, token);
+    }
+
+    function test_RemovesFeedId() public {
+        bytes32 feedId = bytes32("TEST");
+        address token = makeAddr("token");
+
+        redstoneAdapter.registerFeedIdToAddress(feedId, token);
+        redstoneAdapter.removeFeedIdToAddress(feedId);
+
+        assertEq(redstoneAdapter.feedIdToAddress(feedId), address(0));
+    }
+
+    function test_RemoveFeedIdRevertsIfNoAccess() public {
+        bytes32 feedId = bytes32("TEST");
+        address token = makeAddr("token");
+
+        redstoneAdapter.registerFeedIdToAddress(feedId, token);
+
+        vm.prank(RANDOM);
+        vm.expectRevert(abi.encodeWithSignature("AccessDenied()"));
+        redstoneAdapter.removeFeedIdToAddress(feedId);
+    }
+}
+
+contract UpdatePriceTests is CustomRedStoneOracleAdapterTest {
+    function test_UpdatePriceWithFeedIdRevertsIfNoAccess() public {
         bytes32[] memory feedIds = new bytes32[](1);
         feedIds[0] = bytes32("pxETH");
 
@@ -172,7 +181,7 @@ contract CustomRedStoneOracleAdapterTest is Test {
 
         redstoneAdapter.registerFeedIdToAddress(feedIds[0], PXETH_MAINNET);
 
-        IAccessController mainnetAccessController = IAccessController(customOracle.accessController());
+        IAccessController mainnetAccessController = ISecurityBase(address(customOracle)).accessController();
         vm.prank(TREASURY);
         mainnetAccessController.grantRole(Roles.CUSTOM_ORACLE_EXECUTOR, address(redstoneAdapter));
 
@@ -182,7 +191,7 @@ contract CustomRedStoneOracleAdapterTest is Test {
         assertEq(success, false);
     }
 
-    function testUpdatePriceWithFeedIdRevertsIfFeedIdNotRegistered() public {
+    function test_UpdatePriceWithFeedIdRevertsIfFeedIdNotRegistered() public {
         bytes32[] memory feedIds = new bytes32[](1);
         feedIds[0] = bytes32("pxETH");
 
@@ -191,7 +200,7 @@ contract CustomRedStoneOracleAdapterTest is Test {
         bytes memory encodedFunction = abi.encodeWithSignature("updatePriceWithFeedId(bytes32[])", feedIds);
         bytes memory encodedFunctionWithRedstonePayload = abi.encodePacked(encodedFunction, redstonePayload);
 
-        IAccessController mainnetAccessController = IAccessController(customOracle.accessController());
+        IAccessController mainnetAccessController = ISecurityBase(address(customOracle)).accessController();
         vm.prank(TREASURY);
         mainnetAccessController.grantRole(Roles.CUSTOM_ORACLE_EXECUTOR, address(redstoneAdapter));
 
@@ -201,7 +210,7 @@ contract CustomRedStoneOracleAdapterTest is Test {
         assertEq(success, false);
     }
 
-    function testUpdatePriceWithSingleFeedId() public {
+    function test_UpdatesPriceWithSingleFeedId() public {
         bytes32[] memory feedIds = new bytes32[](1);
         feedIds[0] = bytes32("pxETH");
 
@@ -212,24 +221,24 @@ contract CustomRedStoneOracleAdapterTest is Test {
 
         redstoneAdapter.registerFeedIdToAddress(feedIds[0], PXETH_MAINNET);
 
-        IAccessController mainnetAccessController = IAccessController(customOracle.accessController());
+        IAccessController mainnetAccessController = ISecurityBase(address(customOracle)).accessController();
         vm.prank(TREASURY);
         mainnetAccessController.grantRole(Roles.CUSTOM_ORACLE_EXECUTOR, address(redstoneAdapter));
 
-        ICustomOracle.Price memory priceBefore = customOracle.prices(address(PXETH_MAINNET));
+        (uint192 priceBefore,,) = customOracle.prices(address(PXETH_MAINNET));
 
         vm.prank(MAINNET_ORACLE_EXECUTOR);
         // solhint-disable-next-line avoid-low-level-calls
         (bool success,) = address(redstoneAdapter).call(encodedFunctionWithRedstonePayload);
         assertEq(success, true);
 
-        ICustomOracle.Price memory priceAfter = customOracle.prices(address(PXETH_MAINNET));
+        (uint192 priceAfter,,) = customOracle.prices(address(PXETH_MAINNET));
 
-        assertNotEq(priceAfter.price, priceBefore.price);
-        assertEq(priceAfter.price, 311_090_138_125);
+        assertNotEq(priceAfter, priceBefore);
+        assertEq(priceAfter, 311_090_138_125);
     }
 
-    function testUpdatePriceWithMultipleFeedIds() public {
+    function test_UpdatesPriceWithMultipleFeedIds() public {
         bytes32[] memory feedIds = new bytes32[](3);
         feedIds[0] = bytes32("ezETH");
         feedIds[1] = bytes32("wstETH");
@@ -258,22 +267,22 @@ contract CustomRedStoneOracleAdapterTest is Test {
         redstoneAdapter.registerFeedIdToAddress(feedIds[1], WSTETH_MAINNET);
         redstoneAdapter.registerFeedIdToAddress(feedIds[2], RETH_MAINNET);
 
-        IAccessController mainnetAccessController = IAccessController(customOracle.accessController());
+        IAccessController mainnetAccessController = ISecurityBase(address(customOracle)).accessController();
         vm.prank(TREASURY);
         mainnetAccessController.grantRole(Roles.CUSTOM_ORACLE_EXECUTOR, address(redstoneAdapter));
 
-        uint256 ezEthPriceBefore = customOracle.prices(EZETH_MAINNET).price;
-        uint256 wstEthPriceBefore = customOracle.prices(WSTETH_MAINNET).price;
-        uint256 rEthPriceBefore = customOracle.prices(RETH_MAINNET).price;
+        (uint192 ezEthPriceBefore,,) = customOracle.prices(EZETH_MAINNET);
+        (uint192 wstEthPriceBefore,,) = customOracle.prices(WSTETH_MAINNET);
+        (uint192 rEthPriceBefore,,) = customOracle.prices(RETH_MAINNET);
 
         vm.prank(MAINNET_ORACLE_EXECUTOR);
         // solhint-disable-next-line avoid-low-level-calls
         (bool success,) = address(redstoneAdapter).call(encodedFunctionWithRedstonePayload);
         assertEq(success, true);
 
-        uint256 ezEthPriceAfter = customOracle.prices(EZETH_MAINNET).price;
-        uint256 wstEthPriceAfter = customOracle.prices(WSTETH_MAINNET).price;
-        uint256 rEthPriceAfter = customOracle.prices(RETH_MAINNET).price;
+        (uint192 ezEthPriceAfter,,) = customOracle.prices(EZETH_MAINNET);
+        (uint192 wstEthPriceAfter,,) = customOracle.prices(WSTETH_MAINNET);
+        (uint192 rEthPriceAfter,,) = customOracle.prices(RETH_MAINNET);
 
         assertNotEq(ezEthPriceAfter, ezEthPriceBefore);
         assertNotEq(wstEthPriceAfter, wstEthPriceBefore);

@@ -3,9 +3,10 @@
 pragma solidity ^0.8.24;
 
 import { IAccessController } from "src/interfaces/security/IAccessController.sol";
+import { ISecurityBase } from "src/interfaces/security/ISecurityBase.sol";
 import { Errors } from "src/utils/Errors.sol";
 
-contract SecurityBase {
+contract SecurityBase is ISecurityBase {
     IAccessController public immutable accessController;
 
     error UndefinedAddress();

@@ -9,19 +9,14 @@ import { SystemComponent } from "src/SystemComponent.sol";
 import { SecurityBase } from "src/security/SecurityBase.sol";
 import { ISystemRegistry } from "src/interfaces/ISystemRegistry.sol";
 import { IPriceOracle } from "src/interfaces/oracles/IPriceOracle.sol";
+import { ICustomSetOracle } from "src/interfaces/oracles/ICustomSetOracle.sol";
 
 /**
  * @notice Fall back oracle that we can set manually through a secured call
  * @dev We are ignoring checks for timestamps greater than u32. Hopefully we'll be kicking ourselves
  * for this move in 83 years.
  */
-contract CustomSetOracle is SystemComponent, SecurityBase, IPriceOracle {
-    struct Price {
-        uint192 price;
-        uint32 maxAge;
-        uint32 timestamp;
-    }
-
+contract CustomSetOracle is ICustomSetOracle, SystemComponent, SecurityBase, IPriceOracle {
     /// @notice Maximum age a price can be from when it was originally queried
     /// @dev Will revert on getPriceInEth if older
     uint256 public maxAge;
@@ -64,10 +59,11 @@ contract CustomSetOracle is SystemComponent, SecurityBase, IPriceOracle {
         _setMaxAge(age);
     }
 
-    /// @notice Register tokens that should be resolvable through this oracle
-    /// @param tokens addresses of tokens to register
-    /// @param maxAges the max allowed age of a tokens price before it will revert on retrieval
-    function registerTokens(address[] memory tokens, uint256[] memory maxAges) external hasRole(Roles.ORACLE_MANAGER) {
+    /// @inheritdoc ICustomSetOracle
+    function registerTokens(
+        address[] memory tokens,
+        uint256[] memory maxAges
+    ) external override hasRole(Roles.ORACLE_MANAGER) {
         _registerTokens(tokens, maxAges, false);
     }
 
@@ -105,16 +101,12 @@ contract CustomSetOracle is SystemComponent, SecurityBase, IPriceOracle {
         emit TokensUnregistered(tokens);
     }
 
-    /// @notice Update the price of one or more registered tokens
-    /// @dev Only callable by the CUSTOM_ORACLE_EXECUTOR
-    /// @param tokens address of the tokens price we are setting
-    /// @param ethPrices prices of the tokens we're setting
-    /// @param queriedTimestamps the timestamps of when each price was queried
+    /// @inheritdoc ICustomSetOracle
     function setPrices(
         address[] memory tokens,
         uint256[] memory ethPrices,
         uint256[] memory queriedTimestamps
-    ) external hasRole(Roles.CUSTOM_ORACLE_EXECUTOR) {
+    ) external override hasRole(Roles.CUSTOM_ORACLE_EXECUTOR) {
         uint256 len = tokens.length;
         Errors.verifyNotZero(len, "len");
         Errors.verifyArrayLengths(len, ethPrices.length, "token+prices");
@@ -165,11 +157,10 @@ contract CustomSetOracle is SystemComponent, SecurityBase, IPriceOracle {
         emit PricesSet(tokens, ethPrices, queriedTimestamps);
     }
 
-    /// @notice Returns true for a token that is registered with this oracle
-    /// @param token address to check
+    /// @inheritdoc ICustomSetOracle
     function isRegistered(
         address token
-    ) external view returns (bool) {
+    ) external view override returns (bool) {
         return prices[token].maxAge > 0;
     }
 

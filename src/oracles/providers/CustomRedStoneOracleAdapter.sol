@@ -9,7 +9,7 @@ import { PrimaryProdDataServiceConsumerBase } from
 import { SystemComponent } from "src/SystemComponent.sol";
 import { SecurityBase } from "src/security/SecurityBase.sol";
 import { ISystemRegistry } from "src/interfaces/ISystemRegistry.sol";
-import { ICustomOracle } from "src/interfaces/oracles/ICustomOracle.sol";
+import { ICustomSetOracle } from "src/interfaces/oracles/ICustomSetOracle.sol";
 import { Errors } from "src/utils/Errors.sol";
 import { Roles } from "src/libs/Roles.sol";
 
@@ -19,7 +19,7 @@ contract CustomRedStoneOracleAdapter is PrimaryProdDataServiceConsumerBase, Syst
 
     error TokenNotRegistered(bytes32 feedId, address tokenAddress);
 
-    ICustomOracle public immutable customOracle;
+    ICustomSetOracle public immutable customOracle;
     uint8 private immutable uniqueSignersThreshold;
 
     /// @notice Mapping between a Redstone feedId and token address
@@ -37,7 +37,7 @@ contract CustomRedStoneOracleAdapter is PrimaryProdDataServiceConsumerBase, Syst
         uint8 _uniqueSignersThreshold
     ) SystemComponent(_systemRegistry) SecurityBase(address(_systemRegistry.accessController())) {
         Errors.verifyNotZero(_customOracle, "customOracle");
-        customOracle = ICustomOracle(_customOracle);
+        customOracle = ICustomSetOracle(_customOracle);
 
         // Register the feedId for ETH
         feedIdToAddress[bytes32("ETH")] = address(_systemRegistry.weth());
@@ -108,10 +108,10 @@ contract CustomRedStoneOracleAdapter is PrimaryProdDataServiceConsumerBase, Syst
             Errors.verifyNotZero(values[i], "baseToken price");
 
             // Get the last set price from the custom oracle
-            ICustomOracle.Price memory lastSetPrice = customOracle.prices(tokenAddress);
+            (,, uint32 lastSetTimestamp) = customOracle.prices(tokenAddress);
 
             // Check that the price has not been updated more recently than the timestamp in the Redstone payload
-            if (lastSetPrice.timestamp >= timestamp) {
+            if (lastSetTimestamp >= timestamp) {
                 revert Errors.InvalidParam("timestamp");
             }
             // Set the same timestamp from the Redstone payload for all base tokens
