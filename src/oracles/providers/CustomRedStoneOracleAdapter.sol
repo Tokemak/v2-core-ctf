@@ -74,7 +74,7 @@ contract CustomRedStoneOracleAdapter is PrimaryProdDataServiceConsumerBase, Syst
         // Extract and validate the prices from the Redstone payload
         (uint256[] memory values, uint256 timestamp) = _securelyExtractOracleValuesAndTimestampFromTxMsg(feedIds);
 
-        // Call of RedstoneConsumerNumericBase implementation of validateTimestamp
+        // Call of RedstoneConsumerBase implementation of validateTimestamp
         validateTimestamp(timestamp);
 
         // Prepare the base tokens array
