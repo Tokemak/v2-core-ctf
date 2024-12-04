@@ -197,16 +197,35 @@ contract UpdatePriceTests is CustomRedStoneOracleAdapterTest {
         assertEq(success, false);
     }
 
-    function test_UpdatesPriceWithSingleFeedId() public {
+    function test_UpdatePriceWithFeedIdRevertsIfFeedIdIsNotExisting() public {
         bytes32[] memory feedIds = new bytes32[](1);
-        feedIds[0] = bytes32("pxETH");
+        feedIds[0] = bytes32("someRandomFeedIdThatDoesNotExist");
+        redstoneAdapter.registerFeedIdToAddress(feedIds[0], PXETH_MAINNET);
 
         bytes memory redstonePayload = getRedstonePayload(feedIds[0]);
-
         bytes memory encodedFunction = abi.encodeWithSignature("updatePriceWithFeedId(bytes32[])", feedIds);
         bytes memory encodedFunctionWithRedstonePayload = abi.encodePacked(encodedFunction, redstonePayload);
 
+        IAccessController mainnetAccessController = ISecurityBase(address(customOracle)).accessController();
+        vm.prank(TREASURY);
+        mainnetAccessController.grantRole(Roles.CUSTOM_ORACLE_EXECUTOR, address(redstoneAdapter));
+
+        (uint192 priceBefore,,) = customOracle.prices(address(PXETH_MAINNET));
+
+        vm.prank(MAINNET_ORACLE_EXECUTOR);
+        // solhint-disable-next-line avoid-low-level-calls
+        (bool success,) = address(redstoneAdapter).call(encodedFunctionWithRedstonePayload);
+        assertEq(success, false);
+    }
+
+    function test_UpdatesPriceWithSingleFeedId() public {
+        bytes32[] memory feedIds = new bytes32[](1);
+        feedIds[0] = bytes32("pxETH");
         redstoneAdapter.registerFeedIdToAddress(feedIds[0], PXETH_MAINNET);
+
+        bytes memory redstonePayload = getRedstonePayload(feedIds[0]);
+        bytes memory encodedFunction = abi.encodeWithSignature("updatePriceWithFeedId(bytes32[])", feedIds);
+        bytes memory encodedFunctionWithRedstonePayload = abi.encodePacked(encodedFunction, redstonePayload);
 
         IAccessController mainnetAccessController = ISecurityBase(address(customOracle)).accessController();
         vm.prank(TREASURY);
