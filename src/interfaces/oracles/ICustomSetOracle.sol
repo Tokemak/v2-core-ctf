@@ -18,7 +18,7 @@ interface ICustomSetOracle {
     function maxAge() external view returns (uint256);
 
     /// @notice All current prices for registered tokens
-    function prices(address token) external view returns (uint192 price, uint32 maxAge, uint32 timestamp);
+    function prices(address token) external view returns (uint192 price, uint32 priceMaxAge, uint32 timestamp);
 
     /// FUNCTIONS
 

@@ -93,6 +93,7 @@ contract CustomRedStoneOracleAdapter is PrimaryProdDataServiceConsumerBase, Syst
             Errors.verifyNotZero(values[i], "baseToken price");
 
             // Get the last set price from the custom oracle
+            // slither-disable-next-line unused-return
             (,, uint32 lastSetTimestamp) = customOracle.prices(tokenAddress);
 
             // Check that the price has not been updated more recently than the timestamp in the Redstone payload
