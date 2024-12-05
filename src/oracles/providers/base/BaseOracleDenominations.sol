@@ -33,7 +33,7 @@ abstract contract BaseOracleDenominations is SystemComponent, IPriceOracle, Secu
         Errors.verifyNotZero(address(_systemRegistry.rootPriceOracle()), "rootPriceOracle");
     }
 
-    // Handles non-Eth denomination if neccessary.
+    // Handles non-Eth denomination if necessary.
     function _denominationPricing(
         Denomination denomination,
         uint256 normalizedPrice,
