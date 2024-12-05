@@ -9,6 +9,7 @@ import { PrimaryProdDataServiceConsumerBase } from
 import { SystemComponent } from "src/SystemComponent.sol";
 import { SecurityBase } from "src/security/SecurityBase.sol";
 import { ISystemRegistry } from "src/interfaces/ISystemRegistry.sol";
+import { ISystemComponent } from "src/interfaces/ISystemComponent.sol";
 import { ICustomSetOracle } from "src/interfaces/oracles/ICustomSetOracle.sol";
 import { Errors } from "src/utils/Errors.sol";
 import { Roles } from "src/libs/Roles.sol";
@@ -54,6 +55,13 @@ contract CustomRedStoneOracleAdapter is PrimaryProdDataServiceConsumerBase, Syst
     ) SystemComponent(_systemRegistry) SecurityBase(address(_systemRegistry.accessController())) {
         Errors.verifyNotZero(_customOracle, "customOracle");
         customOracle = ICustomSetOracle(_customOracle);
+
+        // Verify that the custom oracle is from the same system registry as the adapter
+        address customOracleSystemRegistry = ISystemComponent(_customOracle).getSystemRegistry();
+        if (address(_systemRegistry) != customOracleSystemRegistry) {
+            revert Errors.SystemMismatch(address(_systemRegistry), customOracleSystemRegistry);
+        }
+
         uniqueSignersThreshold = _uniqueSignersThreshold;
         _initializeSignerAddressToIndex(initAuthorizedSigners);
     }
