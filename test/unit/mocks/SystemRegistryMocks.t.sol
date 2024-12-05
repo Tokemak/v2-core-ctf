@@ -6,6 +6,7 @@ pragma solidity ^0.8.24;
 
 import { Vm } from "forge-std/Vm.sol";
 import { ISystemRegistry } from "src/interfaces/ISystemRegistry.sol";
+import { ISystemComponent } from "src/interfaces/ISystemComponent.sol";
 
 contract SystemRegistryMocks {
     Vm private vm;
@@ -14,6 +15,14 @@ contract SystemRegistryMocks {
         Vm _vm
     ) {
         vm = _vm;
+    }
+
+    function _mockSystemComponent(ISystemRegistry systemRegistry, address component) internal {
+        vm.mockCall(
+            address(component),
+            abi.encodeWithSelector(ISystemComponent.getSystemRegistry.selector),
+            abi.encode(systemRegistry)
+        );
     }
 
     function _mockSysRegAccessController(ISystemRegistry systemRegistry, address accessController) internal {

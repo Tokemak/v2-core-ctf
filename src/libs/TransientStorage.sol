@@ -22,20 +22,20 @@ library TransientStorage {
     /// @notice Retrieves bytes data from transient storage
     /// @dev Uses assembly to efficiently retrieve data from transient storage slots
     /// @param slot The starting slot in transient storage to retrieve the data
-    /// @return newdata The bytes data retrieved from transient storage
+    /// @return newData The bytes data retrieved from transient storage
     function getBytes(
         uint256 slot
-    ) public view returns (bytes memory newdata) {
+    ) public view returns (bytes memory newData) {
         // Retrieve the data
         //solhint-disable-next-line no-inline-assembly
         assembly {
             let dataLength := tload(slot)
-            newdata := mload(0x40)
-            mstore(newdata, dataLength)
+            newData := mload(0x40)
+            mstore(newData, dataLength)
             for { let i := 0 } lt(i, dataLength) { i := add(i, 32) } {
-                mstore(add(newdata, add(32, i)), tload(add(slot, add(1, div(i, 32)))))
+                mstore(add(newData, add(32, i)), tload(add(slot, add(1, div(i, 32)))))
             }
-            mstore(0x40, add(newdata, add(32, dataLength)))
+            mstore(0x40, add(newData, add(32, dataLength)))
         }
     }
 
