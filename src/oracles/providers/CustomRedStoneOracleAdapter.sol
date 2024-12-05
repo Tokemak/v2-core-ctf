@@ -143,7 +143,9 @@ contract CustomRedStoneOracleAdapter is PrimaryProdDataServiceConsumerBase, Syst
 
     /// @notice Removes a mapping between a Redstone feedId and token address
     /// @param feedId The Redstone feedId to remove mapping for
-    function removeFeedId(bytes32 feedId) external hasRole(Roles.ORACLE_MANAGER) {
+    function removeFeedId(
+        bytes32 feedId
+    ) external hasRole(Roles.ORACLE_MANAGER) {
         delete registeredFeedIds[feedId];
         emit FeedIdRemoved(feedId);
     }

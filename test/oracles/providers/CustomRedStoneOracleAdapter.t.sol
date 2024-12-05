@@ -10,13 +10,7 @@ import { IAccessController } from "src/interfaces/security/IAccessController.sol
 import { ISystemRegistry } from "src/interfaces/ISystemRegistry.sol";
 import { Roles } from "src/libs/Roles.sol";
 import {
-    WETH9_ADDRESS,
-    CRV_MAINNET,
-    PXETH_MAINNET,
-    EZETH_MAINNET,
-    WSTETH_MAINNET,
-    RETH_MAINNET,
-    RANDOM
+    CRV_MAINNET, PXETH_MAINNET, EZETH_MAINNET, WSTETH_MAINNET, RETH_MAINNET, RANDOM
 } from "test/utils/Addresses.sol";
 
 address constant TREASURY = 0x8b4334d4812C530574Bd4F2763FcD22dE94A969B;
