@@ -7,33 +7,37 @@ import { CustomRedStoneOracleAdapter } from "src/oracles/providers/CustomRedSton
 import { ICustomSetOracle } from "src/interfaces/oracles/ICustomSetOracle.sol";
 import { ISecurityBase } from "src/interfaces/security/ISecurityBase.sol";
 import { IAccessController } from "src/interfaces/security/IAccessController.sol";
-import { AccessController } from "src/security/AccessController.sol";
-import { SystemRegistry } from "src/SystemRegistry.sol";
+import { ISystemRegistry } from "src/interfaces/ISystemRegistry.sol";
 import { Roles } from "src/libs/Roles.sol";
 import {
-    WETH9_ADDRESS, PXETH_MAINNET, EZETH_MAINNET, WSTETH_MAINNET, RETH_MAINNET, RANDOM
+    WETH9_ADDRESS,
+    CRV_MAINNET,
+    PXETH_MAINNET,
+    EZETH_MAINNET,
+    WSTETH_MAINNET,
+    RETH_MAINNET,
+    RANDOM
 } from "test/utils/Addresses.sol";
 
 address constant TREASURY = 0x8b4334d4812C530574Bd4F2763FcD22dE94A969B;
+address constant MAINNET_SYSTEM_REGISTRY = 0x2218F90A98b0C070676f249EF44834686dAa4285;
 address constant MAINNET_CUSTOM_ORACLE = 0x53ff9D648a8A1cf70c6B60ae26B93047cc24066f;
 address constant MAINNET_ORACLE_EXECUTOR = 0x1b9841A65c6777fdE03Be97C9A9E70C3d5C01E9c;
 
 // solhint-disable func-name-mixedcase
 contract CustomRedStoneOracleAdapterTest is Test {
-    SystemRegistry internal systemRegistry;
-    AccessController internal accessController;
+    ISystemRegistry internal systemRegistry;
+    IAccessController internal accessController;
     CustomRedStoneOracleAdapter internal redstoneAdapter;
     ICustomSetOracle internal customOracle;
     uint8 internal constant DEFAULT_UNIQUE_SIGNERS_THRESHOLD = 3;
 
     function setUp() public {
-        vm.createSelectFork(vm.envString("MAINNET_RPC_URL"), 21_337_530);
+        vm.createSelectFork(vm.envString("MAINNET_RPC_URL"), 21_338_134);
 
         // Setup SystemRegistry
-        systemRegistry = new SystemRegistry(address(1), WETH9_ADDRESS);
-
-        accessController = new AccessController(address(systemRegistry));
-        systemRegistry.setAccessController(address(accessController));
+        systemRegistry = ISystemRegistry(MAINNET_SYSTEM_REGISTRY);
+        accessController = ISystemRegistry(MAINNET_SYSTEM_REGISTRY).accessController();
 
         // Setup oracles
         customOracle = ICustomSetOracle(MAINNET_CUSTOM_ORACLE);
@@ -51,10 +55,12 @@ contract CustomRedStoneOracleAdapterTest is Test {
         );
 
         // Setup roles
+        vm.startPrank(TREASURY);
         accessController.grantRole(Roles.ORACLE_MANAGER, address(this));
         accessController.grantRole(Roles.CUSTOM_ORACLE_EXECUTOR, address(this));
 
         accessController.grantRole(Roles.CUSTOM_ORACLE_EXECUTOR, MAINNET_ORACLE_EXECUTOR);
+        vm.stopPrank();
     }
 
     ///@dev Get the Redstone payload snapshot for a given feedId
@@ -65,10 +71,16 @@ contract CustomRedStoneOracleAdapterTest is Test {
         //solhint-disable max-line-length
         if (feedId == bytes32("pxETH/ETH")) {
             data =
-                hex"70784554482f45544800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005f1d87d019397aeb6f00000002000000119c4a429c7d1ac62eb5ec9bdd30b6d1f19389e4ba74369deb6adcce542cb41207457333d71ea4d5726c204a94e306e8bff5f64d11ec32e0f4bb6e632716c77341b70784554482f45544800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005f1d87d019397aeb6f000000020000001909f90dfccd481e0f6d5e65b84e7c3139b91578deabb9fc380efd6acc8b157663351c362db36c3356afb0419416f36f2242b9f26edb5e25093c643dc6c0989081c70784554482f45544800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005f1d87d019397aeb6f00000002000000143aeec854fbb1d0dc38dc737d97a2e657ae9ef61b37556d3eceb5c138ab9331f6ee21216a686cd2e9d138a38a9fcbd2336364272203e8a5ef9293f24db3846b41c00033137333334313636343335303323302e362e322372656473746f6e652d7072696d6172792d70726f645f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f000048000002ed57011e0000";
-        } else if (feedId == bytes32("multiple")) {
+                hex"70784554482f45544800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005f1d87d0193981dcc700000002000000129f52990cdbd3aa4897087c573632f6f925941b20162bac60d4136a850a7d122323ae981da4abaab8d3dc55e5b5543995fb4547b00175b3056c0ea4bcc3c5cb01b70784554482f45544800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005f1d87d0193981dcc700000002000000121bb6db4386ce633bd72684e2b4f9e1a666e640f18d5906aa37242f801dd916a3cb3e952a12c5adda158a3e3e75beed90abfe0399ac061431c0bf902470b14851b70784554482f45544800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005f1d87d0193981dcc70000000200000019e0164726b5090ee5e827a0e56e9e7c6a7e55e1d2ac1fab9aafd6a870395cfec76dec58ea38ff84ae916b58b44281c8356bef2ecd5f73ef95584102d5279f3cc1c00033137333334323339323430383523302e362e322372656473746f6e652d7072696d6172792d70726f645f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f000048000002ed57011e0000";
+        }
+        if (feedId == bytes32("CRV")) {
             data =
-                hex"657a4554482f45544800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006200299019397aeb6f0000000200000014a23f28d88b683e6ec892fa5f2db7c6a72f977c02617975c227a2bab4a4f3f547f90debc96b8fe92f5b5b3876fbd4ac03c7eab27dc9412b9132823bc8b0e68851c657a4554482f45544800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006200299019397aeb6f000000020000001718e72ba066524bd306a469277ced60ef28fc09d7b132603bc3f97c992d1483c59713974904780f6dd279454d71b090c2a71a3772f1d781ab70549d3b46dfcdc1c657a4554482f45544800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006200299019397aeb6f000000020000001fafb03ff2a463def0ddffca9a124bd3ff8f7f46f94b22b687f14039d3dd8f5d421ba617e557997f8f62e7a29d9e7f63674f417fe07b47b6fe27d186cdd2b505d1b7773744554482f45544800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000711268b019397aeb6f00000002000000178d027aa2cc17ef4659c98fe46f1f62baa7211de33131044f72000972f8089502d95898492505010760c1b157112a56aa838d5996794a31868ddb04f9f349e701b7773744554482f45544800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000711268b019397aeb6f000000020000001cd545978b824fa2131d4b2a7ca4cc2c8b2f1d2b1b94d1bc04eff52584be985f4417c4f7b68d49ce636de352d1b01714d9eb76dff1440df5091688307aed9ef791c7773744554482f45544800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000711268b019397aeb6f0000000200000012e96e125e0fbca8a78c100787a0832c3f507f2d4e7cb5b7fee076cd92d1f6bd20113f6cf752f2592a95e72c2c241e392ab6660b2e670add1011861531fe73b201b724554482f4554480000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006ac60d8019397aeb6f000000020000001cec3fd41e88a0100a7feffb5604d2501c868de354a874291f0be072216e302291169f3c33a8be8d76d62b47f7d6d2eb6b2f52233ce782ce8777eea3257f4b72e1b724554482f4554480000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006ac60d8019397aeb6f000000020000001723de5fbc6213292afb37f3f3b84d2468c370df8537b9449b398902c86d66eee2fba39e4251406214851d8d8ba49020a0e1748963e8843712b49fce430e194d01b724554482f4554480000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006ac60d8019397aeb6f0000000200000014028d38c7959438634acc748a3ee222be173ec17834494e2bdfbf88c42a827eb065b97423eb93f59fdc552a0946efd03fd65aebc82772ac4c0244db4f0ffeef61b00093137333334313636343335333323302e362e322372656473746f6e652d7072696d6172792d70726f645f5f5f5f5f5f5f5f5f5f5f000034000002ed57011e0000";
+                hex"4352560000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000694fb230193981dcc70000000200000012cfc45ad2a36a38b3ed39a18266c0f2f0e2643ce6aeee8603d8a654e29bd234b595da399d0349ff9f5302419f9a8db109c7fb115a156ef0f4889c85405ed87371b4352560000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000694fb230193981dcc70000000200000015798f2db0ef555a1cd4ef44e49d581e82232ab5d0b5f416031b6ffbe272d92d367d1490d24a2e0e5c24c5aa288dccb4c361281beeb8afc008b711ef720f06d5a1b4352560000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000694fb230193981dcc70000000200000015304faba5bd3d655c7df7e31efa1e62f683705f58a3b90d68064048183e177e232d60940c4b013b10d8c6ed24be5a50810c8b1f469258e679cbdec26674a28501c00033137333334323339323431323623302e362e322372656473746f6e652d7072696d6172792d70726f645f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f000048000002ed57011e0000";
+        } else if (feedId == bytes32("multiple")) {
+            // Note: "multiple" is not the actual name of the feedId, just a selector in the tests
+            // It combines multiple tokens in the same payload (ezETH/ETH, rETH/ETH, WSTETH/ETH)
+            data =
+                hex"657a4554482f45544800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006200bd00193981dcc70000000200000011c8805e60a9f6e96cfc4c548842b1a3271ce555c7a2ca647b3645828e75eb8805f2c4fe0e5cf79d56a040ad18f5cfa9d6749b3622b0896a74a0226f7ef568b091b657a4554482f45544800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006200bd00193981dcc7000000020000001d5a439f890de685bcd58ac9fef978cc956b0c9a8869f73f0f3624410aca0d1410d549b7dd987f82fb075de57065c61635a9c199ba6baf3cd389f09cf7be998b61c657a4554482f45544800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006200bd00193981dcc7000000020000001360b441abb077d9ee3e626020370473d4fe0290859004a9c71bc3853048f85d82d63e9a9b0110a584eb610d46a07228dedc0a7f58cc36b175afb311da596a94e1b7773744554482f4554480000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000071125cb0193981dcc700000002000000178c734e9075b680a21ca9a879d360472e6d45157381afc96da31bd1ae64346a5217fdc05218913e5a4b70e83e090c3946151436851b5cf473df3e844023740801b7773744554482f4554480000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000071125cb0193981dcc700000002000000174cc6dc6ef3fab5ca239f30e94467d1980322f9c929c8b954a0b5f17613f8ff50aae2b0c562cb35948a237ab661aa8c665a0ea41cbe756457fa58bba5676849c1b7773744554482f4554480000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000071125cb0193981dcc70000000200000014c9a16ff85379f6608004b6bf4b7623b2812acd647e1de714656c3900c28234a61a193cd43640a3987f5890512ed01b97262903018731cbb76d00cbd2b18012b1c724554482f4554480000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006ac60220193981dcc7000000020000001d6e17cf6b130fe7eb37fe9095abba8b51b4cb5d62a85ca1f01579308cae425a27d8e67a158c495700dbbbdd7df004f7ca956f35c5184105a5899b6316665a7331c724554482f4554480000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006ac60220193981dcc7000000020000001a6059d22efa4ac3bcd3451ec3ded68b1b1724c7cb502d5083912a03f39e1550025cdb7494ea0061242de6cc71fb02d0c80d2884bc858327540d1cba9e58e738e1b724554482f4554480000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006ac60220193981dcc700000002000000180e9d81295797186f592654decc92d15cba4f07f33203f8130d72bf0e1b85d802a7a92970bd5c46d65304ee5e959053a56c5817a0bb93ec9a8e7189ec0aafa851b00093137333334323339323431363223302e362e322372656473746f6e652d7072696d6172792d70726f645f5f5f5f5f5f5f5f5f5f5f000034000002ed57011e0000";
         }
         return data;
     }
@@ -122,14 +134,17 @@ contract SetUniqueSignersThreshold is CustomRedStoneOracleAdapterTest {
     }
 }
 
-contract RegisterFeedIdToAddress is CustomRedStoneOracleAdapterTest {
+contract RegisterFeedId is CustomRedStoneOracleAdapterTest {
     function test_RegistersFeedId() public {
         bytes32 feedId = bytes32("TEST");
         address token = makeAddr("token");
 
-        redstoneAdapter.registerFeedIdToAddress(feedId, token);
+        redstoneAdapter.registerFeedId(feedId, token, true);
 
-        assertEq(redstoneAdapter.feedIdToAddress(feedId), token);
+        (address tokenAddress, bool ethQuoted) = redstoneAdapter.registeredFeedIds(feedId);
+
+        assertEq(tokenAddress, token);
+        assertEq(ethQuoted, true);
     }
 
     function testRegisterFeedIdRevertsIfNoAccess() public {
@@ -138,30 +153,31 @@ contract RegisterFeedIdToAddress is CustomRedStoneOracleAdapterTest {
 
         vm.prank(RANDOM);
         vm.expectRevert(abi.encodeWithSignature("AccessDenied()"));
-        redstoneAdapter.registerFeedIdToAddress(feedId, token);
+        redstoneAdapter.registerFeedId(feedId, token, true);
     }
 }
 
-contract RemoveFeedIdToAddress is CustomRedStoneOracleAdapterTest {
+contract RemoveFeedId is CustomRedStoneOracleAdapterTest {
     function test_RemovesFeedId() public {
         bytes32 feedId = bytes32("TEST");
         address token = makeAddr("token");
 
-        redstoneAdapter.registerFeedIdToAddress(feedId, token);
-        redstoneAdapter.removeFeedIdToAddress(feedId);
+        redstoneAdapter.registerFeedId(feedId, token, true);
+        redstoneAdapter.removeFeedId(feedId);
 
-        assertEq(redstoneAdapter.feedIdToAddress(feedId), address(0));
+        (address tokenAddress,) = redstoneAdapter.registeredFeedIds(feedId);
+        assertEq(tokenAddress, address(0));
     }
 
     function test_RemoveFeedIdRevertsIfNoAccess() public {
         bytes32 feedId = bytes32("TEST");
         address token = makeAddr("token");
 
-        redstoneAdapter.registerFeedIdToAddress(feedId, token);
+        redstoneAdapter.registerFeedId(feedId, token, true);
 
         vm.prank(RANDOM);
         vm.expectRevert(abi.encodeWithSignature("AccessDenied()"));
-        redstoneAdapter.removeFeedIdToAddress(feedId);
+        redstoneAdapter.removeFeedId(feedId);
     }
 }
 
@@ -175,7 +191,7 @@ contract UpdatePriceWithFeedId is CustomRedStoneOracleAdapterTest {
         bytes memory encodedFunction = abi.encodeWithSignature("updatePriceWithFeedId(bytes32[])", feedIds);
         bytes memory encodedFunctionWithRedstonePayload = abi.encodePacked(encodedFunction, redstonePayload);
 
-        redstoneAdapter.registerFeedIdToAddress(feedIds[0], PXETH_MAINNET);
+        redstoneAdapter.registerFeedId(feedIds[0], PXETH_MAINNET, true);
 
         IAccessController mainnetAccessController = ISecurityBase(address(customOracle)).accessController();
         vm.prank(TREASURY);
@@ -209,7 +225,7 @@ contract UpdatePriceWithFeedId is CustomRedStoneOracleAdapterTest {
     function test_UpdatePriceWithFeedIdRevertsIfFeedIdIsNotExisting() public {
         bytes32[] memory feedIds = new bytes32[](1);
         feedIds[0] = bytes32("someRandomFeedIdThatDoesNotExist");
-        redstoneAdapter.registerFeedIdToAddress(feedIds[0], PXETH_MAINNET);
+        redstoneAdapter.registerFeedId(feedIds[0], PXETH_MAINNET, true);
 
         bytes memory redstonePayload = getRedstonePayload(feedIds[0]);
         bytes memory encodedFunction = abi.encodeWithSignature("updatePriceWithFeedId(bytes32[])", feedIds);
@@ -225,10 +241,47 @@ contract UpdatePriceWithFeedId is CustomRedStoneOracleAdapterTest {
         assertEq(success, false);
     }
 
+    function test_UpdatesPriceWithUsdNominatedFeedId() public {
+        bytes32[] memory feedIds = new bytes32[](1);
+        feedIds[0] = bytes32("CRV");
+        redstoneAdapter.registerFeedId(feedIds[0], CRV_MAINNET, false);
+
+        address[] memory tokenAddresses = new address[](1);
+        tokenAddresses[0] = CRV_MAINNET;
+
+        uint256 maxAge = customOracle.maxAge();
+        uint256[] memory maxAges = new uint256[](1);
+        maxAges[0] = maxAge;
+
+        vm.prank(TREASURY);
+        customOracle.registerTokens(tokenAddresses, maxAges);
+
+        bytes memory redstonePayload = getRedstonePayload(feedIds[0]);
+        bytes memory encodedFunction = abi.encodeWithSignature("updatePriceWithFeedId(bytes32[])", feedIds);
+        bytes memory encodedFunctionWithRedstonePayload = abi.encodePacked(encodedFunction, redstonePayload);
+
+        IAccessController mainnetAccessController = ISecurityBase(address(customOracle)).accessController();
+        vm.prank(TREASURY);
+        mainnetAccessController.grantRole(Roles.CUSTOM_ORACLE_EXECUTOR, address(redstoneAdapter));
+
+        (uint192 priceBefore,,) = customOracle.prices(address(CRV_MAINNET));
+
+        vm.prank(MAINNET_ORACLE_EXECUTOR);
+        // solhint-disable-next-line avoid-low-level-calls
+        (bool success,) = address(redstoneAdapter).call(encodedFunctionWithRedstonePayload);
+        assertEq(success, true);
+
+        (uint192 priceAfter,,) = customOracle.prices(address(CRV_MAINNET));
+
+        assertNotEq(priceAfter, priceBefore);
+        // Prices should be quoted in ETH and have 18 decimals despite the feedId being quoted in USD
+        assertEq(priceAfter, 283_801_142_910_443); // 0.000283801142910443 ETH
+    }
+
     function test_UpdatesPriceWithSingleFeedId() public {
         bytes32[] memory feedIds = new bytes32[](1);
         feedIds[0] = bytes32("pxETH/ETH");
-        redstoneAdapter.registerFeedIdToAddress(feedIds[0], PXETH_MAINNET);
+        redstoneAdapter.registerFeedId(feedIds[0], PXETH_MAINNET, true);
 
         bytes memory redstonePayload = getRedstonePayload(feedIds[0]);
         bytes memory encodedFunction = abi.encodeWithSignature("updatePriceWithFeedId(bytes32[])", feedIds);
@@ -277,9 +330,9 @@ contract UpdatePriceWithFeedId is CustomRedStoneOracleAdapterTest {
         bytes memory encodedFunction = abi.encodeWithSignature("updatePriceWithFeedId(bytes32[])", feedIds);
         bytes memory encodedFunctionWithRedstonePayload = abi.encodePacked(encodedFunction, redstonePayload);
 
-        redstoneAdapter.registerFeedIdToAddress(feedIds[0], EZETH_MAINNET);
-        redstoneAdapter.registerFeedIdToAddress(feedIds[1], WSTETH_MAINNET);
-        redstoneAdapter.registerFeedIdToAddress(feedIds[2], RETH_MAINNET);
+        redstoneAdapter.registerFeedId(feedIds[0], EZETH_MAINNET, true);
+        redstoneAdapter.registerFeedId(feedIds[1], WSTETH_MAINNET, true);
+        redstoneAdapter.registerFeedId(feedIds[2], RETH_MAINNET, true);
 
         IAccessController mainnetAccessController = ISecurityBase(address(customOracle)).accessController();
         vm.prank(TREASURY);
@@ -303,8 +356,8 @@ contract UpdatePriceWithFeedId is CustomRedStoneOracleAdapterTest {
         assertNotEq(rEthPriceAfter, rEthPriceBefore);
 
         // Prices should be quoted in ETH and have 18 decimals
-        assertEq(ezEthPriceAfter, 1_027_611_130_000_000_000);
-        assertEq(wstEthPriceAfter, 1_185_644_910_000_000_000);
-        assertEq(rEthPriceAfter, 1_119_602_800_000_000_000);
+        assertEq(ezEthPriceAfter, 1_027_634_720_000_000_000);
+        assertEq(wstEthPriceAfter, 1_185_642_990_000_000_000);
+        assertEq(rEthPriceAfter, 1_119_600_980_000_000_000);
     }
 }

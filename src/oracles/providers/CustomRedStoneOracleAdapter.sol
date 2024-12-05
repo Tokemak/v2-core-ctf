@@ -32,8 +32,13 @@ contract CustomRedStoneOracleAdapter is PrimaryProdDataServiceConsumerBase, Syst
     ICustomSetOracle public immutable customOracle;
     uint8 public uniqueSignersThreshold;
 
-    /// @notice Mapping between a Redstone feedId and token address
-    mapping(bytes32 => address) public feedIdToAddress;
+    struct FeedId {
+        address tokenAddress;
+        bool ethQuoted;
+    }
+
+    /// @notice Mapping between a Redstone feedId and token address and if the price is quoted in ETH
+    mapping(bytes32 => FeedId) public registeredFeedIds;
 
     /// @notice Mapping between an authorized signer address and its index for faster lookup
     mapping(address => uint8) internal signerAddressToIndex;
@@ -78,15 +83,21 @@ contract CustomRedStoneOracleAdapter is PrimaryProdDataServiceConsumerBase, Syst
         uint256[] memory queriedTimestamps = new uint256[](len);
         for (uint256 i = 0; i < len; ++i) {
             // Save token address from the registered mapping
-            address tokenAddress = feedIdToAddress[feedIds[i]];
-            if (tokenAddress == address(0)) {
-                revert TokenNotRegistered(feedIds[i], tokenAddress);
+            FeedId memory feedId = registeredFeedIds[feedIds[i]];
+            if (feedId.tokenAddress == address(0)) {
+                revert TokenNotRegistered(feedIds[i], feedId.tokenAddress);
             }
-            baseTokens[i] = tokenAddress;
+            baseTokens[i] = feedId.tokenAddress;
 
             // Validate the price
             Errors.verifyNotZero(values[i], "baseToken price");
             values[i] = values[i] * 10 ** 10; // Convert to ETH decimals since Redstone uses 8 decimals
+
+            // Convert to ETH if the data feed price is not quoted in ETH
+            if (!feedId.ethQuoted) {
+                uint256 ethInUsd = systemRegistry.rootPriceOracle().getPriceInEth(address(bytes20("ETH_IN_USD")));
+                values[i] = (values[i] * 1e18) / ethInUsd;
+            }
 
             // Set the same timestamp from the Redstone payload for all base tokens
             queriedTimestamps[i] = timestamp / 1000; // adapted to seconds
@@ -111,19 +122,21 @@ contract CustomRedStoneOracleAdapter is PrimaryProdDataServiceConsumerBase, Syst
     /// @notice Registers a mapping between a Redstone feedId and token address
     /// @param feedId The Redstone feedId to register
     /// @param tokenAddress The token address to map to
-    function registerFeedIdToAddress(bytes32 feedId, address tokenAddress) external hasRole(Roles.ORACLE_MANAGER) {
+    function registerFeedId(
+        bytes32 feedId,
+        address tokenAddress,
+        bool ethQuoted
+    ) external hasRole(Roles.ORACLE_MANAGER) {
         Errors.verifyNotZero(feedId, "feedId");
         Errors.verifyNotZero(address(tokenAddress), "tokenAddress");
-        feedIdToAddress[feedId] = tokenAddress;
+        registeredFeedIds[feedId] = FeedId(tokenAddress, ethQuoted);
         emit FeedIdRegistered(feedId, tokenAddress);
     }
 
     /// @notice Removes a mapping between a Redstone feedId and token address
     /// @param feedId The Redstone feedId to remove mapping for
-    function removeFeedIdToAddress(
-        bytes32 feedId
-    ) external hasRole(Roles.ORACLE_MANAGER) {
-        delete feedIdToAddress[feedId];
+    function removeFeedId(bytes32 feedId) external hasRole(Roles.ORACLE_MANAGER) {
+        delete registeredFeedIds[feedId];
         emit FeedIdRemoved(feedId);
     }
 
