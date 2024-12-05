@@ -21,9 +21,6 @@ import { SystemComponent } from "src/SystemComponent.sol";
 import { IERC1271 } from "openzeppelin-contracts/interfaces/IERC1271.sol";
 import { Address } from "openzeppelin-contracts/utils/Address.sol";
 
-// TODO: Remove
-// cspell: disable
-
 abstract contract DestinationVault is
     SecurityBase,
     SystemComponent,
