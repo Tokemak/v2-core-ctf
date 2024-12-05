@@ -127,7 +127,7 @@ contract AutopilotRouter is IAutopilotRouter, AutopilotRouterBase, ReentrancyGua
         uint256 shares,
         uint256 minAmountOut,
         ISwapRouterV2.UserSwapData[] calldata customRoutes
-    ) public returns (uint256 amountOut) {
+    ) public payable returns (uint256 amountOut) {
         ISwapRouterV2 swapRouter = ISwapRouterV2(payable(address(systemRegistry.swapRouter())));
         swapRouter.initTransientSwap(customRoutes);
 

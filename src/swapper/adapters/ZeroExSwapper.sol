@@ -23,23 +23,24 @@ contract ZeroExSwapper {
     function swap(
         ZeroExSwapData memory zeroExSwapData
     ) external {
-        LibAdapter._approve(IERC20(zeroExSwapData.fromToken), zeroExSwapData.approvalTarget, type(uint256).max);
+        address fromToken = zeroExSwapData.fromToken;
+        address approvalTarget = zeroExSwapData.approvalTarget;
+        LibAdapter._approve(IERC20(fromToken), approvalTarget, type(uint256).max);
 
         // slither-disable-start low-level-calls
         // solhint-disable-next-line avoid-low-level-calls
         (bool success,) = zeroExSwapData.swapTarget.call(zeroExSwapData.swapCallData);
         // slither-disable-end low-level-calls
+        LibAdapter._approve(IERC20(fromToken), approvalTarget, 0);
 
         if (!success) {
             revert SwapFailed();
         }
 
+        address toToken = zeroExSwapData.toToken;
         // return funds
-        if (IERC20(zeroExSwapData.toToken).balanceOf(address(this)) > 0) {
-            IERC20(zeroExSwapData.toToken).safeTransfer(
-                zeroExSwapData.tokenRecipient, IERC20(zeroExSwapData.toToken).balanceOf(address(this))
-            );
+        if (IERC20(toToken).balanceOf(address(this)) > 0) {
+            IERC20(toToken).safeTransfer(zeroExSwapData.tokenRecipient, IERC20(toToken).balanceOf(address(this)));
         }
-        LibAdapter._approve(IERC20(zeroExSwapData.fromToken), zeroExSwapData.approvalTarget, 0);
     }
 }

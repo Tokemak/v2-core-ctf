@@ -13,7 +13,7 @@ import { Errors } from "src/utils/Errors.sol";
 contract SwapRouterV2 is ISwapRouterV2, SwapRouter {
     using SafeERC20 for IERC20;
 
-    uint256 private constant _ROUTES = uint256(keccak256(bytes("ROUTES"))) - 1;
+    uint256 private constant _NUM_ROUTES = uint256(keccak256(bytes("_NUM_ROUTES"))) - 1;
     uint256 private constant _CURRENT_SWAP_INDEX = uint256(keccak256(bytes("CURRENT_SWAP_INDEX"))) - 1;
 
     constructor(
@@ -31,17 +31,17 @@ contract SwapRouterV2 is ISwapRouterV2, SwapRouter {
             return _swapForQuote(assetToken, sellAmount, quoteToken, minBuyAmount);
         }
         // if no transient -> use swapRoutes
-        // if transient + empty route -> use swapRputes
+        // if transient + empty route -> use swapRoutes
         // if transient + non-empty route -> use transient
         // if transient + index out of bounds -> revert
 
         // maintain txn index
         uint256 index = _getCurrentSwapIndex();
         _setCurrentSwapIndex(index + 1);
-        ISwapRouterV2.UserSwapData[] memory transientRoutes = _getTransientRoutes();
-        if (index >= transientRoutes.length) revert InvalidParams();
 
-        ISwapRouterV2.UserSwapData memory route = transientRoutes[index];
+        if (index >= _getNumSwapRoutes()) revert InvalidParams();
+
+        ISwapRouterV2.UserSwapData memory route = _getTransientRoutes(index);
         if (route.target == address(0)) {
             return _swapForQuote(assetToken, sellAmount, quoteToken, minBuyAmount);
         } else {
@@ -89,12 +89,27 @@ contract SwapRouterV2 is ISwapRouterV2, SwapRouter {
         ISwapRouterV2.UserSwapData[] memory customRoutes
     ) public onlyAutoPilotRouter {
         if (_transientRoutesAvailable()) revert AccessDenied();
-        TransientStorage.setBytes(abi.encode(customRoutes), _ROUTES);
-        TransientStorage.setBytes(abi.encode(0), _CURRENT_SWAP_INDEX); // probably not needed but
+        TransientStorage.setBytes(abi.encode(0), _CURRENT_SWAP_INDEX);
+
+        uint256 numRoutes = customRoutes.length;
+        TransientStorage.setBytes(abi.encode(numRoutes), _NUM_ROUTES);
+        for (uint256 i = 0; i < customRoutes.length;) {
+            TransientStorage.setBytes(abi.encode(customRoutes[i]), _computeTransientRouteIndex(i));
+            unchecked {
+                ++i;
+            }
+        }
     }
 
     function exitTransientSwap() public onlyAutoPilotRouter {
-        TransientStorage.clearBytes(_ROUTES);
+        uint256 numRoutes = _getNumSwapRoutes();
+        for (uint256 i = 0; i < numRoutes;) {
+            TransientStorage.clearBytes(_computeTransientRouteIndex(i));
+            unchecked {
+                ++i;
+            }
+        }
+        TransientStorage.clearBytes(_NUM_ROUTES);
         TransientStorage.clearBytes(_CURRENT_SWAP_INDEX);
     }
 
@@ -109,13 +124,27 @@ contract SwapRouterV2 is ISwapRouterV2, SwapRouter {
         return abi.decode(indexEncoded, (uint256));
     }
 
-    function _getTransientRoutes() internal view returns (UserSwapData[] memory customRoutes) {
-        bytes memory customRoutesEncoded = TransientStorage.getBytes(_ROUTES);
-        customRoutes = abi.decode(customRoutesEncoded, (UserSwapData[]));
+    function _getNumSwapRoutes() internal view returns (uint256) {
+        bytes memory numRoutesEncoded = TransientStorage.getBytes(_NUM_ROUTES);
+        return abi.decode(numRoutesEncoded, (uint256));
+    }
+
+    function _getTransientRoutes(
+        uint256 index
+    ) internal view returns (UserSwapData memory customRoute) {
+        uint256 routeSlot = _computeTransientRouteIndex(index);
+        bytes memory customRouteEncoded = TransientStorage.getBytes(routeSlot);
+        customRoute = abi.decode(customRouteEncoded, (UserSwapData));
     }
 
     function _transientRoutesAvailable() internal view returns (bool) {
-        return TransientStorage.dataExists(_ROUTES);
+        return TransientStorage.dataExists(_NUM_ROUTES);
+    }
+
+    function _computeTransientRouteIndex(
+        uint256 index
+    ) internal pure returns (uint256) {
+        return uint256(keccak256(abi.encode(_NUM_ROUTES, index)));
     }
 
     modifier onlyAutoPilotRouter() {

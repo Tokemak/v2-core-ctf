@@ -121,7 +121,7 @@ interface IAutopilotRouter is IAutopilotRouterBase {
         uint256 shares,
         uint256 minAmountOut,
         ISwapRouterV2.UserSwapData[] calldata customRoute
-    ) external returns (uint256 amountOut);
+    ) external payable returns (uint256 amountOut);
 
     /**
      * @notice swaps token
