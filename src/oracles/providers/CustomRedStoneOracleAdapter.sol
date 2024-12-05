@@ -86,6 +86,7 @@ contract CustomRedStoneOracleAdapter is PrimaryProdDataServiceConsumerBase, Syst
 
             // Validate the price
             Errors.verifyNotZero(values[i], "baseToken price");
+            values[i] = values[i] * 10 ** 10; // Convert to ETH decimals since Redstone uses 8 decimals
 
             // Set the same timestamp from the Redstone payload for all base tokens
             queriedTimestamps[i] = timestamp / 1000; // adapted to seconds
