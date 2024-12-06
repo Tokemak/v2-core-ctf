@@ -39,7 +39,7 @@ contract SwapRouterV2 is ISwapRouterV2, SwapRouter {
         uint256 index = _getCurrentSwapIndex();
         _setCurrentSwapIndex(index + 1);
 
-        if (index >= _getNumSwapRoutes()) revert InvalidParams();
+        if (index >= _getNumSwapRoutes()) revert Errors.InvalidParams();
 
         ISwapRouterV2.UserSwapData memory route = _getTransientRoutes(index);
         if (route.target == address(0)) {
@@ -58,7 +58,7 @@ contract SwapRouterV2 is ISwapRouterV2, SwapRouter {
         ISwapRouterV2.UserSwapData memory transientRoute
     ) internal returns (uint256) {
         if (transientRoute.fromToken != assetToken || transientRoute.toToken != quoteToken) {
-            revert InvalidConfiguration();
+            revert Errors.InvalidConfiguration();
         }
 
         uint256 balanceDiff = IERC20(quoteToken).balanceOf(address(this));
@@ -71,7 +71,7 @@ contract SwapRouterV2 is ISwapRouterV2, SwapRouter {
         if (!success) revert SwapFailed();
 
         balanceDiff = IERC20(quoteToken).balanceOf(address(this)) - balanceDiff;
-        if (balanceDiff < minBuyAmount) revert MaxSlippageExceeded();
+        if (balanceDiff < minBuyAmount) revert Errors.SlippageExceeded(minBuyAmount, balanceDiff);
 
         IERC20(quoteToken).safeTransfer(msg.sender, balanceDiff);
         emit SwapForQuoteSuccessful(assetToken, sellAmount, quoteToken, minBuyAmount, balanceDiff);
@@ -80,7 +80,7 @@ contract SwapRouterV2 is ISwapRouterV2, SwapRouter {
 
     function _validateSwapParams(address assetToken, uint256 sellAmount, address quoteToken) internal pure {
         if (sellAmount == 0) revert Errors.ZeroAmount();
-        if (assetToken == quoteToken) revert InvalidParams();
+        if (assetToken == quoteToken) revert Errors.InvalidParams();
         Errors.verifyNotZero(assetToken, "assetToken");
         Errors.verifyNotZero(quoteToken, "quoteToken");
     }
@@ -88,7 +88,7 @@ contract SwapRouterV2 is ISwapRouterV2, SwapRouter {
     function initTransientSwap(
         ISwapRouterV2.UserSwapData[] memory customRoutes
     ) public onlyAutoPilotRouter {
-        if (_transientRoutesAvailable()) revert AccessDenied();
+        if (_transientRoutesAvailable()) revert Errors.AccessDenied();
         TransientStorage.setBytes(abi.encode(0), _CURRENT_SWAP_INDEX);
 
         uint256 numRoutes = customRoutes.length;
@@ -148,7 +148,7 @@ contract SwapRouterV2 is ISwapRouterV2, SwapRouter {
     }
 
     modifier onlyAutoPilotRouter() {
-        if (msg.sender != address(systemRegistry.autoPoolRouter())) revert AccessDenied();
+        if (msg.sender != address(systemRegistry.autoPoolRouter())) revert Errors.AccessDenied();
         _;
     }
 }

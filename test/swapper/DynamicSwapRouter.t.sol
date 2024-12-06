@@ -10,6 +10,8 @@ import { ZeroExSwapper } from "src/swapper/adapters/ZeroExSwapper.sol";
 import { SwapRouterV2 } from "src/swapper/SwapRouterV2.sol";
 import { ISystemRegistry } from "src/interfaces/ISystemRegistry.sol";
 import { AutopilotRouter } from "src/vault/AutopilotRouter.sol";
+import { Errors } from "src/utils/Errors.sol";
+import { SWETH_MAINNET, RSWETH_MAINNET } from "test/utils/Addresses.sol";
 
 //anvil -f https://eth-mainnet.g.alchemy.com/v2/M9VWxJElEag_cu-pCMocGJ9jX7l9sWj_
 /// forge test --ffi --mt testDynamicSwapRouter -vvvvv
@@ -126,6 +128,51 @@ contract DynamicSwapRouterTest is BaseTest {
         uint256 balAfterWETH = weth.balanceOf(address(this));
         assertGe(amountOut, 0, "Amount out is 0");
         assertGe(balAfterWETH - balBeforeWETH, amountOut, "Withdrawal amount is incorrect");
+    }
+
+    function testDynamicSwapRouterWithInvalidConfiguration() public {
+        _updateToNewSwapRouter();
+
+        autoPilotRouter = _updateToNewAutopilotRouter();
+
+        ZeroExSwapper zeroExSwapperDummy = new ZeroExSwapper();
+
+        //zeroExSwapper needs a hard coded address to generate routes payload from npm cli
+        //abiCoder packed encoding for route generation needs a proper checksummed address for zerosxwapper
+        address zeroExSwapperAddress = address(0xD6BbDE9174b1CdAa358d2Cf4D57D1a9F7178FBfF);
+
+        bytes memory byteCode = address(zeroExSwapperDummy).code;
+
+        vm.etch(zeroExSwapperAddress, byteCode);
+
+        //ZeroExSwapper zeroExSwapper = ZeroExSwapper(zeroExSwapperAddress);
+        address tokeMak = 0x8b4334d4812C530574Bd4F2763FcD22dE94A969B;
+
+        //bytes memory packedRoutes = _runffi(address(tokeMak), address(zeroExSwapperAddress));
+
+        bytes[] memory unpackedRoutes = abi.decode(packedRoutes, (bytes[]));
+
+        ISwapRouterV2.UserSwapData[] memory swapRoutes = new ISwapRouterV2.UserSwapData[](unpackedRoutes.length);
+
+        for (uint256 i = 0; i < swapRoutes.length; i++) {
+            swapRoutes[i] = abi.decode(unpackedRoutes[i], (ISwapRouterV2.UserSwapData));
+
+            //set some invaalid values for from and to Tokens
+            swapRoutes[i].fromToken = SWETH_MAINNET;
+            swapRoutes[i].toToken = RSWETH_MAINNET;
+        }
+
+        // Amount needs to match --sell-amount in ffi call
+        uint256 withdrawAmount = 500 * 10 ** 18;
+
+        vm.startPrank(tokeMak);
+
+        autopool.approve(address(autoPilotRouter), withdrawAmount);
+
+        vm.expectRevert(Errors.InvalidConfiguration.selector);
+        autoPilotRouter.redeemWithRoutes(autopool, address(this), withdrawAmount, 0, swapRoutes);
+
+        vm.stopPrank();
     }
 
     function _updateToNewSwapRouter() internal returns (ISwapRouterV2) {

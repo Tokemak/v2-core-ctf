@@ -5,11 +5,6 @@ pragma solidity ^0.8.24;
 import { ISwapRouter } from "src/interfaces/swapper/ISwapRouter.sol";
 
 interface ISwapRouterV2 is ISwapRouter {
-    error InvalidParams();
-    error ZeroAddress(string paramName);
-    error InvalidConfiguration();
-    error AccessDenied();
-
     struct UserSwapData {
         address fromToken;
         address toToken;
