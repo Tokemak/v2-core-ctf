@@ -70,6 +70,7 @@ library AerodromeAdapter {
         if (actualAmounts[0] < params.amounts[0]) revert LibAdapter.InvalidBalanceChange();
         if (actualAmounts[1] < params.amounts[1]) revert LibAdapter.InvalidBalanceChange();
 
+        // slither-disable-next-line reentrancy-events
         emit WithdrawLiquidity(
             [actualAmounts[0], actualAmounts[1]],
             [params.tokens[0], params.tokens[1]],
