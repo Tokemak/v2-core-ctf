@@ -55,6 +55,14 @@ contract IncentiveCalculatorUpdateDestinationVaultExtensionTest is Test {
         );
     }
 
+    function test_RevertIf_NoDelegatecall() public {
+        bytes memory data = _generateData(0, address(1), address(1));
+
+        // Call directly instead of through dv.  Dv uses delegatecall
+        vm.expectRevert(Errors.NotRegistered.selector);
+        extension.execute(data);
+    }
+
     function test_RevertIf_NewCalculator_Zero() public {
         bytes memory data = _generateData(SLOT, address(dv.getStats()), address(0));
 

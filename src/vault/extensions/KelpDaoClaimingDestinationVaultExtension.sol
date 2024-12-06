@@ -17,7 +17,7 @@ contract KelpDaoClaimingDestinationVaultExtension is BaseClaimingDestinationVaul
 
     /// @param account Account that can claim rewards
     /// @param cumulativeAmount Cumulative amount of rewards for account. Used in Merkle calculations
-    /// @param expectedClaimAmount The amount expected to be claimed on this claim
+    /// @param expectedClaimAmount The amount expected to be claimed
     /// @param index The index of the claim
     /// @param merkleProof Merkle proof used in verification of claim
     struct KelpDaoClaimParams {
