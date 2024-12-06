@@ -38,6 +38,7 @@ contract IncentiveCalculatorUpdateDestinationVaultExtension is BaseDestinationVa
     /// @inheritdoc IDestinationVaultExtension
     /// @dev Use evm.storage and the address of the DV you are looking to replace the calculator for to get the slot
     /// @dev oldCalc can be retrieved using DestinationVault.getStats()
+    // slither-disable-start assembly
     function execute(
         bytes memory data
     ) external override onlyDestinationVault {
@@ -51,6 +52,7 @@ contract IncentiveCalculatorUpdateDestinationVaultExtension is BaseDestinationVa
 
         bool set = false;
         address slotVal;
+
         assembly {
             slotVal := sload(slot)
 
@@ -66,4 +68,5 @@ contract IncentiveCalculatorUpdateDestinationVaultExtension is BaseDestinationVa
 
         emit CalculatorUpdateExtensionExecuted(newCalc, oldCalc);
     }
+    // slither-disable-end assembly
 }
