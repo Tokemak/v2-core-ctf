@@ -66,6 +66,12 @@ abstract contract BaseSetCalculator is SystemComponent, Initializable, IStatsCal
 
     function initialize(bytes32[] calldata, bytes memory initData) external virtual initializer {
         InitData memory decodedInitData = abi.decode(initData, (InitData));
+
+        Errors.verifyNotZero(decodedInitData.addressId, "addressId");
+        Errors.verifyNotZero(decodedInitData.cacheStore, "cacheStore");
+        Errors.verifyNotZero(decodedInitData.aprId, "aprId");
+        Errors.verifyNotZero(bytes(decodedInitData.calcType).length, "calcType");
+
         getAddressId = decodedInitData.addressId;
         _baseCalculators = decodedInitData.baseCalculators;
         cacheStore = StatsTransientCacheStore(decodedInitData.cacheStore);

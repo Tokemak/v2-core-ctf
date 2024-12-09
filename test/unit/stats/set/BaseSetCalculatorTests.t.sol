@@ -51,6 +51,36 @@ abstract contract BaseSetCalculatorTests is Test, SystemRegistryMocks, AccessCon
 }
 
 contract Initialize is BaseSetCalculatorTests {
+    function test_RevertIf_ZeroPassedForRequiredParams() external {
+        BaseSetCalculator.InitData memory initData = getDefaultInitData();
+        initData.addressId = address(0);
+
+        vm.expectRevert(abi.encodeWithSelector(Errors.ZeroAddress.selector, "addressId"));
+        calculator.initialize(new bytes32[](0), abi.encode(initData));
+
+        initData = getDefaultInitData();
+        initData.cacheStore = address(0);
+
+        vm.expectRevert(abi.encodeWithSelector(Errors.ZeroAddress.selector, "cacheStore"));
+        calculator.initialize(new bytes32[](0), abi.encode(initData));
+
+        initData = getDefaultInitData();
+        initData.aprId = "";
+
+        vm.expectRevert(abi.encodeWithSelector(Errors.InvalidParam.selector, "aprId"));
+        calculator.initialize(new bytes32[](0), abi.encode(initData));
+
+        initData = getDefaultInitData();
+        initData.calcType = "";
+
+        vm.expectRevert(abi.encodeWithSelector(Errors.InvalidParam.selector, "calcType"));
+        calculator.initialize(new bytes32[](0), abi.encode(initData));
+
+        initData = getDefaultInitData();
+        _mockSystemComponent(systemRegistry, initData.cacheStore);
+        calculator.initialize(new bytes32[](0), abi.encode(initData));
+    }
+
     function test_SavesInitializationData() external {
         BaseSetCalculator.InitData memory initData = getDefaultInitData();
         _mockSystemComponent(systemRegistry, initData.cacheStore);
