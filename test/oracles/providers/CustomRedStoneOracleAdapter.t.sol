@@ -5,7 +5,6 @@ import { Test } from "forge-std/Test.sol";
 
 import { CustomRedStoneOracleAdapter } from "src/oracles/providers/CustomRedStoneOracleAdapter.sol";
 import { ICustomSetOracle } from "src/interfaces/oracles/ICustomSetOracle.sol";
-import { ISecurityBase } from "src/interfaces/security/ISecurityBase.sol";
 import { IAccessController } from "src/interfaces/security/IAccessController.sol";
 import { ISystemRegistry } from "src/interfaces/ISystemRegistry.sol";
 import { Roles } from "src/libs/Roles.sol";
@@ -59,9 +58,7 @@ contract CustomRedStoneOracleAdapterTest is Test {
 
     ///@dev Get the Redstone payload snapshot for a given feedId
     ///@return data The real Redstone payload from their API
-    function getRedstonePayload(
-        bytes32 feedId
-    ) internal pure returns (bytes memory data) {
+    function getRedstonePayload(bytes32 feedId) internal pure returns (bytes memory data) {
         //solhint-disable max-line-length
         if (feedId == bytes32("pxETH/ETH")) {
             data =
@@ -187,9 +184,8 @@ contract UpdatePriceWithFeedId is CustomRedStoneOracleAdapterTest {
 
         redstoneAdapter.registerFeedId(feedIds[0], PXETH_MAINNET, true);
 
-        IAccessController mainnetAccessController = ISecurityBase(address(customOracle)).accessController();
         vm.prank(TREASURY);
-        mainnetAccessController.grantRole(Roles.CUSTOM_ORACLE_EXECUTOR, address(redstoneAdapter));
+        accessController.grantRole(Roles.CUSTOM_ORACLE_EXECUTOR, address(redstoneAdapter));
 
         vm.prank(RANDOM);
         // solhint-disable-next-line avoid-low-level-calls
@@ -206,9 +202,8 @@ contract UpdatePriceWithFeedId is CustomRedStoneOracleAdapterTest {
         bytes memory encodedFunction = abi.encodeWithSignature("updatePriceWithFeedId(bytes32[])", feedIds);
         bytes memory encodedFunctionWithRedstonePayload = abi.encodePacked(encodedFunction, redstonePayload);
 
-        IAccessController mainnetAccessController = ISecurityBase(address(customOracle)).accessController();
         vm.prank(TREASURY);
-        mainnetAccessController.grantRole(Roles.CUSTOM_ORACLE_EXECUTOR, address(redstoneAdapter));
+        accessController.grantRole(Roles.CUSTOM_ORACLE_EXECUTOR, address(redstoneAdapter));
 
         vm.prank(MAINNET_ORACLE_EXECUTOR);
         // solhint-disable-next-line avoid-low-level-calls
@@ -225,9 +220,8 @@ contract UpdatePriceWithFeedId is CustomRedStoneOracleAdapterTest {
         bytes memory encodedFunction = abi.encodeWithSignature("updatePriceWithFeedId(bytes32[])", feedIds);
         bytes memory encodedFunctionWithRedstonePayload = abi.encodePacked(encodedFunction, redstonePayload);
 
-        IAccessController mainnetAccessController = ISecurityBase(address(customOracle)).accessController();
         vm.prank(TREASURY);
-        mainnetAccessController.grantRole(Roles.CUSTOM_ORACLE_EXECUTOR, address(redstoneAdapter));
+        accessController.grantRole(Roles.CUSTOM_ORACLE_EXECUTOR, address(redstoneAdapter));
 
         vm.prank(MAINNET_ORACLE_EXECUTOR);
         // solhint-disable-next-line avoid-low-level-calls
@@ -254,9 +248,8 @@ contract UpdatePriceWithFeedId is CustomRedStoneOracleAdapterTest {
         bytes memory encodedFunction = abi.encodeWithSignature("updatePriceWithFeedId(bytes32[])", feedIds);
         bytes memory encodedFunctionWithRedstonePayload = abi.encodePacked(encodedFunction, redstonePayload);
 
-        IAccessController mainnetAccessController = ISecurityBase(address(customOracle)).accessController();
         vm.prank(TREASURY);
-        mainnetAccessController.grantRole(Roles.CUSTOM_ORACLE_EXECUTOR, address(redstoneAdapter));
+        accessController.grantRole(Roles.CUSTOM_ORACLE_EXECUTOR, address(redstoneAdapter));
 
         (uint192 priceBefore,,) = customOracle.prices(address(CRV_MAINNET));
 
@@ -281,9 +274,8 @@ contract UpdatePriceWithFeedId is CustomRedStoneOracleAdapterTest {
         bytes memory encodedFunction = abi.encodeWithSignature("updatePriceWithFeedId(bytes32[])", feedIds);
         bytes memory encodedFunctionWithRedstonePayload = abi.encodePacked(encodedFunction, redstonePayload);
 
-        IAccessController mainnetAccessController = ISecurityBase(address(customOracle)).accessController();
         vm.prank(TREASURY);
-        mainnetAccessController.grantRole(Roles.CUSTOM_ORACLE_EXECUTOR, address(redstoneAdapter));
+        accessController.grantRole(Roles.CUSTOM_ORACLE_EXECUTOR, address(redstoneAdapter));
 
         (uint192 priceBefore,,) = customOracle.prices(address(PXETH_MAINNET));
 
@@ -328,9 +320,8 @@ contract UpdatePriceWithFeedId is CustomRedStoneOracleAdapterTest {
         redstoneAdapter.registerFeedId(feedIds[1], WSTETH_MAINNET, true);
         redstoneAdapter.registerFeedId(feedIds[2], RETH_MAINNET, true);
 
-        IAccessController mainnetAccessController = ISecurityBase(address(customOracle)).accessController();
         vm.prank(TREASURY);
-        mainnetAccessController.grantRole(Roles.CUSTOM_ORACLE_EXECUTOR, address(redstoneAdapter));
+        accessController.grantRole(Roles.CUSTOM_ORACLE_EXECUTOR, address(redstoneAdapter));
 
         (uint192 ezEthPriceBefore,,) = customOracle.prices(EZETH_MAINNET);
         (uint192 wstEthPriceBefore,,) = customOracle.prices(WSTETH_MAINNET);
