@@ -25,7 +25,7 @@ import { Roles } from "src/libs/Roles.sol";
  * ref: https://docs.redstone.finance/docs/get-started/models/redstone-pull/#manual-payload
  */
 contract CustomRedStoneOracleAdapter is PrimaryProdDataServiceConsumerBase, SystemComponent, SecurityBase {
-    event FeedIdRegistered(bytes32 indexed feedId, address indexed tokenAddress);
+    event FeedIdRegistered(bytes32 indexed feedId, address indexed tokenAddress, bool ethQuoted, uint256 feedDecimals);
     event FeedIdRemoved(bytes32 indexed feedId);
 
     error TokenNotRegistered(bytes32 feedId, address tokenAddress);
@@ -36,6 +36,7 @@ contract CustomRedStoneOracleAdapter is PrimaryProdDataServiceConsumerBase, Syst
     struct FeedId {
         address tokenAddress;
         bool ethQuoted;
+        uint256 feedDecimals;
     }
 
     /// @notice Mapping between a Redstone feedId and token address and if the price is quoted in ETH
@@ -99,7 +100,14 @@ contract CustomRedStoneOracleAdapter is PrimaryProdDataServiceConsumerBase, Syst
 
             // Validate the price
             Errors.verifyNotZero(values[i], "baseToken price");
-            values[i] = values[i] * 10 ** 10; // Convert to ETH decimals since Redstone uses 8 decimals
+
+            // Adjust the price from the feed decimals to 18 decimals
+            uint256 feedDecimals = feedId.feedDecimals;
+            if (feedDecimals < 18) {
+                values[i] = values[i] * 10 ** (18 - feedDecimals);
+            } else if (feedDecimals > 18) {
+                values[i] = values[i] / 10 ** (feedDecimals - 18);
+            }
 
             // Convert to ETH if the data feed price is not quoted in ETH
             if (!feedId.ethQuoted) {
@@ -133,12 +141,13 @@ contract CustomRedStoneOracleAdapter is PrimaryProdDataServiceConsumerBase, Syst
     function registerFeedId(
         bytes32 feedId,
         address tokenAddress,
-        bool ethQuoted
+        bool ethQuoted,
+        uint256 feedDecimals
     ) external hasRole(Roles.ORACLE_MANAGER) {
         Errors.verifyNotZero(feedId, "feedId");
         Errors.verifyNotZero(address(tokenAddress), "tokenAddress");
-        registeredFeedIds[feedId] = FeedId(tokenAddress, ethQuoted);
-        emit FeedIdRegistered(feedId, tokenAddress);
+        registeredFeedIds[feedId] = FeedId(tokenAddress, ethQuoted, feedDecimals);
+        emit FeedIdRegistered(feedId, tokenAddress, ethQuoted, feedDecimals);
     }
 
     /// @notice Removes a mapping between a Redstone feedId and token address

@@ -58,7 +58,9 @@ contract CustomRedStoneOracleAdapterTest is Test {
 
     ///@dev Get the Redstone payload snapshot for a given feedId
     ///@return data The real Redstone payload from their API
-    function getRedstonePayload(bytes32 feedId) internal pure returns (bytes memory data) {
+    function getRedstonePayload(
+        bytes32 feedId
+    ) internal pure returns (bytes memory data) {
         //solhint-disable max-line-length
         if (feedId == bytes32("pxETH/ETH")) {
             data =
@@ -130,12 +132,13 @@ contract RegisterFeedId is CustomRedStoneOracleAdapterTest {
         bytes32 feedId = bytes32("TEST");
         address token = makeAddr("token");
 
-        redstoneAdapter.registerFeedId(feedId, token, true);
+        redstoneAdapter.registerFeedId(feedId, token, true, 8);
 
-        (address tokenAddress, bool ethQuoted) = redstoneAdapter.registeredFeedIds(feedId);
+        (address tokenAddress, bool ethQuoted, uint256 feedDecimals) = redstoneAdapter.registeredFeedIds(feedId);
 
         assertEq(tokenAddress, token);
         assertEq(ethQuoted, true);
+        assertEq(feedDecimals, 8);
     }
 
     function testRegisterFeedIdRevertsIfNoAccess() public {
@@ -144,7 +147,7 @@ contract RegisterFeedId is CustomRedStoneOracleAdapterTest {
 
         vm.prank(RANDOM);
         vm.expectRevert(abi.encodeWithSignature("AccessDenied()"));
-        redstoneAdapter.registerFeedId(feedId, token, true);
+        redstoneAdapter.registerFeedId(feedId, token, true, 8);
     }
 }
 
@@ -153,10 +156,10 @@ contract RemoveFeedId is CustomRedStoneOracleAdapterTest {
         bytes32 feedId = bytes32("TEST");
         address token = makeAddr("token");
 
-        redstoneAdapter.registerFeedId(feedId, token, true);
+        redstoneAdapter.registerFeedId(feedId, token, true, 8);
         redstoneAdapter.removeFeedId(feedId);
 
-        (address tokenAddress,) = redstoneAdapter.registeredFeedIds(feedId);
+        (address tokenAddress,,) = redstoneAdapter.registeredFeedIds(feedId);
         assertEq(tokenAddress, address(0));
     }
 
@@ -164,7 +167,7 @@ contract RemoveFeedId is CustomRedStoneOracleAdapterTest {
         bytes32 feedId = bytes32("TEST");
         address token = makeAddr("token");
 
-        redstoneAdapter.registerFeedId(feedId, token, true);
+        redstoneAdapter.registerFeedId(feedId, token, true, 8);
 
         vm.prank(RANDOM);
         vm.expectRevert(abi.encodeWithSignature("AccessDenied()"));
@@ -182,7 +185,7 @@ contract UpdatePriceWithFeedId is CustomRedStoneOracleAdapterTest {
         bytes memory encodedFunction = abi.encodeWithSignature("updatePriceWithFeedId(bytes32[])", feedIds);
         bytes memory encodedFunctionWithRedstonePayload = abi.encodePacked(encodedFunction, redstonePayload);
 
-        redstoneAdapter.registerFeedId(feedIds[0], PXETH_MAINNET, true);
+        redstoneAdapter.registerFeedId(feedIds[0], PXETH_MAINNET, true, 8);
 
         vm.prank(TREASURY);
         accessController.grantRole(Roles.CUSTOM_ORACLE_EXECUTOR, address(redstoneAdapter));
@@ -214,7 +217,7 @@ contract UpdatePriceWithFeedId is CustomRedStoneOracleAdapterTest {
     function test_UpdatePriceWithFeedIdRevertsIfFeedIdIsNotExisting() public {
         bytes32[] memory feedIds = new bytes32[](1);
         feedIds[0] = bytes32("someRandomFeedIdThatDoesNotExist");
-        redstoneAdapter.registerFeedId(feedIds[0], PXETH_MAINNET, true);
+        redstoneAdapter.registerFeedId(feedIds[0], PXETH_MAINNET, true, 8);
 
         bytes memory redstonePayload = getRedstonePayload(feedIds[0]);
         bytes memory encodedFunction = abi.encodeWithSignature("updatePriceWithFeedId(bytes32[])", feedIds);
@@ -232,7 +235,7 @@ contract UpdatePriceWithFeedId is CustomRedStoneOracleAdapterTest {
     function test_UpdatesPriceWithUsdNominatedFeedId() public {
         bytes32[] memory feedIds = new bytes32[](1);
         feedIds[0] = bytes32("CRV");
-        redstoneAdapter.registerFeedId(feedIds[0], CRV_MAINNET, false);
+        redstoneAdapter.registerFeedId(feedIds[0], CRV_MAINNET, false, 8);
 
         address[] memory tokenAddresses = new address[](1);
         tokenAddresses[0] = CRV_MAINNET;
@@ -268,7 +271,7 @@ contract UpdatePriceWithFeedId is CustomRedStoneOracleAdapterTest {
     function test_UpdatesPriceWithSingleFeedId() public {
         bytes32[] memory feedIds = new bytes32[](1);
         feedIds[0] = bytes32("pxETH/ETH");
-        redstoneAdapter.registerFeedId(feedIds[0], PXETH_MAINNET, true);
+        redstoneAdapter.registerFeedId(feedIds[0], PXETH_MAINNET, true, 8);
 
         bytes memory redstonePayload = getRedstonePayload(feedIds[0]);
         bytes memory encodedFunction = abi.encodeWithSignature("updatePriceWithFeedId(bytes32[])", feedIds);
@@ -316,9 +319,9 @@ contract UpdatePriceWithFeedId is CustomRedStoneOracleAdapterTest {
         bytes memory encodedFunction = abi.encodeWithSignature("updatePriceWithFeedId(bytes32[])", feedIds);
         bytes memory encodedFunctionWithRedstonePayload = abi.encodePacked(encodedFunction, redstonePayload);
 
-        redstoneAdapter.registerFeedId(feedIds[0], EZETH_MAINNET, true);
-        redstoneAdapter.registerFeedId(feedIds[1], WSTETH_MAINNET, true);
-        redstoneAdapter.registerFeedId(feedIds[2], RETH_MAINNET, true);
+        redstoneAdapter.registerFeedId(feedIds[0], EZETH_MAINNET, true, 8);
+        redstoneAdapter.registerFeedId(feedIds[1], WSTETH_MAINNET, true, 8);
+        redstoneAdapter.registerFeedId(feedIds[2], RETH_MAINNET, true, 8);
 
         vm.prank(TREASURY);
         accessController.grantRole(Roles.CUSTOM_ORACLE_EXECUTOR, address(redstoneAdapter));
