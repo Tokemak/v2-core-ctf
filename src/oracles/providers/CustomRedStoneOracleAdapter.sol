@@ -36,7 +36,7 @@ contract CustomRedStoneOracleAdapter is PrimaryProdDataServiceConsumerBase, Syst
     struct FeedId {
         address tokenAddress;
         bool ethQuoted;
-        uint256 feedDecimals;
+        uint8 feedDecimals;
     }
 
     /// @notice Mapping between a Redstone feedId and token address and if the price is quoted in ETH
@@ -102,7 +102,7 @@ contract CustomRedStoneOracleAdapter is PrimaryProdDataServiceConsumerBase, Syst
             Errors.verifyNotZero(values[i], "baseToken price");
 
             // Adjust the price from the feed decimals to 18 decimals
-            uint256 feedDecimals = feedId.feedDecimals;
+            uint8 feedDecimals = feedId.feedDecimals;
             if (feedDecimals < 18) {
                 values[i] = values[i] * 10 ** (18 - feedDecimals);
             } else if (feedDecimals > 18) {
@@ -142,7 +142,7 @@ contract CustomRedStoneOracleAdapter is PrimaryProdDataServiceConsumerBase, Syst
         bytes32 feedId,
         address tokenAddress,
         bool ethQuoted,
-        uint256 feedDecimals
+        uint8 feedDecimals
     ) external hasRole(Roles.ORACLE_MANAGER) {
         Errors.verifyNotZero(feedId, "feedId");
         Errors.verifyNotZero(address(tokenAddress), "tokenAddress");
