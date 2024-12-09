@@ -7,6 +7,7 @@ import {
     IDestinationVaultExtension
 } from "src/vault/extensions/base/BaseDestinationVaultExtension.sol";
 
+import { IDestinationVault } from "src/interfaces/vault/IDestinationVault.sol";
 import { ISystemRegistry } from "src/interfaces/ISystemRegistry.sol";
 
 import { Errors } from "src/utils/Errors.sol";
@@ -16,8 +17,8 @@ import { Errors } from "src/utils/Errors.sol";
 /// @title An extension to replace _incentiveCalculator on a destination vault
 /// @dev This contract can only be accessed in a delegatecall context
 contract IncentiveCalculatorUpdateDestinationVaultExtension is BaseDestinationVaultExtension {
-    /// @notice Thrown when a calculator is not update
-    error IncentiveCalculatorNotSet();
+    /// @notice Thrown when old and new calculator addresses match
+    error CalculatorsMatch();
 
     /// @notice Emitted when an extension is updated
     event CalculatorUpdateExtensionExecuted(address newCalc, address oldCalc);
@@ -37,8 +38,6 @@ contract IncentiveCalculatorUpdateDestinationVaultExtension is BaseDestinationVa
 
     /// @inheritdoc IDestinationVaultExtension
     /// @dev Use evm.storage and the address of the DV you are looking to replace the calculator for to get the slot
-    /// @dev oldCalc can be retrieved using DestinationVault.getStats()
-    // slither-disable-start assembly
     function execute(
         bytes memory data
     ) external override onlyDestinationVault {
@@ -47,26 +46,20 @@ contract IncentiveCalculatorUpdateDestinationVaultExtension is BaseDestinationVa
         address oldCalc = params.oldCalc;
         address newCalc = params.newCalc;
 
-        // Slot can technically be 0, if newCalc is not zero by default oldCalc by default when zero on check below
         Errors.verifyNotZero(newCalc, "newCalc");
+        if (oldCalc == newCalc) revert CalculatorsMatch();
+        if (address(IDestinationVault(address(this)).getStats()) != oldCalc) revert Errors.InvalidConfiguration();
 
-        bool set = false;
         address slotVal;
-
+        // slither-disable-next-line assembly
         assembly {
             slotVal := sload(slot)
 
-            if eq(slotVal, oldCalc) {
-                sstore(slot, newCalc)
-                set := true
-            }
+            if eq(slotVal, oldCalc) { sstore(slot, newCalc) }
         }
 
-        if (!set) {
-            revert IncentiveCalculatorNotSet();
-        }
+        if (address(IDestinationVault(address(this)).getStats()) != newCalc) revert Errors.InvalidConfiguration();
 
         emit CalculatorUpdateExtensionExecuted(newCalc, oldCalc);
     }
-    // slither-disable-end assembly
 }

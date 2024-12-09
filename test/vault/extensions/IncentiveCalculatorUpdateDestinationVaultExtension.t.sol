@@ -63,25 +63,63 @@ contract IncentiveCalculatorUpdateDestinationVaultExtensionTest is Test {
         extension.execute(data);
     }
 
-    function test_RevertIf_NewCalculator_Zero() public {
-        bytes memory data = _generateData(SLOT, address(dv.getStats()), address(0));
+    function test_EnsureCalcsCannotBeZero() public {
+        address newCalc = makeAddr("newCalc");
 
+        // Test old is zero
+        bytes memory data = _generateData(10, address(0), newCalc);
+
+        // Reverts when oldCalc != calc registered to DV
+        vm.expectRevert(Errors.InvalidConfiguration.selector);
+        dv.executeExtension(data);
+
+        // Test new is zero
+        data = _generateData(10, address(dv.getStats()), address(0));
+
+        vm.expectRevert(abi.encodeWithSelector(Errors.ZeroAddress.selector, "newCalc"));
+        dv.executeExtension(data);
+
+        // Test both are zero
+        data = _generateData(10, address(0), address(0));
+
+        // Will still be caught by zero address check for new calculator
         vm.expectRevert(abi.encodeWithSelector(Errors.ZeroAddress.selector, "newCalc"));
         dv.executeExtension(data);
     }
 
-    function test_RevertIf_OldCalculator_Zero() public {
-        bytes memory data = _generateData(SLOT, address(0), makeAddr("newCalc"));
+    function test_RevertIf_CalcsMatch() public {
+        bytes memory data = _generateData(10, address(1), address(1));
 
-        vm.expectRevert(IncentiveCalculatorUpdateDestinationVaultExtension.IncentiveCalculatorNotSet.selector);
+        vm.expectRevert(IncentiveCalculatorUpdateDestinationVaultExtension.CalculatorsMatch.selector);
         dv.executeExtension(data);
     }
 
-    function test_RevertIf_SlotNotUpdated() public {
-        // Data doesn't matter for this one, just want it to fail
-        bytes memory data = _generateData(0, address(1), address(1));
+    function test_RevertIf_getStatsCallBeforeUpdate_DoesNotEqual_OldCalc() public {
+        // Dv registered calc will be 0x8CCCdB904b79F22E1d7f2BFa0638fB6F8b3e6A1C
+        bytes memory data = _generateData(10, address(1), makeAddr("newCalc"));
 
-        vm.expectRevert(IncentiveCalculatorUpdateDestinationVaultExtension.IncentiveCalculatorNotSet.selector);
+        vm.expectRevert(Errors.InvalidConfiguration.selector);
+        dv.executeExtension(data);
+    }
+
+    function test_RevertIf_getStatsCallAfterUpdate_DoesNotEqual_NewCalc() public {
+        bytes memory data = _generateData(10, address(dv.getStats()), makeAddr("newCalc"));
+
+        // Have to mock call for this one
+        vm.mockCall(address(dv), abi.encodeWithSignature("getStats()"), abi.encode(address(1)));
+
+        vm.expectRevert(Errors.InvalidConfiguration.selector);
+        dv.executeExtension(data);
+    }
+
+    // Will revert in same fashion as above
+    function test_RevertIf_SlotIncorrect() public {
+        // Because slot is incorrect, slot val will not load from storage correctly and will force a revert when
+        // checking
+        // dv.getStats() vs newCalc
+        bytes memory data = _generateData(1, address(dv.getStats()), makeAddr("newCalc"));
+
+        vm.expectRevert(Errors.InvalidConfiguration.selector);
         dv.executeExtension(data);
     }
 
