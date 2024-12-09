@@ -93,7 +93,7 @@ contract SwapRouterV2 is ISwapRouterV2, SwapRouter {
 
         uint256 numRoutes = customRoutes.length;
         TransientStorage.setBytes(abi.encode(numRoutes), _NUM_ROUTES);
-        for (uint256 i = 0; i < customRoutes.length;) {
+        for (uint256 i = 0; i < numRoutes;) {
             TransientStorage.setBytes(abi.encode(customRoutes[i]), _computeTransientRouteIndex(i));
             unchecked {
                 ++i;

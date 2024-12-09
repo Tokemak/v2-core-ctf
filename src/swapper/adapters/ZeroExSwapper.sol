@@ -39,8 +39,9 @@ contract ZeroExSwapper {
 
         address toToken = zeroExSwapData.toToken;
         // return funds
-        if (IERC20(toToken).balanceOf(address(this)) > 0) {
-            IERC20(toToken).safeTransfer(zeroExSwapData.tokenRecipient, IERC20(toToken).balanceOf(address(this)));
+        uint256 balance = IERC20(toToken).balanceOf(address(this));
+        if (balance > 0) {
+            IERC20(toToken).safeTransfer(zeroExSwapData.tokenRecipient, balance);
         }
     }
 }
