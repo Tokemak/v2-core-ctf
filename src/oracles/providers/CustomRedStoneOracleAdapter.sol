@@ -30,6 +30,9 @@ contract CustomRedStoneOracleAdapter is PrimaryProdDataServiceConsumerBase, Syst
 
     error TokenNotRegistered(bytes32 feedId, address tokenAddress);
 
+    /// @dev Constant referenced from BaseOracleDenominations contract
+    address public constant ETH_IN_USD = address(bytes20("ETH_IN_USD"));
+
     ICustomSetOracle public immutable customOracle;
     uint8 public uniqueSignersThreshold;
 
@@ -111,7 +114,7 @@ contract CustomRedStoneOracleAdapter is PrimaryProdDataServiceConsumerBase, Syst
 
             // Convert to ETH if the data feed price is not quoted in ETH
             if (!feedId.ethQuoted) {
-                uint256 ethInUsd = systemRegistry.rootPriceOracle().getPriceInEth(address(bytes20("ETH_IN_USD")));
+                uint256 ethInUsd = systemRegistry.rootPriceOracle().getPriceInEth(ETH_IN_USD);
                 values[i] = (values[i] * 1e18) / ethInUsd;
             }
 
